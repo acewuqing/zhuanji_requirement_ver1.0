@@ -1,0 +1,1741 @@
+/* 通用样式文件 - 政府系统风格 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Microsoft YaHei", "SimSun", sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 页面头部 - 保留用于其他页面 */
+.header {
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    color: white;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.15);
+}
+
+.header h1 {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 500;
+}
+
+/* 面包屑导航 */
+.breadcrumb {
+    background: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    font-size: 14px;
+    color: #666;
+}
+
+.breadcrumb span {
+    color: #1890ff;
+}
+
+/* 卡片容器 */
+.card {
+    background: white;
+    padding: 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1890ff;
+    margin-bottom: 20px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e6f7ff;
+}
+
+/* 表单样式 */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select {
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.date-range {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.date-range input {
+    flex: 1;
+}
+
+.form-buttons {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: #1890ff;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #096dd9;
+}
+
+.btn-secondary {
+    background: #f0f0f0;
+    color: #666;
+    border: 1px solid #d9d9d9;
+}
+
+.btn-secondary:hover {
+    background: #e6e6e6;
+}
+
+.btn-success {
+    background: #52c41a;
+    color: white;
+}
+
+.btn-success:hover {
+    background: #389e0d;
+}
+
+.btn-warning {
+    background: #fa8c16;
+    color: white;
+}
+
+.btn-warning:hover {
+    background: #d46b08;
+}
+
+.btn-danger {
+    background: #ff4d4f;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #cf1322;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-info:hover {
+    background: #138496;
+}
+
+/* 汇总卡片样式 - 紧凑优化版 */
+.summary-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+}
+
+.summary-group {
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e8eaed;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.summary-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #1890ff 0%, #52c41a 100%);
+}
+
+.summary-group.income-group::before {
+    background: linear-gradient(90deg, #52c41a 0%, #73d13d 100%);
+}
+
+.summary-group.refund-group::before {
+    background: linear-gradient(90deg, #fa8c16 0%, #ffa940 100%);
+}
+
+.summary-group.balance-group::before {
+    background: linear-gradient(90deg, #1890ff 0%, #40a9ff 100%);
+}
+
+.summary-group-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.summary-group-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    border-radius: 2px;
+    background: #1890ff;
+}
+
+.income-title {
+    color: #52c41a;
+}
+
+.income-title::before {
+    background: #52c41a;
+}
+
+.refund-title {
+    color: #fa8c16;
+}
+
+.refund-title::before {
+    background: #fa8c16;
+}
+
+.balance-title {
+    color: #1890ff;
+}
+
+.balance-title::before {
+    background: #1890ff;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+}
+
+/* 特殊布局：主要金额字段一行显示 */
+.summary-grid.main-amounts {
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 8px;
+}
+
+/* 其他字段一行显示2个 */
+.summary-grid.other-amounts {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.summary-card {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 6px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    position: relative;
+    transition: all 0.2s ease;
+    overflow: hidden;
+}
+
+.summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: #1890ff;
+    transition: all 0.2s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.summary-card:hover::before {
+    width: 4px;
+}
+
+.summary-card h4 {
+    font-size: 12px;
+    color: #666;
+    margin-bottom: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.3;
+}
+
+.summary-card .amount {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1890ff;
+    line-height: 1.2;
+}
+
+/* 主要金额字段样式 */
+.summary-grid.main-amounts .summary-card {
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f7ff 100%);
+    border: 1px solid #d6e4ff;
+}
+
+.summary-grid.main-amounts .summary-card .amount {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.summary-grid.main-amounts .summary-card h4 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #262626;
+}
+
+.income-section::before {
+    background: #52c41a;
+}
+
+.income-section .amount {
+    color: #52c41a;
+}
+
+.refund-section::before {
+    background: #fa8c16;
+}
+
+.refund-section .amount {
+    color: #fa8c16;
+}
+
+/* 感叹号提示样式 - 简化版 */
+.info-icon {
+    color: #1890ff;
+    cursor: help;
+    font-size: 14px;
+    margin-left: 6px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+    flex-shrink: 0;
+    text-shadow: 0 1px 2px rgba(24, 144, 255, 0.3);
+}
+
+.info-icon:hover {
+    color: #096dd9;
+    transform: scale(1.1);
+    text-shadow: 0 2px 4px rgba(9, 109, 217, 0.4);
+}
+
+.income-section .info-icon {
+    color: #52c41a;
+    text-shadow: 0 1px 2px rgba(82, 196, 26, 0.3);
+}
+
+.income-section .info-icon:hover {
+    color: #389e0d;
+    text-shadow: 0 2px 4px rgba(56, 158, 13, 0.4);
+}
+
+.refund-section .info-icon {
+    color: #fa8c16;
+    text-shadow: 0 1px 2px rgba(250, 140, 22, 0.3);
+}
+
+.refund-section .info-icon:hover {
+    color: #d46b08;
+    text-shadow: 0 2px 4px rgba(212, 107, 8, 0.4);
+}
+
+.tooltip {
+    position: absolute;
+    background: #2c3e50;
+    color: white;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    max-width: 280px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    line-height: 1.4;
+    font-weight: 400;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 12px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #2c3e50;
+}
+
+.summary-card:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* 操作区域 */
+.action-section {
+    background: white;
+    padding: 20px 24px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.action-left {
+    display: flex;
+    gap: 12px;
+}
+
+/* 表格样式 */
+.table-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+}
+
+.table-header {
+    background: #fafafa;
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1890ff;
+}
+
+.table-tabs {
+    display: flex;
+    gap: 0;
+}
+
+.tab {
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab.active {
+    color: #1890ff;
+    border-bottom-color: #1890ff;
+    background: #e6f7ff;
+}
+
+.table-container {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    padding: 10px 8px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    white-space: nowrap;
+}
+
+th {
+    background: #fafafa;
+    font-weight: 500;
+    color: #666;
+    font-size: 13px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+td {
+    font-size: 13px;
+    color: #333;
+}
+
+tr:hover {
+    background: #f5f7fa;
+}
+
+/* 状态徽章 */
+.status-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.status-success {
+    background: #f6ffed;
+    color: #52c41a;
+}
+
+.status-pending {
+    background: #fff7e6;
+    color: #fa8c16;
+}
+
+.status-failed {
+    background: #fff2f0;
+    color: #ff4d4f;
+}
+
+.status-frozen {
+    background: #f0f0f0;
+    color: #666;
+}
+
+.status-invoice {
+    background: #e6f7ff;
+    color: #1890ff;
+}
+
+/* 分页 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 8px;
+}
+
+.page-btn {
+    padding: 6px 12px;
+    border: 1px solid #d9d9d9;
+    background: white;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.page-btn.active {
+    background: #1890ff;
+    color: white;
+    border-color: #1890ff;
+}
+
+.page-btn:hover:not(.active) {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+/* 模态框 - 汇总样式版 */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 0;
+    max-width: 1400px;
+    width: 95%;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    color: white;
+    padding: 16px 24px;
+    margin-bottom: 0;
+    border-bottom: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: modalShine 3s ease-in-out infinite;
+}
+
+@keyframes modalShine {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-title::before {
+    content: '💰';
+    font-size: 24px;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-body {
+    margin-bottom: 0;
+    padding: 16px 20px;
+    max-height: calc(80vh - 120px);
+    overflow-y: auto;
+}
+
+.modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 确认汇总区域 - 参考列表页汇总样式 */
+.confirm-summary-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.confirm-summary-group {
+    background: linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #e8eaed;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.confirm-summary-group::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1890ff 0%, #52c41a 100%);
+}
+
+.confirm-summary-group.income-group::before {
+    background: linear-gradient(90deg, #52c41a 0%, #73d13d 100%);
+}
+
+.confirm-summary-group.refund-group::before {
+    background: linear-gradient(90deg, #fa8c16 0%, #ffa940 100%);
+}
+
+.confirm-summary-group-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+}
+
+.confirm-summary-group-title::before {
+    content: '';
+    width: 6px;
+    height: 18px;
+    border-radius: 3px;
+    background: #1890ff;
+}
+
+.confirm-income-title {
+    color: #52c41a;
+}
+
+.confirm-income-title::before {
+    background: #52c41a;
+}
+
+.confirm-refund-title {
+    color: #fa8c16;
+}
+
+.confirm-refund-title::before {
+    background: #fa8c16;
+}
+
+/* 分组标题中的悬浮提示样式 */
+.confirm-summary-group-title .info-icon {
+    color: #1890ff;
+    cursor: help;
+    font-size: 12px;
+    margin-left: 4px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    position: relative;
+    flex-shrink: 0;
+    text-shadow: 0 1px 2px rgba(24, 144, 255, 0.3);
+}
+
+.confirm-summary-group-title .info-icon:hover {
+    color: #096dd9;
+    transform: scale(1.1);
+    text-shadow: 0 2px 4px rgba(9, 109, 217, 0.4);
+}
+
+.confirm-income-title .info-icon {
+    color: #52c41a;
+    text-shadow: 0 1px 2px rgba(82, 196, 26, 0.3);
+}
+
+.confirm-income-title .info-icon:hover {
+    color: #389e0d;
+    text-shadow: 0 2px 4px rgba(56, 158, 13, 0.4);
+}
+
+.confirm-refund-title .info-icon {
+    color: #fa8c16;
+    text-shadow: 0 1px 2px rgba(250, 140, 22, 0.3);
+}
+
+.confirm-refund-title .info-icon:hover {
+    color: #d46b08;
+    text-shadow: 0 2px 4px rgba(212, 107, 8, 0.4);
+}
+
+.confirm-balance-title .info-icon {
+    color: #1890ff;
+    text-shadow: 0 1px 2px rgba(24, 144, 255, 0.3);
+}
+
+.confirm-balance-title .info-icon:hover {
+    color: #096dd9;
+    text-shadow: 0 2px 4px rgba(9, 109, 217, 0.4);
+}
+
+.confirm-summary-group-title .tooltip {
+    position: absolute;
+    background: #2c3e50;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    max-width: 200px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    top: 100%;
+    left: 0;
+    margin-top: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    line-height: 1.3;
+    font-weight: 400;
+}
+
+.confirm-summary-group-title .tooltip::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 12px;
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #2c3e50;
+}
+
+.confirm-summary-group-title:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.confirm-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.confirm-summary-card {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.confirm-summary-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #1890ff;
+    transition: all 0.3s ease;
+}
+
+.confirm-summary-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.confirm-summary-card:hover::before {
+    width: 6px;
+}
+
+.confirm-summary-card h4 {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 6px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    line-height: 1.2;
+}
+
+.confirm-summary-card .amount {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1890ff;
+    line-height: 1.1;
+}
+
+.confirm-income-section::before {
+    background: #52c41a;
+}
+
+.confirm-income-section .amount {
+    color: #52c41a;
+}
+
+.confirm-refund-section::before {
+    background: #fa8c16;
+}
+
+.confirm-refund-section .amount {
+    color: #fa8c16;
+}
+
+/* 时间信息区域 */
+.time-info-section {
+    background: #fafbfc;
+    border-radius: 12px;
+    padding: 12px;
+    border: 1px solid #e8eaed;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.time-info-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #1890ff 0%, #40a9ff 100%);
+    border-radius: 2px;
+}
+
+.time-info-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1890ff;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #e6f7ff;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.time-info-title::before {
+    content: '';
+    width: 6px;
+    height: 16px;
+    border-radius: 3px;
+    background: #1890ff;
+}
+
+.time-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.time-info-item {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.time-info-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.time-info-label {
+    color: #666;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.time-info-label::before {
+    content: '🕐';
+    font-size: 14px;
+}
+
+.time-info-value {
+    color: #1890ff;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/* 净收入突出显示 */
+.net-income-section {
+    background: linear-gradient(135deg, #f6ffed 0%, #e6f7ff 100%);
+    border-radius: 12px;
+    padding: 12px;
+    border: 2px solid #52c41a;
+    margin-top: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.net-income-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #52c41a 0%, #73d13d 100%);
+    border-radius: 2px;
+}
+
+.net-income-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #52c41a;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #b7eb8f;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.net-income-title::before {
+    content: '';
+    width: 6px;
+    height: 18px;
+    border-radius: 3px;
+    background: #52c41a;
+}
+
+.net-income-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.net-income-item {
+    background: white;
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.net-income-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #52c41a;
+    transition: all 0.3s ease;
+}
+
+.net-income-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.net-income-item:hover::before {
+    width: 6px;
+}
+
+.net-income-label {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 4px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.net-income-label::before {
+    content: '💰';
+    font-size: 14px;
+}
+
+.net-income-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: #52c41a;
+    line-height: 1.1;
+    text-shadow: 0 1px 2px rgba(82, 196, 26, 0.2);
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    padding: 12px 20px;
+    background: #fafbfc;
+    border-top: 1px solid #e8eaed;
+}
+
+.modal-footer .btn {
+    padding: 12px 32px;
+    font-size: 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-footer .btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.modal-footer .btn:hover::before {
+    left: 100%;
+}
+
+.modal-footer .btn-success {
+    background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+}
+
+.modal-footer .btn-success:hover {
+    background: linear-gradient(135deg, #389e0d 0%, #237804 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(82, 196, 26, 0.4);
+}
+
+.modal-footer .btn-secondary {
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    color: #666;
+    border: 1px solid #d9d9d9;
+}
+
+.modal-footer .btn-secondary:hover {
+    background: linear-gradient(135deg, #e8e8e8 0%, #d9d9d9 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* 响应式设计 */
+@media (max-width: 1200px) {
+    .summary-container {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .summary-grid.main-amounts {
+        grid-template-columns: 2fr 1fr 1fr;
+    }
+    
+    .summary-grid.other-amounts {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .confirm-summary-container {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .confirm-summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .time-info-grid,
+    .net-income-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .summary-grid.main-amounts,
+    .summary-grid.other-amounts,
+    .summary-grid,
+    .confirm-summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .net-income-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .action-section {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+    
+    .action-left {
+        justify-content: center;
+    }
+    
+    .modal-content {
+        max-width: 98%;
+        margin: 10px;
+    }
+    
+    .modal-body {
+        padding: 16px;
+    }
+    
+    .modal-footer {
+        padding: 16px;
+        flex-direction: column;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+    }
+}
+
+/* 加载状态样式 */
+.loading {
+    text-align: center;
+    padding: 60px 20px;
+    color: #666;
+    font-size: 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.loading::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1890ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.error {
+    text-align: center;
+    padding: 60px 20px;
+    color: #ff4d4f;
+    font-size: 16px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 1px solid #ffccc7;
+}
+
+.error::before {
+    content: '⚠';
+    display: block;
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+/* 结算单页面专用样式 */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+.audit-info {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    border: 1px solid #e9ecef;
+}
+
+.audit-header h3 {
+    color: #1890ff;
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.audit-header p {
+    color: #666;
+    margin: 0;
+    font-size: 14px;
+}
+
+.audit-opinion-section {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #e8eaed;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+    margin-top: 24px;
+}
+
+.audit-opinion-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1890ff;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e6f7ff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.audit-opinion-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: #1890ff;
+    border-radius: 2px;
+}
+
+.audit-opinion-content textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 100px;
+    transition: all 0.3s ease;
+}
+
+.audit-opinion-content textarea:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.audit-info-display {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.audit-info-display p {
+    margin: 8px 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.audit-info-display p:first-child {
+    margin-top: 0;
+}
+
+.audit-info-display p:last-child {
+    margin-bottom: 0;
+}
+
+.audit-info-display strong {
+    color: #495057;
+    font-weight: 600;
+}
+
+/* 产品需求说明编辑器样式 */
+.requirement-editor {
+    border: 1px solid #e8eaed;
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+}
+
+.editor-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    background: #fafbfc;
+    border-bottom: 1px solid #e8eaed;
+    flex-wrap: wrap;
+}
+
+.toolbar-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: white;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    color: #666;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 32px;
+}
+
+.toolbar-btn:hover {
+    background: #f5f5f5;
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.toolbar-btn:active {
+    background: #e6f7ff;
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: #d9d9d9;
+    margin: 0 4px;
+}
+
+.editor-content {
+    position: relative;
+    min-height: 400px;
+}
+
+.requirement-textarea {
+    width: 100%;
+    min-height: 400px;
+    padding: 20px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    background: white;
+    resize: vertical;
+    overflow-y: auto;
+}
+
+.requirement-textarea:empty:before {
+    content: attr(placeholder);
+    color: #999;
+    font-style: italic;
+}
+
+.requirement-textarea:focus {
+    background: #fafbfc;
+}
+
+.requirement-textarea h3 {
+    color: #1890ff;
+    margin: 0 0 16px 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.requirement-textarea h4 {
+    color: #333;
+    margin: 20px 0 12px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.requirement-textarea p {
+    margin: 8px 0;
+    color: #666;
+}
+
+.requirement-textarea ul,
+.requirement-textarea ol {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.requirement-textarea li {
+    margin: 4px 0;
+    color: #666;
+}
+
+.requirement-textarea strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.editor-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    background: #fafbfc;
+    border-top: 1px solid #e8eaed;
+    font-size: 12px;
+    color: #666;
+}
+
+.word-count {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.auto-save-status {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.auto-save-status::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: #52c41a;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* 需求编辑器响应式设计 */
+@media (max-width: 768px) {
+    .editor-toolbar {
+        padding: 8px 12px;
+        gap: 2px;
+    }
+    
+    .toolbar-btn {
+        padding: 6px 8px;
+        font-size: 12px;
+        min-height: 28px;
+    }
+    
+    .requirement-textarea {
+        padding: 16px;
+        min-height: 300px;
+        font-size: 13px;
+    }
+    
+    .editor-footer {
+        padding: 8px 16px;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .requirement-textarea h3 {
+        font-size: 16px;
+    }
+    
+    .requirement-textarea h4 {
+        font-size: 14px;
+    }
+}
+
+/* 加载消息样式 */
+.loading-message {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.loading-message.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-content {
+    background: white;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    min-width: 300px;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #1890ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 16px;
+}
+
+.loading-text {
+    color: #666;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+/* 状态徽章样式补充 */
+.status-failed {
+    background: #fff2f0;
+    color: #ff4d4f;
+}
+
+/* 响应式设计补充 */
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .btn-sm {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .audit-opinion-content textarea {
+        min-height: 80px;
+    }
+    
+    .loading-content {
+        min-width: 250px;
+        padding: 24px;
+    }
+} 
+
+/* --- Modal Layout Fix for Sticky Footer --- */
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    height: auto;
+}
+
+.modal-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    max-height: none;
+}
+
+.modal-footer {
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    z-index: 2;
+    background: #fafbfc;
+    border-top: 1px solid #e8eaed;
+} 

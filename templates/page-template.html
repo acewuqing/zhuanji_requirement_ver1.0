@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>页面标题 - 专技系统</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+</head>
+<body>
+    <!-- 左侧菜单导航栏 -->
+    <div id="sidebar-container">
+        <!-- 侧边栏组件将在这里加载 -->
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 顶部导航栏 -->
+        <div id="top-nav-container">
+            <!-- 顶部导航栏组件将在这里加载 -->
+        </div>
+
+        <!-- 页面内容 -->
+        <div class="page-content">
+            <!-- 面包屑导航 -->
+            <div class="breadcrumb">
+                <!-- 面包屑导航将在这里动态生成 -->
+            </div>
+
+            <!-- 页面主要内容 -->
+            <div id="page-main-content">
+                <!-- 在这里添加页面的主要内容 -->
+                <div class="card">
+                    <div class="card-title">页面内容</div>
+                    <p>这是页面模板，请根据具体需求修改内容。</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公共脚本 -->
+    <script src="scripts/components.js"></script>
+    <script>
+        // 页面特定的脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载公共组件
+            ComponentManager.loadComponent('sidebar', 'sidebar-container');
+            ComponentManager.loadComponent('top-nav', 'top-nav-container');
+            
+            // 初始化页面
+            ComponentManager.initializePage();
+            
+            // 在这里添加页面特定的初始化代码
+        });
+    </script>
+</body>
+</html> 

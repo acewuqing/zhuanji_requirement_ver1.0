@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订单详情</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #fff;
+            font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+        }
+        .top-bar {
+            background: #1686ff;
+            color: #fff;
+            position: relative;
+            height: 140px;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+        }
+        .status-bar {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 0 16px;
+            font-size: 14px;
+        }
+        .back-btn {
+            position: absolute;
+            left: 16px;
+            top: 56px;
+            width: 28px;
+            height: 28px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .title {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 500;
+            margin-top: 56px;
+            letter-spacing: 1px;
+        }
+        .section {
+            background: #fff;
+            margin-top: -12px;
+            border-radius: 16px 16px 0 0;
+            box-shadow: 0 2px 8px rgba(22,134,255,0.04);
+            padding: 0 0 24px 0;
+        }
+        .order-pay-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1686ff;
+            margin: 0 0 2px 0;
+            padding: 24px 0 0 24px;
+        }
+        .order-pay-time {
+            font-size: 15px;
+            color: #1686ff;
+            padding-left: 24px;
+            margin-bottom: 8px;
+        }
+        .course-info-row {
+            display: flex;
+            align-items: center;
+            padding: 18px 24px 0 24px;
+        }
+        .course-img {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            object-fit: cover;
+            margin-right: 12px;
+            background: #eee;
+        }
+        .course-title {
+            font-size: 16px;
+            color: #222;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+        .course-price {
+            color: #ff3b30;
+            font-size: 15px;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+        .order-detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 18px;
+            font-size: 15px;
+            color: #222;
+        }
+        .order-detail-table td {
+            padding: 8px 24px 8px 24px;
+            border: none;
+        }
+        .order-detail-table .label {
+            color: #888;
+            width: 110px;
+            text-align: left;
+            font-size: 15px;
+        }
+        .order-detail-table .value {
+            color: #222;
+            text-align: left;
+            font-size: 15px;
+            word-break: break-all;
+        }
+        .order-detail-table .copy-btn {
+            background: #f5f5f5;
+            color: #1686ff;
+            border: none;
+            border-radius: 12px;
+            font-size: 13px;
+            padding: 2px 10px;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+        .order-detail-table .price {
+            color: #ff3b30;
+            font-weight: 500;
+        }
+        .order-detail-table .right {
+            text-align: right;
+        }
+        .refund-reason-section {
+            background: #f8f8f8;
+            border-radius: 10px;
+            margin: 18px 24px 0 24px;
+            padding: 14px 16px 12px 16px;
+        }
+        .refund-reason-title {
+            color: #1686ff;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .refund-reason-content {
+            color: #222;
+            font-size: 15px;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+        .bottom-actions {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+            padding: 24px 24px 16px 24px;
+            background: #fff;
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            z-index: 10;
+        }
+        .action-btn {
+            border: none;
+            border-radius: 18px;
+            padding: 8px 28px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .action-btn.comment {
+            background: #f5f5f5;
+            color: #bbb;
+        }
+        .action-btn.refund {
+            background: #1686ff;
+            color: #fff;
+        }
+        @media (max-width: 500px) {
+            .section, .refund-reason-section { margin-left: 0; margin-right: 0; }
+            .order-detail-table td { padding-left: 10px; padding-right: 10px; }
+            .course-info-row { padding-left: 10px; padding-right: 10px; }
+            .refund-reason-section { margin-left: 10px; margin-right: 10px; }
+            .bottom-actions { padding-left: 10px; padding-right: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="status-bar">
+            <span style="margin-left:auto;">24</span>
+            <span style="margin-left:8px;">5G</span>
+        </div>
+        <button class="back-btn">&#8592;</button>
+        <div class="title">订单详情</div>
+    </div>
+    <div class="section">
+        <div class="order-pay-title">订单支付</div>
+        <div class="order-pay-time">2025-07-14 11:28:40</div>
+        <div class="course-info-row">
+            <img class="course-img" src="https://img1.imgtp.com/2023/07/21/8QwQwQwQ.png" alt="课程图片" />
+            <div class="course-title">施工成本计划编制核心知识点与案例</div>
+            <div class="course-price">￥5</div>
+        </div>
+        <table class="order-detail-table">
+            <tr>
+                <td class="label">订单编号：</td>
+                <td class="value">1943565393666035714 <button class="copy-btn" onclick="copyOrderNo()">复制</button></td>
+            </tr>
+            <tr>
+                <td class="label">下单时间：</td>
+                <td class="value">2025-07-11 14:57:54</td>
+            </tr>
+            <tr>
+                <td class="label">支付状态：</td>
+                <td class="value">已完成</td>
+            </tr>
+            <tr>
+                <td class="label">支付方式：</td>
+                <td class="value">学币支付</td>
+            </tr>
+            <tr>
+                <td class="label">商品总价：</td>
+                <td class="value">￥5</td>
+            </tr>
+            <tr>
+                <td class="label">实付款：</td>
+                <td class="value price">￥5</td>
+            </tr>
+        </table>
+        <!-- 退课原因展示区域，接口渲染 -->
+        <div class="refund-reason-section" id="refundReasonSection">
+            <div class="refund-reason-title">退课原因</div>
+            <div class="refund-reason-content" id="refundReasonContent">课程内容与预期不符，申请退课。</div>
+        </div>
+    </div>
+    <div class="bottom-actions">
+        <button class="action-btn comment">评价</button>
+        <button class="action-btn refund">申请退课</button>
+    </div>
+    <script>
+    document.querySelector('.back-btn').onclick = function() {
+        window.location.href = 'my_orders.html';
+    };
+    // 复制订单号
+    function copyOrderNo() {
+        const text = '1943565393666035714';
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text);
+            alert('订单编号已复制');
+        } else {
+            const input = document.createElement('input');
+            input.value = text;
+            document.body.appendChild(input);
+            input.select();
+            document.execCommand('copy');
+            document.body.removeChild(input);
+            alert('订单编号已复制');
+        }
+    }
+    // 模拟接口渲染退课原因
+    function renderRefundReason(reason) {
+        var section = document.getElementById('refundReasonSection');
+        var content = document.getElementById('refundReasonContent');
+        if (reason && reason.trim()) {
+            content.textContent = reason;
+            section.style.display = '';
+        } else {
+            section.style.display = 'none';
+        }
+    }
+    // 示例：有退课原因时调用
+    // renderRefundReason('课程内容与预期不符，申请退课。');
+    </script>
+</body>
+</html> 

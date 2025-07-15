@@ -1,0 +1,98 @@
+<!-- 左侧菜单导航栏组件 -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE2IDJMMjggMTZIMjBWMzBIMTJWMjZIMFYxNkwxNiAyWiIgZmlsbD0iIzE4OTBmZiIvPgo8L3N2Zz4K" alt="Logo">
+            <span class="logo-text">专技系统</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                <path d="M3 6H17M3 10H17M3 14H17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <div class="nav-link nav-parent expanded" data-menu="finance">
+                    <div class="nav-icon">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 1V15M4 5H12M4 9H12M4 13H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <span class="nav-text">财务账单</span>
+                    <svg class="nav-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <ul class="nav-submenu expanded" id="finance-submenu">
+                    <li class="nav-item">
+                        <a href="financial_reconciliation_prototype.html" class="nav-link nav-child" data-page="financial-reconciliation">
+                            <div class="nav-icon">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M2 2H12V12H2V2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <path d="M2 6H12M6 2V12" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <span class="nav-text">交易账单</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settlement_statement.html" class="nav-link nav-child" data-page="settlement-statement">
+                            <div class="nav-icon">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M2 2H12V12H2V2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <path d="M2 6H12M6 2V12" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <span class="nav-text">结算单</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link nav-parent" data-menu="student">
+                    <div class="nav-icon">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M8 2C9.10457 2 10 2.89543 10 4C10 5.10457 9.10457 6 8 6C6.89543 6 6 5.10457 6 4C6 2.89543 6.89543 2 8 2Z" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M2 14C2 11.7909 3.79086 10 6 10H10C12.2091 10 14 11.7909 14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                    </div>
+                    <span class="nav-text">学员管理</span>
+                    <svg class="nav-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                        <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <ul class="nav-submenu" id="student-submenu">
+                    <li class="nav-item">
+                        <a href="refund_order_list.html" class="nav-link nav-child" data-page="refund-order">
+                            <div class="nav-icon">
+                                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                    <path d="M2 2H12V12H2V2Z" stroke="currentColor" stroke-width="1.5"/>
+                                    <path d="M4 6L10 6M4 9L10 9" stroke="currentColor" stroke-width="1.5"/>
+                                </svg>
+                            </div>
+                            <span class="nav-text">退款订单</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M5 20C5 16.6863 8.13401 14 12 14C15.866 14 19 16.6863 19 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <div class="user-details">
+                <div class="user-name">财务管理员</div>
+                <div class="user-role">系统管理员</div>
+            </div>
+        </div>
+    </div>
+</div> 
