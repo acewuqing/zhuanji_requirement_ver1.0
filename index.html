@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专技系统 - 首页</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <style>
+        /* 首页特定样式 */
+        .dashboard-container {
+            padding: 24px;
+        }
+        
+        .welcome-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        
+        .welcome-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        
+        .welcome-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8e8e8;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+        }
+        
+        .stat-icon.income {
+            background: linear-gradient(135deg, #52c41a, #73d13d);
+            color: white;
+        }
+        
+        .stat-icon.refund {
+            background: linear-gradient(135deg, #fa8c16, #ffa940);
+            color: white;
+        }
+        
+        .stat-icon.settlement {
+            background: linear-gradient(135deg, #1890ff, #40a9ff);
+            color: white;
+        }
+        
+        .stat-icon.order {
+            background: linear-gradient(135deg, #722ed1, #9254de);
+            color: white;
+        }
+        
+        .stat-title {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #262626;
+        }
+        
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8e8e8;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            border-color: #1890ff;
+        }
+        
+        .action-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, #f0f9ff, #e6f7ff);
+            color: #1890ff;
+        }
+        
+        .action-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #262626;
+        }
+        
+        .action-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e8e8e8;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #262626;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #1890ff;
+            margin-right: 12px;
+            border-radius: 2px;
+        }
+        
+        .activity-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 16px;
+            font-size: 14px;
+        }
+        
+        .activity-icon.success {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .activity-icon.warning {
+            background: #fffbe6;
+            color: #fa8c16;
+        }
+        
+        .activity-icon.info {
+            background: #f0f9ff;
+            color: #1890ff;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #262626;
+            margin-bottom: 4px;
+        }
+        
+        .activity-time {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .activity-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .activity-status.pending {
+            background: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .activity-status.success {
+            background: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .activity-status.failed {
+            background: #fff2f0;
+            color: #ff4d4f;
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧菜单导航栏 -->
+    <div id="sidebar-container">
+        <!-- 侧边栏组件将在这里加载 -->
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 顶部导航栏 -->
+        <div id="top-nav-container">
+            <!-- 顶部导航栏组件将在这里加载 -->
+        </div>
+
+        <!-- 页面内容 -->
+        <div class="page-content">
+            <!-- 面包屑导航 -->
+            <div class="breadcrumb">
+                <!-- 面包屑导航将在这里动态生成 -->
+            </div>
+
+            <!-- 内容容器 -->
+            <div id="content-container">
+                <div class="dashboard-container">
+                    <!-- 欢迎区域 -->
+                    <div class="welcome-section">
+                        <div class="welcome-title">欢迎使用专技系统</div>
+                        <div class="welcome-subtitle">专业的在线教育平台财务管理系统</div>
+                    </div>
+                    <!-- 快速操作 -->
+                    <div class="quick-actions">
+                        <a href="financial_reconciliation_prototype.html" class="action-card">
+                            <div class="action-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="action-title">交易账单对账</div>
+                            <div class="action-desc">查看和核对交易账单，生成结算单</div>
+                        </a>
+
+                        <a href="settlement_statement.html" class="action-card">
+                            <div class="action-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="action-title">结算单管理</div>
+                            <div class="action-desc">审核和管理结算单，查看结算详情</div>
+                        </a>
+
+                        <a href="refund_order_list.html" class="action-card">
+                            <div class="action-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                    <path d="M3 12H21M3 12L9 6M3 12L9 18M21 12L15 6M21 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div class="action-title">退款订单</div>
+                            <div class="action-desc">查看和管理学员退款订单</div>
+                        </a>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公共脚本 -->
+    <script src="scripts/components.js"></script>
+    <script>
+        // 页面特定的脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载公共组件
+            ComponentManager.loadComponent('sidebar', 'sidebar-container');
+            ComponentManager.loadComponent('top-nav', 'top-nav-container');
+            
+            // 初始化页面
+            ComponentManager.initializePage();
+            
+            // 设置首页特定的标题和面包屑
+            document.getElementById('pageTitle').textContent = '系统首页';
+            document.getElementById('pageSubtitle').textContent = '专技系统管理控制台';
+            
+            // 设置面包屑导航
+            const breadcrumbContainer = document.querySelector('.breadcrumb');
+            if (breadcrumbContainer) {
+                breadcrumbContainer.innerHTML = `
+                    <span class="breadcrumb-item">首页</span>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
+
