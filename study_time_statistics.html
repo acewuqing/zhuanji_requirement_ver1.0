@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学员课时统计报表</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <style>
+        /* 统计卡片样式 */
+        .statistics-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .statistics-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .statistics-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        }
+        
+        .statistics-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .statistics-title .info-icon {
+            width: 14px;
+            height: 14px;
+            background: #6c757d;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 14px;
+            font-size: 10px;
+            font-weight: bold;
+            cursor: help;
+            transition: all 0.3s ease;
+            position: relative;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .statistics-title .info-icon::before {
+            content: 'i';
+            display: block;
+            font-style: italic;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .statistics-title .info-icon:hover {
+            background: #5a6268;
+            transform: scale(1.1);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .statistics-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1890ff;
+            margin-bottom: 12px;
+        }
+        
+        .statistics-period {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: #e6f7ff;
+            color: #1890ff;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 搜索区域样式 */
+        .search-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .search-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .search-group label {
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .search-group input,
+        .search-group select {
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+            min-width: 160px;
+        }
+        
+        .search-group input:focus,
+        .search-group select:focus {
+            outline: none;
+            border-color: #1890ff;
+            box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+        }
+        
+        .search-buttons {
+            display: flex;
+            gap: 12px;
+            margin-left: auto;
+        }
+        
+        .btn-search {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-search:hover {
+            background: #096dd9;
+        }
+        
+        .btn-reset {
+            background: #f5f5f5;
+            color: #666;
+            border: 1px solid #d9d9d9;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-reset:hover {
+            background: #e6e6e6;
+        }
+        
+        /* 表格区域样式 */
+        .table-section {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .table-header {
+            background: #fafafa;
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid #d9d9d9;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: #f5f5f5;
+            border-color: #1890ff;
+        }
+        
+        /* 复杂表格样式 */
+        .complex-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        
+        .complex-table th {
+            background: #fafafa;
+            padding: 12px 8px;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+            font-weight: 600;
+            color: #333;
+            position: relative;
+        }
+        
+        .complex-table th.category-header {
+            background: #e6f7ff;
+            color: #1890ff;
+            font-size: 14px;
+        }
+        
+        .complex-table th.sub-header {
+            background: #f8f9fa;
+            color: #666;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .complex-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border: 1px solid #f0f0f0;
+            color: #333;
+        }
+        
+        .complex-table tr:hover {
+            background: #f5f7fa;
+        }
+        
+        .student-name {
+            font-weight: 500;
+            color: #1890ff;
+        }
+        
+        .study-hours {
+            font-weight: 600;
+            color: #52c41a;
+        }
+        
+        .study-hours.zero {
+            color: #ccc;
+        }
+        
+        /* 分页样式 */
+        .pagination-section {
+            background: white;
+            padding: 16px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .pagination-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .page-btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            background: white;
+            color: #666;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        
+        .page-btn:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .page-btn.active {
+            background: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+        
+        .page-input {
+            width: 50px;
+            padding: 4px 8px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .page-input:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .statistics-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .statistics-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-buttons {
+                margin-left: 0;
+                justify-content: center;
+            }
+            
+            .table-header {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .pagination-section {
+                flex-direction: column;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧菜单导航栏 -->
+    <div id="sidebar-container">
+        <!-- 侧边栏组件将在这里加载 -->
+    </div>
+
+    <!-- 主内容区域 -->
+    <div class="main-content">
+        <!-- 顶部导航栏 -->
+        <div id="top-nav-container">
+            <!-- 顶部导航栏组件将在这里加载 -->
+        </div>
+
+        <!-- 页面内容 -->
+        <div class="page-content">
+            <!-- 面包屑导航 -->
+            <div class="breadcrumb">
+                <!-- 面包屑导航将在这里动态生成 -->
+            </div>
+
+            <!-- 内容容器 -->
+            <div id="content-container">
+                <div class="container">
+                    <!-- 统计卡片区域 -->
+                    <div class="statistics-container">
+                        <div class="statistics-card">
+                            <div class="statistics-title">
+                                今日申报总学时
+                                <span class="info-icon" title="统计申报时间为今日的总学时"></span>
+                            </div>
+                            <div class="statistics-value">1,700</div>
+                            <div class="statistics-period">今日</div>
+                        </div>
+                        <div class="statistics-card">
+                            <div class="statistics-title">
+                                本周申报总学时
+                                <span class="info-icon" title="统计申报时间为本周的总学时"></span>
+                            </div>
+                            <div class="statistics-value">10,322</div>
+                            <div class="statistics-period">本周</div>
+                        </div>
+                        <div class="statistics-card">
+                            <div class="statistics-title">
+                                本月申报总学时
+                                <span class="info-icon" title="统计申报时间为本月的总学时"></span>
+                            </div>
+                            <div class="statistics-value">158,436</div>
+                            <div class="statistics-period">本月</div>
+                        </div>
+                        <div class="statistics-card">
+                            <div class="statistics-title">
+                                本年申报总学时
+                                <span class="info-icon" title="统计申报时间为本年的总学时"></span>
+                            </div>
+                            <div class="statistics-value">462,587</div>
+                            <div class="statistics-period">本年</div>
+                        </div>
+                    </div>
+
+                    <!-- 搜索筛选区域 -->
+                    <div class="search-section">
+                        <form class="search-form">
+                            <div class="search-group">
+                                <label>学员姓名</label>
+                                <input type="text" placeholder="请输入学员姓名">
+                            </div>
+                            <div class="search-group">
+                                <label>学员手机</label>
+                                <input type="text" placeholder="请输入学员手机">
+                            </div>
+                            <div class="search-group">
+                                <label>开课时间</label>
+                                <select>
+                                    <option value="today">今天</option>
+                                    <option value="week">本周</option>
+                                    <option value="month">本月</option>
+                                    <option value="year">本年</option>
+                                </select>
+                            </div>
+                            <div class="search-buttons">
+                                <button type="button" class="btn-search">
+                                    <span>🔍</span>
+                                    查询
+                                </button>
+                                <button type="button" class="btn-reset">
+                                    <span>🔄</span>
+                                    重置
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 表格区域 -->
+                    <div class="table-section">
+                        <div class="table-header">
+                            <div class="table-title">学员课时统计报表</div>
+                            <div class="table-actions">
+                                <button class="action-btn" title="放大">
+                                    <span>🔍</span>
+                                </button>
+                                <button class="action-btn" title="下载">
+                                    <span>⬇️</span>
+                                </button>
+                                <button class="action-btn" title="刷新">
+                                    <span>🔄</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table class="complex-table">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">#</th>
+                                        <th rowspan="2">学员姓名</th>
+                                        <th colspan="3" class="category-header">未学习</th>
+                                        <th colspan="3" class="category-header">已学习未申报</th>
+                                        <th colspan="3" class="category-header">已申报</th>
+                                    </tr>
+                                    <tr>
+                                        <th class="sub-header">公需课学时</th>
+                                        <th class="sub-header">专业课学时</th>
+                                        <th class="sub-header">建工课学时</th>
+                                        <th class="sub-header">公需课学时</th>
+                                        <th class="sub-header">专业课学时</th>
+                                        <th class="sub-header">建工课学时</th>
+                                        <th class="sub-header">公需课学时</th>
+                                        <th class="sub-header">专业课学时</th>
+                                        <th class="sub-header">建工课学时</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>1</td>
+                                        <td class="student-name">黄荣萱</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">3</td>
+                                        <td class="study-hours zero">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>2</td>
+                                        <td class="student-name">洪福康</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">3</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">3</td>
+                                        <td class="study-hours zero">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>3</td>
+                                        <td class="student-name">李明</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">24</td>
+                                        <td class="study-hours">48</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">12</td>
+                                        <td class="study-hours">36</td>
+                                        <td class="study-hours zero">0</td>
+                                    </tr>
+                                    <tr>
+                                        <td>4</td>
+                                        <td class="student-name">张华</td>
+                                        <td class="study-hours">12</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">60</td>
+                                        <td class="study-hours">24</td>
+                                        <td class="study-hours">18</td>
+                                        <td class="study-hours">42</td>
+                                        <td class="study-hours">12</td>
+                                    </tr>
+                                    <tr>
+                                        <td>5</td>
+                                        <td class="student-name">王鹏</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">36</td>
+                                        <td class="study-hours">120</td>
+                                        <td class="study-hours">48</td>
+                                        <td class="study-hours">24</td>
+                                        <td class="study-hours">60</td>
+                                        <td class="study-hours">36</td>
+                                    </tr>
+                                    <tr>
+                                        <td>6</td>
+                                        <td class="student-name">陈静</td>
+                                        <td class="study-hours">18</td>
+                                        <td class="study-hours">24</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">72</td>
+                                        <td class="study-hours">36</td>
+                                        <td class="study-hours">30</td>
+                                        <td class="study-hours">48</td>
+                                        <td class="study-hours">24</td>
+                                    </tr>
+                                    <tr>
+                                        <td>7</td>
+                                        <td class="student-name">刘强</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">12</td>
+                                        <td class="study-hours">48</td>
+                                        <td class="study-hours">96</td>
+                                        <td class="study-hours">24</td>
+                                        <td class="study-hours">18</td>
+                                        <td class="study-hours">54</td>
+                                        <td class="study-hours">18</td>
+                                    </tr>
+                                    <tr>
+                                        <td>8</td>
+                                        <td class="student-name">申鸿瑞</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">60</td>
+                                        <td class="study-hours">160</td>
+                                        <td class="study-hours">48</td>
+                                        <td class="study-hours">36</td>
+                                        <td class="study-hours">72</td>
+                                        <td class="study-hours">42</td>
+                                    </tr>
+                                    <tr>
+                                        <td>9</td>
+                                        <td class="student-name">赵敏</td>
+                                        <td class="study-hours">24</td>
+                                        <td class="study-hours">18</td>
+                                        <td class="study-hours">6</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">84</td>
+                                        <td class="study-hours">30</td>
+                                        <td class="study-hours">24</td>
+                                        <td class="study-hours">66</td>
+                                        <td class="study-hours">30</td>
+                                    </tr>
+                                    <tr>
+                                        <td>10</td>
+                                        <td class="student-name">孙伟</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">12</td>
+                                        <td class="study-hours zero">0</td>
+                                        <td class="study-hours">42</td>
+                                        <td class="study-hours">108</td>
+                                        <td class="study-hours">36</td>
+                                        <td class="study-hours">30</td>
+                                        <td class="study-hours">78</td>
+                                        <td class="study-hours">36</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- 分页区域 -->
+                        <div class="pagination-section">
+                            <div class="pagination-info">
+                                共47条
+                                <select style="margin-left: 8px; padding: 4px 8px; border: 1px solid #d9d9d9; border-radius: 4px;">
+                                    <option>10条/页</option>
+                                    <option>20条/页</option>
+                                    <option>50条/页</option>
+                                </select>
+                            </div>
+                            <div class="pagination-controls">
+                                <button class="page-btn">‹</button>
+                                <button class="page-btn active">1</button>
+                                <button class="page-btn">2</button>
+                                <button class="page-btn">3</button>
+                                <button class="page-btn">4</button>
+                                <button class="page-btn">5</button>
+                                <button class="page-btn">›</button>
+                                <span style="margin-left: 12px; color: #666;">前往</span>
+                                <input type="number" class="page-input" value="1" min="1">
+                                <span style="color: #666;">页</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 公共脚本 -->
+    <script src="scripts/components.js"></script>
+    <script>
+        // 页面特定的脚本
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载公共组件
+            ComponentManager.loadComponent('sidebar', 'sidebar-container');
+            ComponentManager.loadComponent('top-nav', 'top-nav-container');
+            
+            // 初始化页面
+            ComponentManager.initializePage();
+            
+            // 初始化搜索功能
+            initializeSearch();
+            
+            // 初始化分页功能
+            initializePagination();
+        });
+        
+        // 初始化搜索功能
+        function initializeSearch() {
+            const searchBtn = document.querySelector('.btn-search');
+            const resetBtn = document.querySelector('.btn-reset');
+            
+            searchBtn.addEventListener('click', function() {
+                // 执行搜索逻辑
+                console.log('执行搜索...');
+            });
+            
+            resetBtn.addEventListener('click', function() {
+                // 重置搜索条件
+                const inputs = document.querySelectorAll('.search-form input, .search-form select');
+                inputs.forEach(input => {
+                    if (input.type === 'text') {
+                        input.value = '';
+                    } else if (input.tagName === 'SELECT') {
+                        input.selectedIndex = 0;
+                    }
+                });
+            });
+        }
+        
+        // 初始化分页功能
+        function initializePagination() {
+            const pageBtns = document.querySelectorAll('.page-btn');
+            const pageInput = document.querySelector('.page-input');
+            
+            pageBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!this.classList.contains('active')) {
+                        // 移除所有active类
+                        pageBtns.forEach(b => b.classList.remove('active'));
+                        // 添加active类到当前按钮
+                        this.classList.add('active');
+                        
+                        // 更新页码输入框
+                        const pageNum = this.textContent;
+                        if (pageNum !== '‹' && pageNum !== '›') {
+                            pageInput.value = pageNum;
+                        }
+                    }
+                });
+            });
+            
+            // 页码输入框回车事件
+            pageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const pageNum = parseInt(this.value);
+                    if (pageNum >= 1 && pageNum <= 5) {
+                        // 更新分页按钮状态
+                        pageBtns.forEach(btn => btn.classList.remove('active'));
+                        pageBtns[pageNum].classList.add('active');
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html> 

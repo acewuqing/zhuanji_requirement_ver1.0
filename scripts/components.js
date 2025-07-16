@@ -38,6 +38,12 @@ const pageConfig = {
         activePage: 'refund-order',
         breadcrumb: ['首页', '学员管理', '退款订单列表']
     },
+    'study_time_statistics.html': {
+        title: '学员课时统计',
+        subtitle: '学员课时数据统计报表',
+        activePage: 'study-time-statistics',
+        breadcrumb: ['首页', '数据统计', '学员课时统计']
+    },
     'test-prototype.html': {
         title: '测试页面',
         subtitle: '组件化架构验证',
@@ -149,6 +155,37 @@ const componentCache = {
                                         </svg>
                                     </div>
                                     <span class="nav-text">退款订单</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <div class="nav-link nav-parent" data-menu="statistics">
+                            <div class="nav-icon">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                    <path d="M2 12L6 8L10 10L14 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="6" cy="8" r="1" fill="currentColor"/>
+                                    <circle cx="10" cy="10" r="1" fill="currentColor"/>
+                                    <circle cx="14" cy="6" r="1" fill="currentColor"/>
+                                </svg>
+                            </div>
+                            <span class="nav-text">数据统计</span>
+                            <svg class="nav-arrow" width="12" height="12" viewBox="0 0 12 12" fill="none">
+                                <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <ul class="nav-submenu" id="statistics-submenu">
+                            <li class="nav-item">
+                                <a href="study_time_statistics.html" class="nav-link nav-child" data-page="study-time-statistics">
+                                    <div class="nav-icon">
+                                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                                            <path d="M7 1V13M3 5H11M3 9H11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                                            <circle cx="7" cy="3" r="1" fill="currentColor"/>
+                                            <circle cx="7" cy="7" r="1" fill="currentColor"/>
+                                            <circle cx="7" cy="11" r="1" fill="currentColor"/>
+                                        </svg>
+                                    </div>
+                                    <span class="nav-text">学员课时统计</span>
                                 </a>
                             </li>
                         </ul>

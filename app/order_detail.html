@@ -10,6 +10,13 @@
             padding: 0;
             background: #fff;
             font-family: 'PingFang SC', 'Microsoft YaHei', Arial, sans-serif;
+            height: 100%;
+            overflow-y: auto;
+            padding-bottom: 80px; /* 为底部按钮留出空间 */
+        }
+        html {
+            height: 100%;
+            overflow-y: auto;
         }
         .top-bar {
             background: #1686ff;
@@ -159,6 +166,7 @@
             position: fixed;
             left: 0; right: 0; bottom: 0;
             z-index: 10;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
         }
         .action-btn {
             border: none;
@@ -211,6 +219,10 @@
                 <td class="label">下单时间：</td>
                 <td class="value">2025-07-11 14:57:54</td>
             </tr>
+            <tr id="refundTimeRow">
+                <td class="label">退课时间：</td>
+                <td class="value" id="refundTimeValue">2025-07-16 09:15:23</td>
+            </tr>
             <tr>
                 <td class="label">支付状态：</td>
                 <td class="value">已完成</td>
@@ -258,19 +270,35 @@
             alert('订单编号已复制');
         }
     }
-    // 模拟接口渲染退课原因
-    function renderRefundReason(reason) {
+    // 模拟接口渲染退课原因和退课时间
+    function renderRefundInfo(reason, time) {
         var section = document.getElementById('refundReasonSection');
         var content = document.getElementById('refundReasonContent');
+        var timeRow = document.getElementById('refundTimeRow');
+        var timeValue = document.getElementById('refundTimeValue');
+        
         if (reason && reason.trim()) {
             content.textContent = reason;
             section.style.display = '';
+            
+            if (time && time.trim()) {
+                timeValue.textContent = time;
+                timeRow.style.display = '';
+            } else {
+                timeRow.style.display = 'none';
+            }
         } else {
             section.style.display = 'none';
+            timeRow.style.display = 'none';
         }
     }
-    // 示例：有退课原因时调用
-    // renderRefundReason('课程内容与预期不符，申请退课。');
+    // 示例：有退课原因和时间时调用
+    // renderRefundInfo('课程内容与预期不符，申请退课。', '2025-07-16 09:15:23');
+    
+    // 页面加载时显示退课信息
+    window.onload = function() {
+        renderRefundInfo('课程内容与预期不符，申请退课。', '2025-07-16 09:15:23');
+    };
     </script>
 </body>
 </html> 

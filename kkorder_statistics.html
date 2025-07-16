@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>开课跟课统计</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        body { background: #f7f8fa; }
+        .statistics-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 18px;
+        }
+        .statistics-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 18px 20px 12px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: relative;
+        }
+        .statistics-title {
+            font-size: 14px;
+            color: #888;
+            margin-bottom: 8px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .statistics-value {
+            font-size: 26px;
+            font-weight: 700;
+            color: #1890ff;
+        }
+        .statistics-period {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: #e6f7ff;
+            color: #1890ff;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 18px;
+            padding: 0 0 20px 0;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1.5px solid #e6e6e6;
+            padding: 18px 24px 0 24px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+        .section-search {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .section-search input {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .section-search button {
+            background: #1890ff;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 16px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .section-search button:hover {
+            background: #096dd9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0 40px;
+            padding: 18px 24px 0 24px;
+        }
+        .stat-block {
+            display: flex;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+        }
+        /* 彩色图标背景 */
+        .icon-cyan { background: #e6f7ff; color: #13c2c2; }
+        .icon-green { background: #f6ffed; color: #52c41a; }
+        .icon-blue { background: #e6f4ff; color: #1890ff; }
+        .icon-purple { background: #f9f0ff; color: #722ed1; }
+        .icon-orange { background: #fff7e6; color: #fa8c16; }
+        .icon-yellow { background: #fffbe6; color: #fadb14; }
+        .icon-gold { background: #fffbe6; color: #faad14; }
+        .icon-red { background: #fff1f0; color: #f5222d; }
+        .stat-label {
+            color: #888;
+            font-size: 13px;
+            min-width: 120px;
+        }
+        .stat-value {
+            color: #222;
+            font-size: 20px;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+        @media (max-width: 1200px) {
+            .statistics-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 768px) {
+            .statistics-container {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+                padding: 12px 8px 0 8px;
+            }
+            .section-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar-container"></div>
+    <div class="main-content">
+        <div id="top-nav-container"></div>
+        <div class="page-content">
+            <!-- 顶部统计卡片 -->
+            <div class="statistics-container">
+                <div class="statistics-card">
+                    <div class="statistics-title">昨日开课跟课量</div>
+                    <div class="statistics-value">467</div>
+                    <div class="statistics-period">昨日</div>
+                </div>
+                <div class="statistics-card">
+                    <div class="statistics-title">本月开课跟课量</div>
+                    <div class="statistics-value">21615</div>
+                    <div class="statistics-period">本月</div>
+                </div>
+                <div class="statistics-card">
+                    <div class="statistics-title">昨日订单金额</div>
+                    <div class="statistics-value">7198</div>
+                    <div class="statistics-period">昨日</div>
+                </div>
+                <div class="statistics-card">
+                    <div class="statistics-title">本月订单金额</div>
+                    <div class="statistics-value">304767</div>
+                    <div class="statistics-period">本月</div>
+                </div>
+            </div>
+            <!-- 交易状况区块 -->
+            <div class="section">
+                <div class="section-header">
+                    <div class="section-title">交易状况</div>
+                </div>
+                <div class="section-search" style="padding: 18px 24px 0 24px; border-bottom: 1px solid #e6e6e6; margin-bottom: 18px;">
+                    <input type="text" placeholder="本年">
+                    <button>查询</button>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-block"><span class="stat-icon icon-cyan">👜</span><span class="stat-label">后台开课订单数量 </span><span class="stat-value">3238</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-purple">🛍️</span><span class="stat-label">后台开课订单金额</span><span class="stat-value">46728</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-blue">🎒</span><span class="stat-label">后台订单退款数量</span><span class="stat-value">12011</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-green">💼</span><span class="stat-label">后台订单退款金额</span><span class="stat-value">25268</span></div>
+                    
+                    <div class="stat-block"><span class="stat-icon icon-cyan">👜</span><span class="stat-label">微信支付订单数量</span><span class="stat-value">2</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-purple">🛍️</span><span class="stat-label">微信支付订单金额</span><span class="stat-value">481</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-blue">🎒</span><span class="stat-label">微信支付退款订单数量</span><span class="stat-value">0</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-green">💼</span><span class="stat-label">微信支付退款金额</span><span class="stat-value">68</span></div>
+                    
+                    <div class="stat-block"><span class="stat-icon icon-green">🏠</span><span class="stat-label">聚合支付订单数</span><span class="stat-value">33160</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-blue">💳</span><span class="stat-label">聚合支付订单金额</span><span class="stat-value">546900</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-purple">💰</span><span class="stat-label">聚合支付退款订单数量</span><span class="stat-value">155903</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-cyan">📦</span><span class="stat-label">聚合支付退款金额</span><span class="stat-value">379466</span></div>
+                    
+                    <div class="stat-block"><span class="stat-icon icon-green">🏠</span><span class="stat-label">学员账户金额开课订单数量</span><span class="stat-value">32</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-blue">💳</span><span class="stat-label">学员账户金额开课订单金额</span><span class="stat-value">7160</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-purple">💰</span><span class="stat-label">学员账户金额开课订单退款数量</span><span class="stat-value">0</span></div>
+                    <div class="stat-block"><span class="stat-icon icon-cyan">📦</span><span class="stat-label">学员账户金额开课订单退款金额</span><span class="stat-value">964</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="scripts/components.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            ComponentManager.loadComponent('sidebar', 'sidebar-container');
+            ComponentManager.loadComponent('top-nav', 'top-nav-container');
+            ComponentManager.initializePage();
+        });
+    </script>
+</body>
+</html> 

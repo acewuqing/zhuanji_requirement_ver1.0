@@ -94,22 +94,22 @@
                                 <th>结算周期</th>
                                 <th>
                                     结算总金额
-                                    <span class="info-icon" title="支付结算总金额-退款结算总金额+余额结算总金额">!</span>
+                                    <span class="info-icon" title="支付结算总金额-退款结算总金额+余额结算总金额"></span>
                                     <div class="tooltip">支付结算总金额-退款结算总金额+余额结算总金额</div>
                                 </th>
                                 <th>
                                     支付结算总金额
-                                    <span class="info-icon" title="结算周期内支付结算总金额">!</span>
+                                    <span class="info-icon" title="结算周期内支付结算总金额"></span>
                                     <div class="tooltip">结算周期内支付结算总金额</div>
                                 </th>
                                 <th>
                                     退款结算总金额
-                                    <span class="info-icon" title="结算周期内退款结算总金额">!</span>
+                                    <span class="info-icon" title="结算周期内退款结算总金额"></span>
                                     <div class="tooltip">结算周期内退款结算总金额</div>
                                 </th>
                                 <th>
                                     余额结算总金额
-                                    <span class="info-icon" title="结算周期内余额结算总金额">!</span>
+                                    <span class="info-icon" title="结算周期内余额结算总金额"></span>
                                     <div class="tooltip">结算周期内余额结算总金额</div>
                                 </th>
                                 <th>创建时间</th>
@@ -711,21 +711,35 @@
         }
         
         .table-container .info-icon {
-            color: #1890ff;
-            cursor: help;
-            font-size: 12px;
-            margin-left: 4px;
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background: #6c757d;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 14px;
+            font-size: 10px;
             font-weight: bold;
+            cursor: help;
+            margin-left: 4px;
             transition: all 0.3s ease;
             position: relative;
             flex-shrink: 0;
-            text-shadow: 0 1px 2px rgba(24, 144, 255, 0.3);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        .table-container .info-icon::before {
+            content: 'i';
+            display: block;
+            font-style: italic;
+            font-family: 'Times New Roman', serif;
         }
         
         .table-container .info-icon:hover {
-            color: #096dd9;
+            background: #5a6268;
             transform: scale(1.1);
-            text-shadow: 0 2px 4px rgba(9, 109, 217, 0.4);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
         }
         
         .table-container .tooltip {

@@ -370,43 +370,57 @@ body {
     color: #fa8c16;
 }
 
-/* 感叹号提示样式 - 简化版 */
+/* 信息提示样式 - 圆形背景的"i"图标 */
 .info-icon {
-    color: #1890ff;
-    cursor: help;
-    font-size: 14px;
-    margin-left: 6px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: #6c757d;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 16px;
+    font-size: 11px;
     font-weight: bold;
+    cursor: help;
+    margin-left: 6px;
     transition: all 0.3s ease;
     position: relative;
     flex-shrink: 0;
-    text-shadow: 0 1px 2px rgba(24, 144, 255, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.info-icon::before {
+    content: 'i';
+    display: block;
+    font-style: italic;
+    font-family: 'Times New Roman', serif;
 }
 
 .info-icon:hover {
-    color: #096dd9;
+    background: #5a6268;
     transform: scale(1.1);
-    text-shadow: 0 2px 4px rgba(9, 109, 217, 0.4);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .income-section .info-icon {
-    color: #52c41a;
-    text-shadow: 0 1px 2px rgba(82, 196, 26, 0.3);
+    background: #6c757d;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .income-section .info-icon:hover {
-    color: #389e0d;
-    text-shadow: 0 2px 4px rgba(56, 158, 13, 0.4);
+    background: #5a6268;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .refund-section .info-icon {
-    color: #fa8c16;
-    text-shadow: 0 1px 2px rgba(250, 140, 22, 0.3);
+    background: #6c757d;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .refund-section .info-icon:hover {
-    color: #d46b08;
-    text-shadow: 0 2px 4px rgba(212, 107, 8, 0.4);
+    background: #5a6268;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .tooltip {
@@ -825,51 +839,65 @@ tr:hover {
 
 /* 分组标题中的悬浮提示样式 */
 .confirm-summary-group-title .info-icon {
-    color: #1890ff;
-    cursor: help;
-    font-size: 12px;
-    margin-left: 4px;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: #6c757d;
+    color: white;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 14px;
+    font-size: 10px;
     font-weight: bold;
+    cursor: help;
+    margin-left: 4px;
     transition: all 0.3s ease;
     position: relative;
     flex-shrink: 0;
-    text-shadow: 0 1px 2px rgba(24, 144, 255, 0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-summary-group-title .info-icon::before {
+    content: 'i';
+    display: block;
+    font-style: italic;
+    font-family: 'Times New Roman', serif;
 }
 
 .confirm-summary-group-title .info-icon:hover {
-    color: #096dd9;
+    background: #5a6268;
     transform: scale(1.1);
-    text-shadow: 0 2px 4px rgba(9, 109, 217, 0.4);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .confirm-income-title .info-icon {
-    color: #52c41a;
-    text-shadow: 0 1px 2px rgba(82, 196, 26, 0.3);
+    background: #6c757d;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .confirm-income-title .info-icon:hover {
-    color: #389e0d;
-    text-shadow: 0 2px 4px rgba(56, 158, 13, 0.4);
+    background: #5a6268;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .confirm-refund-title .info-icon {
-    color: #fa8c16;
-    text-shadow: 0 1px 2px rgba(250, 140, 22, 0.3);
+    background: #6c757d;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .confirm-refund-title .info-icon:hover {
-    color: #d46b08;
-    text-shadow: 0 2px 4px rgba(212, 107, 8, 0.4);
+    background: #5a6268;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .confirm-balance-title .info-icon {
-    color: #1890ff;
-    text-shadow: 0 1px 2px rgba(24, 144, 255, 0.3);
+    background: #6c757d;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .confirm-balance-title .info-icon:hover {
-    color: #096dd9;
-    text-shadow: 0 2px 4px rgba(9, 109, 217, 0.4);
+    background: #5a6268;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
 }
 
 .confirm-summary-group-title .tooltip {
