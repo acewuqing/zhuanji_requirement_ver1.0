@@ -111,6 +111,7 @@
                                     <input type="date">
                                 </div>
                             </div>
+
                             <div class="form-group">
                                 <label>支付时间</label>
                                 <div class="date-range">
@@ -135,6 +136,16 @@
                                     <option value="2">面授课程</option>
                                     <option value="3">混合课程</option>
                                     <option value="4">其他</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>退款状态</label>
+                                <select>
+                                    <option value="">请选择退款状态</option>
+                                    <option value="1">退款中</option>
+                                    <option value="2">退款失败</option>
+                                    <option value="3">已退款</option>
+                                    <option value="4">已取消</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -180,6 +191,13 @@
                                     <tr>
                                         <th>序号</th>
                                         <th>退款单号</th>
+                                        <th>申请退款时间</th>
+                                        <th>退款时间</th>
+                                        <th>取消退款时间</th>
+                                        <th>退款原因</th>
+                                        <th>退款说明</th>
+                                        <th>退款凭证</th>
+                                        <th>退款金额</th>
                                         <th>订单号</th>
                                         <th>学员名称</th>
                                         <th>手机号</th>
@@ -196,12 +214,6 @@
                                         <th>实付金额</th>
                                         <th>支付时间</th>
                                         <th>支付方式</th>
-                                        <th>申请退款时间</th>
-                                        <th>退款时间</th>
-                                        <th>退款原因</th>
-                                        <th>退款说明</th>
-                                        <th>退款凭证</th>
-                                        <th>退款金额</th>
                                         <th>操作</th>
                                     </tr>
                                 </thead>
@@ -209,6 +221,13 @@
                                     <tr>
                                         <td>1</td>
                                         <td>RF20231201001</td>
+                                        <td>2023-12-05 14:30:20</td>
+                                        <td>2023-12-06 14:30:20</td>
+                                        <td>-</td>
+                                        <td>教学质量与宣传不符</td>
+                                        <td>老师讲解不清楚，内容与宣传不符</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(1)">查看凭证</span></td>
+                                        <td>¥1,200.00</td>
                                         <td>ORD20231201006</td>
                                         <td>孙八</td>
                                         <td>134****1111</td>
@@ -225,12 +244,6 @@
                                         <td>¥1,200.00</td>
                                         <td>2023-12-01 10:20:15</td>
                                         <td>微信支付</td>
-                                        <td>2023-12-05 14:30:20</td>
-                                        <td>2023-12-06 14:30:20</td>
-                                        <td>教学质量与宣传不符</td>
-                                        <td>老师讲解不清楚，内容与宣传不符</td>
-                                        <td><span class="link-text" onclick="viewRefundVouchers(1)">查看凭证</span></td>
-                                        <td>¥1,200.00</td>
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn-info btn-sm" onclick="viewOrderDetail(1)">详情</button>
@@ -242,6 +255,13 @@
                                     <tr>
                                         <td>2</td>
                                         <td>RF20231201002</td>
+                                        <td>2023-12-06 16:20:30</td>
+                                        <td>2023-12-07 16:20:30</td>
+                                        <td>2023-12-08 10:15:30</td>
+                                        <td>买多/买错/不想要</td>
+                                        <td>买错了课程，想要其他课程</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(2)">查看凭证</span></td>
+                                        <td>¥1,800.00</td>
                                         <td>ORD20231201007</td>
                                         <td>周九</td>
                                         <td>133****2222</td>
@@ -258,12 +278,6 @@
                                         <td>¥1,800.00</td>
                                         <td>2023-12-02 09:30:45</td>
                                         <td>支付宝</td>
-                                        <td>2023-12-06 16:20:30</td>
-                                        <td>2023-12-07 16:20:30</td>
-                                        <td>买多/买错/不想要</td>
-                                        <td>买错了课程，想要其他课程</td>
-                                        <td><span class="link-text" onclick="viewRefundVouchers(2)">查看凭证</span></td>
-                                        <td>¥1,800.00</td>
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn-info btn-sm" onclick="viewOrderDetail(2)">详情</button>
@@ -275,6 +289,13 @@
                                     <tr>
                                         <td>3</td>
                                         <td>RF20231201003</td>
+                                        <td>2023-12-07 10:15:45</td>
+                                        <td>2023-12-08 10:15:45</td>
+                                        <td>-</td>
+                                        <td>协商一致退款</td>
+                                        <td>与客服协商一致退款</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(3)">查看凭证</span></td>
+                                        <td>¥2,500.00</td>
                                         <td>ORD20231201008</td>
                                         <td>吴十</td>
                                         <td>132****3333</td>
@@ -291,12 +312,6 @@
                                         <td>¥2,500.00</td>
                                         <td>2023-12-03 11:50:10</td>
                                         <td>银行卡</td>
-                                        <td>2023-12-07 10:15:45</td>
-                                        <td>2023-12-08 10:15:45</td>
-                                        <td>协商一致退款</td>
-                                        <td>与客服协商一致退款</td>
-                                        <td><span class="link-text" onclick="viewRefundVouchers(3)">查看凭证</span></td>
-                                        <td>¥2,500.00</td>
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn-info btn-sm" onclick="viewOrderDetail(3)">详情</button>
@@ -308,6 +323,13 @@
                                     <tr>
                                         <td>4</td>
                                         <td>RF20231201004</td>
+                                        <td>2023-12-08 09:45:20</td>
+                                        <td>2023-12-09 09:45:20</td>
+                                        <td>2023-12-10 14:20:15</td>
+                                        <td>课程质量问题</td>
+                                        <td>课程内容质量不符合预期</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(4)">查看凭证</span></td>
+                                        <td>¥2,900.00</td>
                                         <td>ORD20231201009</td>
                                         <td>郑十一</td>
                                         <td>131****4444</td>
@@ -324,12 +346,6 @@
                                         <td>¥2,900.00</td>
                                         <td>2023-12-04 14:25:30</td>
                                         <td>微信支付</td>
-                                        <td>2023-12-08 09:45:20</td>
-                                        <td>2023-12-09 09:45:20</td>
-                                        <td>课程质量问题</td>
-                                        <td>课程内容质量不符合预期</td>
-                                        <td><span class="link-text" onclick="viewRefundVouchers(4)">查看凭证</span></td>
-                                        <td>¥2,900.00</td>
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn-info btn-sm" onclick="viewOrderDetail(4)">详情</button>
@@ -341,6 +357,13 @@
                                     <tr>
                                         <td>5</td>
                                         <td>RF20231201005</td>
+                                        <td>2023-12-09 11:30:15</td>
+                                        <td>2023-12-10 11:30:15</td>
+                                        <td>-</td>
+                                        <td>其他</td>
+                                        <td>个人原因申请退款</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(5)">查看凭证</span></td>
+                                        <td>¥2,200.00</td>
                                         <td>ORD20231201010</td>
                                         <td>王十二</td>
                                         <td>130****5555</td>
@@ -357,12 +380,6 @@
                                         <td>¥2,200.00</td>
                                         <td>2023-12-05 16:15:40</td>
                                         <td>余额支付</td>
-                                        <td>2023-12-09 11:30:15</td>
-                                        <td>2023-12-10 11:30:15</td>
-                                        <td>其他</td>
-                                        <td>个人原因申请退款</td>
-                                        <td><span class="link-text" onclick="viewRefundVouchers(5)">查看凭证</span></td>
-                                        <td>¥2,200.00</td>
                                         <td>
                                             <div class="action-buttons">
                                                 <button class="btn btn-info btn-sm" onclick="viewOrderDetail(5)">详情</button>
@@ -1747,10 +1764,10 @@
         function getRefundStatusTag(status) {
             if (!status) return '-';
             let type = 'pending';
-            if (status === '已完成') type = 'success';
-            else if (status === '处理中') type = 'processing';
-            else if (status === '待处理') type = 'pending';
-            else if (status === '失败') type = 'failed';
+            if (status === '已退款') type = 'success';
+            else if (status === '退款中') type = 'processing';
+            else if (status === '退款失败') type = 'failed';
+            else if (status === '已取消') type = 'cancelled';
             return `<span class="status-tag ${type}">${status}</span>`;
         }
 
