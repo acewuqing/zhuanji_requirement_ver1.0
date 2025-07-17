@@ -35,6 +35,10 @@
                         <div class="card-title">查询条件</div>
                         <form class="form-grid">
                             <div class="form-group">
+                                <label>退款单号</label>
+                                <input type="text" placeholder="请输入退款单号">
+                            </div>
+                            <div class="form-group">
                                 <label>订单号</label>
                                 <input type="text" placeholder="请输入订单号">
                             </div>
@@ -49,6 +53,8 @@
                                     <option value="1">计算机科学与技术</option>
                                     <option value="2">软件工程</option>
                                     <option value="3">数据科学</option>
+                                    <option value="4">网络工程</option>
+                                    <option value="5">信息安全</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -58,10 +64,11 @@
                             <div class="form-group">
                                 <label>课程状态</label>
                                 <select>
-                                    <option value="">请选择状态</option>
+                                    <option value="">请选择课程状态</option>
                                     <option value="1">进行中</option>
                                     <option value="2">已完成</option>
                                     <option value="3">已取消</option>
+                                    <option value="4">已暂停</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -73,8 +80,9 @@
                                 <select>
                                     <option value="">请选择支付方式</option>
                                     <option value="1">微信支付</option>
-                                    <option value="2">聚合支付</option>
-                                    <option value="3">余额支付</option>
+                                    <option value="2">支付宝</option>
+                                    <option value="3">银行卡</option>
+                                    <option value="4">余额支付</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -84,7 +92,24 @@
                                     <option value="1">支付成功</option>
                                     <option value="2">支付失败</option>
                                     <option value="3">待支付</option>
+                                    <option value="4">已退款</option>
                                 </select>
+                            </div>
+                            <div class="form-group">
+                                <label>申请退款时间</label>
+                                <div class="date-range">
+                                    <input type="date">
+                                    <span>至</span>
+                                    <input type="date">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>退款时间</label>
+                                <div class="date-range">
+                                    <input type="date">
+                                    <span>至</span>
+                                    <input type="date">
+                                </div>
                             </div>
                             <div class="form-group">
                                 <label>支付时间</label>
@@ -103,42 +128,26 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>退款时间</label>
-                                <div class="date-range">
-                                    <input type="date">
-                                    <span>至</span>
-                                    <input type="date">
-                                </div>
-                            </div>
-                            <div class="form-group">
                                 <label>课程类型</label>
                                 <select>
                                     <option value="">请选择课程类型</option>
                                     <option value="1">在线课程</option>
                                     <option value="2">面授课程</option>
                                     <option value="3">混合课程</option>
+                                    <option value="4">其他</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>结算状态</label>
+                                <label>退款原因</label>
                                 <select>
-                                    <option value="">请选择结算状态</option>
-                                    <option value="1">未结算</option>
-                                    <option value="2">已结算</option>
-                                    <option value="3">结算中</option>
+                                    <option value="">请选择退款原因</option>
+                                    <option value="1">买多/买错/不想要</option>
+                                    <option value="2">价格问题</option>
+                                    <option value="3">协商一致退款</option>
+                                    <option value="4">教学质量与宣传不符</option>
+                                    <option value="5">课程质量问题</option>
+                                    <option value="6">其他</option>
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label>结算单号</label>
-                                <input type="text" placeholder="请输入结算单号">
-                            </div>
-                            <div class="form-group">
-                                <label>结算单生成时间</label>
-                                <div class="date-range">
-                                    <input type="date">
-                                    <span>至</span>
-                                    <input type="date">
-                                </div>
                             </div>
                             <div class="form-buttons">
                                 <button type="button" class="btn btn-primary">查询</button>
@@ -170,6 +179,7 @@
                                 <thead>
                                     <tr>
                                         <th>序号</th>
+                                        <th>退款单号</th>
                                         <th>订单号</th>
                                         <th>学员名称</th>
                                         <th>手机号</th>
@@ -185,16 +195,20 @@
                                         <th>订单金额</th>
                                         <th>实付金额</th>
                                         <th>支付时间</th>
-                                        <th>退款时间</th>
                                         <th>支付方式</th>
-                                        <th>结算状态</th>
-                                        <th>结算单号</th>
-                                        <th>结算单生成时间</th>
+                                        <th>申请退款时间</th>
+                                        <th>退款时间</th>
+                                        <th>退款原因</th>
+                                        <th>退款说明</th>
+                                        <th>退款凭证</th>
+                                        <th>退款金额</th>
+                                        <th>操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td>1</td>
+                                        <td>RF20231201001</td>
                                         <td>ORD20231201006</td>
                                         <td>孙八</td>
                                         <td>134****1111</td>
@@ -210,14 +224,24 @@
                                         <td>¥1,500.00</td>
                                         <td>¥1,200.00</td>
                                         <td>2023-12-01 10:20:15</td>
-                                        <td>2023-12-05 14:30:20</td>
                                         <td>微信支付</td>
-                                        <td><span class="status-badge status-pending">未结算</span></td>
-                                        <td>-</td>
-                                        <td>-</td>
+                                        <td>2023-12-05 14:30:20</td>
+                                        <td>2023-12-06 14:30:20</td>
+                                        <td>教学质量与宣传不符</td>
+                                        <td>老师讲解不清楚，内容与宣传不符</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(1)">查看凭证</span></td>
+                                        <td>¥1,200.00</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-info btn-sm" onclick="viewOrderDetail(1)">详情</button>
+                                                <button class="btn btn-primary btn-sm" onclick="refundNow(1)">立刻退款退课</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="cancelRefund(1)">取消退款</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>2</td>
+                                        <td>RF20231201002</td>
                                         <td>ORD20231201007</td>
                                         <td>周九</td>
                                         <td>133****2222</td>
@@ -233,14 +257,24 @@
                                         <td>¥2,000.00</td>
                                         <td>¥1,800.00</td>
                                         <td>2023-12-02 09:30:45</td>
+                                        <td>支付宝</td>
                                         <td>2023-12-06 16:20:30</td>
-                                        <td>聚合支付</td>
-                                        <td><span class="status-badge status-success">已结算</span></td>
-                                        <td>JS20231201003</td>
-                                        <td>2023-12-17 10:15:30</td>
+                                        <td>2023-12-07 16:20:30</td>
+                                        <td>买多/买错/不想要</td>
+                                        <td>买错了课程，想要其他课程</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(2)">查看凭证</span></td>
+                                        <td>¥1,800.00</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-info btn-sm" onclick="viewOrderDetail(2)">详情</button>
+                                                <button class="btn btn-primary btn-sm" onclick="refundNow(2)">立刻退款退课</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="cancelRefund(2)">取消退款</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>3</td>
+                                        <td>RF20231201003</td>
                                         <td>ORD20231201008</td>
                                         <td>吴十</td>
                                         <td>132****3333</td>
@@ -256,14 +290,24 @@
                                         <td>¥2,800.00</td>
                                         <td>¥2,500.00</td>
                                         <td>2023-12-03 11:50:10</td>
+                                        <td>银行卡</td>
                                         <td>2023-12-07 10:15:45</td>
-                                        <td>余额支付</td>
-                                        <td><span class="status-badge status-pending">未结算</span></td>
-                                        <td>-</td>
-                                        <td>-</td>
+                                        <td>2023-12-08 10:15:45</td>
+                                        <td>协商一致退款</td>
+                                        <td>与客服协商一致退款</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(3)">查看凭证</span></td>
+                                        <td>¥2,500.00</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-info btn-sm" onclick="viewOrderDetail(3)">详情</button>
+                                                <button class="btn btn-primary btn-sm" onclick="refundNow(3)">立刻退款退课</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="cancelRefund(3)">取消退款</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>4</td>
+                                        <td>RF20231201004</td>
                                         <td>ORD20231201009</td>
                                         <td>郑十一</td>
                                         <td>131****4444</td>
@@ -279,14 +323,24 @@
                                         <td>¥3,200.00</td>
                                         <td>¥2,900.00</td>
                                         <td>2023-12-04 14:25:30</td>
-                                        <td>2023-12-08 09:45:20</td>
                                         <td>微信支付</td>
-                                        <td><span class="status-badge status-processing">结算中</span></td>
-                                        <td>JS20231201004</td>
-                                        <td>2023-12-18 16:45:20</td>
+                                        <td>2023-12-08 09:45:20</td>
+                                        <td>2023-12-09 09:45:20</td>
+                                        <td>课程质量问题</td>
+                                        <td>课程内容质量不符合预期</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(4)">查看凭证</span></td>
+                                        <td>¥2,900.00</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-info btn-sm" onclick="viewOrderDetail(4)">详情</button>
+                                                <button class="btn btn-primary btn-sm" onclick="refundNow(4)">立刻退款退课</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="cancelRefund(4)">取消退款</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td>5</td>
+                                        <td>RF20231201005</td>
                                         <td>ORD20231201010</td>
                                         <td>王十二</td>
                                         <td>130****5555</td>
@@ -302,11 +356,20 @@
                                         <td>¥2,500.00</td>
                                         <td>¥2,200.00</td>
                                         <td>2023-12-05 16:15:40</td>
+                                        <td>余额支付</td>
                                         <td>2023-12-09 11:30:15</td>
-                                        <td>聚合支付</td>
-                                        <td><span class="status-badge status-pending">未结算</span></td>
-                                        <td>-</td>
-                                        <td>-</td>
+                                        <td>2023-12-10 11:30:15</td>
+                                        <td>其他</td>
+                                        <td>个人原因申请退款</td>
+                                        <td><span class="link-text" onclick="viewRefundVouchers(5)">查看凭证</span></td>
+                                        <td>¥2,200.00</td>
+                                        <td>
+                                            <div class="action-buttons">
+                                                <button class="btn btn-info btn-sm" onclick="viewOrderDetail(5)">详情</button>
+                                                <button class="btn btn-primary btn-sm" onclick="refundNow(5)">立刻退款退课</button>
+                                                <button class="btn btn-secondary btn-sm" onclick="cancelRefund(5)">取消退款</button>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -390,6 +453,197 @@
         </div>
     </div>
 
+    <!-- 退款凭证图片查看弹窗 -->
+    <div class="modal" id="refundVouchersModal">
+        <div class="modal-content" style="max-width: 90%; max-height: 90%;">
+            <div class="modal-header">
+                <div class="modal-title">退款凭证图片</div>
+                <button class="close-btn" onclick="hideRefundVouchersModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="vouchers-container">
+                    <div class="vouchers-grid" id="vouchersGrid">
+                        <!-- 图片将在这里动态加载 -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="voucher-info">
+                    <span id="voucherCount">共 0 张图片</span>
+                </div>
+                <button class="btn btn-secondary" onclick="hideRefundVouchersModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片放大查看 -->
+    <div class="image-viewer" id="imageViewer">
+        <div class="image-viewer-content">
+            <button class="image-viewer-close" onclick="closeImageViewer()">&times;</button>
+            <img id="enlargedImage" src="" alt="放大图片">
+        </div>
+    </div>
+
+    <!-- 订单详情弹窗 -->
+    <div class="modal" id="orderDetailModal">
+        <div class="modal-content" style="max-width: 95%; max-height: 95%;">
+            <div class="modal-header">
+                <div class="modal-title">订单详情</div>
+                <button class="close-btn" onclick="hideOrderDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="order-detail-container">
+                    <!-- 学员信息 -->
+                    <div class="detail-section">
+                        <div class="section-title">学员信息</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>学员名称：</label>
+                                <span id="studentName">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>手机号码：</label>
+                                <span id="studentPhone">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>昵称：</label>
+                                <span id="studentNickname">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>邮箱：</label>
+                                <span id="studentEmail">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>工作单位：</label>
+                                <span id="studentWorkplace">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 订单信息 -->
+                    <div class="detail-section">
+                        <div class="section-title">订单信息</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>订单号：</label>
+                                <span id="orderId">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>支付状态：</label>
+                                <span id="paymentStatus">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>支付时间：</label>
+                                <span id="paymentTime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>订单金额：</label>
+                                <span id="orderAmount">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>实付金额：</label>
+                                <span id="paidAmount">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>支付方式：</label>
+                                <span id="paymentMethod">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>冻结状态：</label>
+                                <span id="freezeStatus">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>有效期类型：</label>
+                                <span id="validityType">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>有效结束时间：</label>
+                                <span id="validEndTime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>课程名称：</label>
+                                <span id="courseName">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>创建时间：</label>
+                                <span id="createTime">-</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 退款信息 -->
+                    <div class="detail-section">
+                        <div class="section-title">退款信息</div>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <label>退款单号：</label>
+                                <span id="refundId">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>退款状态：</label>
+                                <span id="refundStatus">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>退款原因：</label>
+                                <span id="refundReason">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>申请时间：</label>
+                                <span id="refundApplyTime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>退款时间：</label>
+                                <span id="refundTime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>退款取消时间：</label>
+                                <span id="refundCancelTime">-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>退款金额：</label>
+                                <span id="refundAmount">-</span>
+                            </div>
+                            <div class="info-item full-width">
+                                <label>退款说明：</label>
+                                <span id="refundDescription">-</span>
+                            </div>
+                            <div class="info-item full-width">
+                                <label>退款凭证：</label>
+                                <div id="refundVouchersDisplay" class="vouchers-display">
+                                    <!-- 退款凭证将在这里显示 -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 课程详情 -->
+                    <div class="detail-section">
+                        <div class="section-title">课程详情</div>
+                        <div class="course-table-container">
+                            <table class="course-detail-table">
+                                <thead>
+                                    <tr>
+                                        <th>课程名称</th>
+                                        <th>课程类型</th>
+                                        <th>适用年份</th>
+                                        <th>视频数</th>
+                                        <th>专技类型</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="courseDetailTableBody">
+                                    <!-- 课程详情将在这里动态加载 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideOrderDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
     <style>
         /* 导出记录表格样式 */
         .export-records-container {
@@ -436,6 +690,104 @@
             color: white;
         }
         
+        /* 退款凭证链接样式 */
+        .link-text {
+            color: #1890ff;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        
+        .link-text:hover {
+            color: #40a9ff;
+        }
+        
+        /* 操作栏按钮样式 */
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            min-width: 120px;
+        }
+        
+        .action-buttons .btn-sm {
+            min-width: 60px;
+            border: 1px solid;
+            cursor: pointer;
+            display: inline-block;
+        }
+        
+        .action-buttons .btn-primary {
+            background-color: #1890ff;
+            color: white;
+            border-color: #1890ff;
+        }
+        
+        .action-buttons .btn-secondary {
+            background-color: #f5f5f5;
+            color: #666;
+            border-color: #d9d9d9;
+        }
+        
+        .action-buttons .btn-primary:hover {
+            background-color: #40a9ff;
+            border-color: #40a9ff;
+        }
+        
+        .action-buttons .btn-secondary:hover {
+            background-color: #e6e6e6;
+            border-color: #bfbfbf;
+        }
+        
+        /* 表格容器横向滚动样式 */
+        .table-container {
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .table-container table {
+            min-width: 100%;
+            white-space: nowrap;
+        }
+        
+        .table-container th,
+        .table-container td {
+            white-space: nowrap;
+            padding: 8px 12px;
+        }
+        
+        /* 操作列固定宽度 */
+        .table-container th:last-child,
+        .table-container td:last-child {
+            min-width: 120px;
+            position: sticky;
+            right: 0;
+            background: white;
+            z-index: 1;
+            border-left: 1px solid #e8e8e8;
+            text-align: center;
+        }
+        
+        /* 确保操作按钮可见 */
+        .table-container td:last-child {
+            background: #fafafa;
+            padding: 8px 12px;
+            vertical-align: middle;
+        }
+        
+        .table-container td:last-child .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        /* 操作列标题样式 */
+        .table-container th:last-child {
+            background: #f0f0f0;
+            font-weight: 600;
+            color: #333;
+        }
+        
         /* 成功提示样式 */
         .success-message {
             position: fixed;
@@ -460,6 +812,411 @@
                 opacity: 1;
             }
         }
+        
+        /* 退款凭证图片查看弹窗样式 */
+        .modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            transform: scale(0.9) translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.show .modal-content {
+            transform: scale(1) translateY(0);
+        }
+        
+        .vouchers-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+        
+        .vouchers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 0 20px;
+            min-height: 200px;
+        }
+        
+        .voucher-item {
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.4s ease forwards;
+        }
+        
+        .voucher-item:nth-child(1) { animation-delay: 0.1s; }
+        .voucher-item:nth-child(2) { animation-delay: 0.2s; }
+        .voucher-item:nth-child(3) { animation-delay: 0.3s; }
+        .voucher-item:nth-child(4) { animation-delay: 0.4s; }
+        .voucher-item:nth-child(5) { animation-delay: 0.5s; }
+        .voucher-item:nth-child(6) { animation-delay: 0.6s; }
+        .voucher-item:nth-child(7) { animation-delay: 0.7s; }
+        .voucher-item:nth-child(8) { animation-delay: 0.8s; }
+        .voucher-item:nth-child(9) { animation-delay: 0.9s; }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .voucher-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+        
+        .voucher-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+            background: #f5f5f5;
+            position: relative;
+        }
+        
+        .voucher-image.loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        
+        .voucher-image:hover {
+            opacity: 0.8;
+        }
+        
+        /* 加载状态样式 */
+        .vouchers-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .vouchers-loading::before {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e0e0e0;
+            border-top: 2px solid #1890ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .voucher-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .voucher-info span {
+            color: #1890ff;
+            font-weight: 500;
+        }
+        
+        /* 图片放大查看样式 */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .image-viewer.show {
+            display: flex;
+            opacity: 1;
+        }
+        
+        .image-viewer-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        
+        .image-viewer.show .image-viewer-content {
+            transform: scale(1);
+        }
+        
+        .image-viewer img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .image-viewer-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .image-viewer-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .vouchers-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+                padding: 0 15px;
+            }
+            
+            .voucher-image {
+                height: 120px;
+            }
+        }
+        
+        /* 订单详情弹窗样式 */
+        .order-detail-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 0 20px;
+        }
+        
+        .detail-section {
+            margin-bottom: 30px;
+            background: #fafafa;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #e8e8e8;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #1890ff;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .info-item label {
+            min-width: 100px;
+            font-weight: 500;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .info-item span {
+            color: #262626;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
+        /* 退款凭证显示样式 */
+        .vouchers-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .voucher-thumbnail {
+            width: 80px;
+            height: 60px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            cursor: pointer;
+            object-fit: cover;
+            transition: all 0.2s ease;
+        }
+        
+        .voucher-thumbnail:hover {
+            transform: scale(1.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .voucher-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            height: 60px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            background: #f5f5f5;
+            color: #666;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .voucher-count:hover {
+            background: #e6f7ff;
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        
+        .course-table-container {
+            overflow-x: auto;
+            margin-top: 10px;
+        }
+        
+        .course-detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .course-detail-table th,
+        .course-detail-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .course-detail-table th {
+            background-color: #f5f5f5;
+            font-weight: 600;
+            color: #262626;
+            font-size: 14px;
+        }
+        
+        .course-detail-table td {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .course-detail-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* 详情按钮样式 */
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+            border-color: #17a2b8;
+        }
+        
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #117a8b;
+        }
+        
+        /* 状态标签样式 */
+        .status-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-tag.success {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .status-tag.pending {
+            background-color: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+        
+        .status-tag.processing {
+            background-color: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+        
+        .status-tag.failed {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+            border: 1px solid #ffccc7;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .info-item {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .info-item label {
+                min-width: auto;
+            }
+        }
     </style>
 
     <!-- 公共脚本 -->
@@ -476,6 +1233,9 @@
             
             // 绑定导出记录模态框事件
             bindExportRecordsModalEvents();
+            
+            // 绑定退款凭证弹窗事件
+            bindRefundVouchersModalEvents();
         });
 
         // 导出数据功能
@@ -509,7 +1269,23 @@
             showSuccessMessage('文件下载开始...');
         }
 
+        // 立刻退款退课功能
+        function refundNow(rowIndex) {
+            if (confirm('确认要立刻退款退课吗？')) {
+                alert('您点击了第 ' + (rowIndex + 1) + ' 行的立刻退款退课按钮。');
+                // 实际应用中，这里会调用后端API进行退款退课操作
+                console.log('执行退款退课操作，行号:', rowIndex);
+            }
+        }
 
+        // 取消退款功能
+        function cancelRefund(rowIndex) {
+            if (confirm('确认要取消退款吗？')) {
+                alert('您点击了第 ' + (rowIndex + 1) + ' 行的取消退款按钮。');
+                // 实际应用中，这里会调用后端API进行取消退款操作
+                console.log('执行取消退款操作，行号:', rowIndex);
+            }
+        }
 
         // 显示成功提示消息
         function showSuccessMessage(message) {
@@ -537,6 +1313,487 @@
                     }
                 });
             }
+        }
+
+        // 订单详情数据（模拟数据）
+        const orderDetailData = {
+            1: {
+                student: {
+                    name: "七月八",
+                    phone: "15807080099",
+                    nickname: "用户PnaB8i7K",
+                    email: "",
+                    workplace: ""
+                },
+                order: {
+                    id: "1945728367065268226",
+                    paymentStatus: "已完成",
+                    paymentTime: "2025-07-17 14:12:51",
+                    orderAmount: "¥12.00",
+                    paidAmount: "¥12.00",
+                    paymentMethod: "账户余额",
+                    freezeStatus: "正常",
+                    validityType: "有效月数",
+                    validEndTime: "2026-07-17 14:12:47",
+                    courseName: "深入学习贯彻习近平总书记关于防灾减灾救灾的重要论述,全面提高我国自然灾害防治能力",
+                    createTime: "2025-07-17 14:12:47"
+                },
+                refund: {
+                    id: "RF20231201001",
+                    status: "处理中",
+                    reason: "教学质量与宣传不符",
+                    applyTime: "2023-12-05 14:30:20",
+                    refundTime: "2023-12-06 14:30:20",
+                    cancelTime: "",
+                    amount: "¥1,200.00",
+                    description: "老师讲解不清楚，内容与宣传不符"
+                },
+                course: {
+                    name: "深入学习贯彻习近平总书记关于防灾减灾救灾的重要论述,全面提高我国自然灾害防治能力",
+                    type: "录播课程",
+                    applicableYears: "2021,2022,2023,2024,2025",
+                    videoCount: "3",
+                    skillType: "公需"
+                }
+            },
+            2: {
+                student: {
+                    name: "周九",
+                    phone: "133****2222",
+                    nickname: "用户KjH9m2L",
+                    email: "zhoujiu@example.com",
+                    workplace: "某科技公司"
+                },
+                order: {
+                    id: "ORD20231201007",
+                    paymentStatus: "已完成",
+                    paymentTime: "2023-12-02 09:30:45",
+                    orderAmount: "¥2,000.00",
+                    paidAmount: "¥1,800.00",
+                    paymentMethod: "支付宝",
+                    freezeStatus: "正常",
+                    validityType: "一年有效",
+                    validEndTime: "2024-12-01",
+                    courseName: "Python编程基础",
+                    createTime: "2023-12-02 09:25:10"
+                },
+                refund: {
+                    id: "RF20231201002",
+                    status: "已完成",
+                    reason: "买多/买错/不想要",
+                    applyTime: "2023-12-06 16:20:30",
+                    refundTime: "2023-12-07 16:20:30",
+                    cancelTime: "",
+                    amount: "¥1,800.00",
+                    description: "买错了课程，想要其他课程"
+                },
+                course: {
+                    name: "Python编程基础",
+                    type: "面授课程",
+                    applicableYears: "2023,2024",
+                    videoCount: "15",
+                    skillType: "专业"
+                }
+            },
+            3: {
+                student: {
+                    name: "吴十",
+                    phone: "132****3333",
+                    nickname: "用户XyZ5n8P",
+                    email: "wushi@example.com",
+                    workplace: "某教育机构"
+                },
+                order: {
+                    id: "ORD20231201008",
+                    paymentStatus: "已完成",
+                    paymentTime: "2023-12-03 11:50:10",
+                    orderAmount: "¥2,800.00",
+                    paidAmount: "¥2,500.00",
+                    paymentMethod: "银行卡",
+                    freezeStatus: "已冻结",
+                    validityType: "半年有效",
+                    validEndTime: "2024-06-01",
+                    courseName: "数据结构与算法",
+                    createTime: "2023-12-03 11:45:20"
+                },
+                refund: {
+                    id: "RF20231201003",
+                    status: "已完成",
+                    reason: "协商一致退款",
+                    applyTime: "2023-12-07 10:15:45",
+                    refundTime: "2023-12-08 10:15:45",
+                    cancelTime: "2023-12-09 15:30:20",
+                    amount: "¥2,500.00",
+                    description: "与客服协商一致退款"
+                },
+                course: {
+                    name: "数据结构与算法",
+                    type: "混合课程",
+                    applicableYears: "2023,2024",
+                    videoCount: "20",
+                    skillType: "专业"
+                }
+            },
+            4: {
+                student: {
+                    name: "郑十一",
+                    phone: "131****4444",
+                    nickname: "用户AbC7d9E",
+                    email: "zhengshiyi@example.com",
+                    workplace: "某互联网公司"
+                },
+                order: {
+                    id: "ORD20231201009",
+                    paymentStatus: "已完成",
+                    paymentTime: "2023-12-04 14:25:30",
+                    orderAmount: "¥3,200.00",
+                    paidAmount: "¥2,900.00",
+                    paymentMethod: "微信支付",
+                    freezeStatus: "正常",
+                    validityType: "永久有效",
+                    validEndTime: "-",
+                    courseName: "Web开发实战",
+                    createTime: "2023-12-04 14:20:15"
+                },
+                refund: {
+                    id: "RF20231201004",
+                    status: "处理中",
+                    reason: "课程质量问题",
+                    applyTime: "2023-12-08 09:45:20",
+                    refundTime: "2023-12-09 09:45:20",
+                    cancelTime: "",
+                    amount: "¥2,900.00",
+                    description: "课程内容质量不符合预期"
+                },
+                course: {
+                    name: "Web开发实战",
+                    type: "在线课程",
+                    applicableYears: "2023,2024,2025",
+                    videoCount: "25",
+                    skillType: "专业"
+                }
+            },
+            5: {
+                student: {
+                    name: "王十二",
+                    phone: "130****5555",
+                    nickname: "用户FgH3i6J",
+                    email: "wangshier@example.com",
+                    workplace: "某软件公司"
+                },
+                order: {
+                    id: "ORD20231201010",
+                    paymentStatus: "已完成",
+                    paymentTime: "2023-12-05 16:15:40",
+                    orderAmount: "¥2,500.00",
+                    paidAmount: "¥2,200.00",
+                    paymentMethod: "余额支付",
+                    freezeStatus: "正常",
+                    validityType: "一年有效",
+                    validEndTime: "2024-12-01",
+                    courseName: "数据库管理系统",
+                    createTime: "2023-12-05 16:10:25"
+                },
+                refund: {
+                    id: "RF20231201005",
+                    status: "待处理",
+                    reason: "其他",
+                    applyTime: "2023-12-09 11:30:15",
+                    refundTime: "2023-12-10 11:30:15",
+                    cancelTime: "2023-12-11 10:30:15",
+                    amount: "¥2,200.00",
+                    description: "个人原因申请退款"
+                },
+                course: {
+                    name: "数据库管理系统",
+                    type: "面授课程",
+                    applicableYears: "2023,2024",
+                    videoCount: "18",
+                    skillType: "专业"
+                }
+            }
+        };
+
+        // 退款凭证图片数据（模拟数据）
+        const refundVouchersData = {
+            1: [
+                { id: 1, url: 'https://via.placeholder.com/400x300/1890ff/ffffff?text=凭证图片1', name: '退款申请截图1.jpg' },
+                { id: 2, url: 'https://via.placeholder.com/400x300/52c41a/ffffff?text=凭证图片2', name: '问题描述截图2.jpg' },
+                { id: 3, url: 'https://via.placeholder.com/400x300/fa8c16/ffffff?text=凭证图片3', name: '聊天记录截图3.jpg' }
+            ],
+            2: [
+                { id: 1, url: 'https://via.placeholder.com/400x300/722ed1/ffffff?text=凭证图片1', name: '退款申请截图1.jpg' },
+                { id: 2, url: 'https://via.placeholder.com/400x300/eb2f96/ffffff?text=凭证图片2', name: '订单截图2.jpg' }
+            ],
+            3: [
+                { id: 1, url: 'https://via.placeholder.com/400x300/13c2c2/ffffff?text=凭证图片1', name: '协商记录截图1.jpg' },
+                { id: 2, url: 'https://via.placeholder.com/400x300/faad14/ffffff?text=凭证图片2', name: '客服确认截图2.jpg' },
+                { id: 3, url: 'https://via.placeholder.com/400x300/ff4d4f/ffffff?text=凭证图片3', name: '退款协议截图3.jpg' },
+                { id: 4, url: 'https://via.placeholder.com/400x300/52c41a/ffffff?text=凭证图片4', name: '支付凭证截图4.jpg' }
+            ],
+            4: [
+                { id: 1, url: 'https://via.placeholder.com/400x300/1890ff/ffffff?text=凭证图片1', name: '课程问题截图1.jpg' },
+                { id: 2, url: 'https://via.placeholder.com/400x300/fa8c16/ffffff?text=凭证图片2', name: '质量问题截图2.jpg' },
+                { id: 3, url: 'https://via.placeholder.com/400x300/52c41a/ffffff?text=凭证图片3', name: '投诉记录截图3.jpg' },
+                { id: 4, url: 'https://via.placeholder.com/400x300/722ed1/ffffff?text=凭证图片4', name: '课程对比截图4.jpg' },
+                { id: 5, url: 'https://via.placeholder.com/400x300/eb2f96/ffffff?text=凭证图片5', name: '退款申请截图5.jpg' }
+            ],
+            5: [
+                { id: 1, url: 'https://via.placeholder.com/400x300/13c2c2/ffffff?text=凭证图片1', name: '个人申请截图1.jpg' },
+                { id: 2, url: 'https://via.placeholder.com/400x300/faad14/ffffff?text=凭证图片2', name: '身份证明截图2.jpg' },
+                { id: 3, url: 'https://via.placeholder.com/400x300/ff4d4f/ffffff?text=凭证图片3', name: '退款说明截图3.jpg' },
+                { id: 4, url: 'https://via.placeholder.com/400x300/52c41a/ffffff?text=凭证图片4', name: '申请材料截图4.jpg' },
+                { id: 5, url: 'https://via.placeholder.com/400x300/1890ff/ffffff?text=凭证图片5', name: '补充材料截图5.jpg' },
+                { id: 6, url: 'https://via.placeholder.com/400x300/fa8c16/ffffff?text=凭证图片6', name: '最终确认截图6.jpg' }
+            ]
+        };
+
+        // 查看退款凭证图片
+        function viewRefundVouchers(rowIndex) {
+            const vouchers = refundVouchersData[rowIndex] || [];
+            const vouchersGrid = document.getElementById('vouchersGrid');
+            const voucherCount = document.getElementById('voucherCount');
+            
+            // 显示弹窗
+            document.getElementById('refundVouchersModal').classList.add('show');
+            
+            // 显示加载状态
+            vouchersGrid.innerHTML = '<div class="vouchers-loading">正在加载图片...</div>';
+            
+            // 更新图片数量
+            voucherCount.textContent = `共 ${vouchers.length} 张图片`;
+            
+            // 预加载图片
+            const imagePromises = vouchers.map(voucher => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => resolve({ voucher, img });
+                    img.onerror = () => reject({ voucher, error: true });
+                    img.src = voucher.url;
+                });
+            });
+            
+            // 等待所有图片加载完成
+            Promise.allSettled(imagePromises).then(results => {
+                // 清空加载状态
+                vouchersGrid.innerHTML = '';
+                
+                // 生成图片网格
+                results.forEach((result, index) => {
+                    const voucherItem = document.createElement('div');
+                    voucherItem.className = 'voucher-item';
+                    
+                    if (result.status === 'fulfilled') {
+                        const { voucher } = result.value;
+                        voucherItem.innerHTML = `
+                            <img src="${voucher.url}" 
+                                 alt="${voucher.name}" 
+                                 class="voucher-image" 
+                                 onclick="enlargeImage('${voucher.url}', '${voucher.name}')"
+                                 title="${voucher.name}">
+                        `;
+                    } else {
+                        const { voucher } = result.reason;
+                        voucherItem.innerHTML = `
+                            <img src="https://via.placeholder.com/400x300/f5f5f5/999999?text=图片加载失败" 
+                                 alt="${voucher.name}" 
+                                 class="voucher-image" 
+                                 title="${voucher.name} (加载失败)">
+                        `;
+                    }
+                    
+                    vouchersGrid.appendChild(voucherItem);
+                });
+            });
+        }
+
+        // 隐藏退款凭证图片弹窗
+        function hideRefundVouchersModal() {
+            const modal = document.getElementById('refundVouchersModal');
+            modal.classList.remove('show');
+            
+            // 延迟清空内容，等待动画完成
+            setTimeout(() => {
+                const vouchersGrid = document.getElementById('vouchersGrid');
+                if (vouchersGrid) {
+                    vouchersGrid.innerHTML = '';
+                }
+            }, 300);
+        }
+
+        // 放大图片查看
+        function enlargeImage(imageUrl, imageName) {
+            const imageViewer = document.getElementById('imageViewer');
+            const enlargedImage = document.getElementById('enlargedImage');
+            
+            // 预加载图片
+            const img = new Image();
+            img.onload = () => {
+                enlargedImage.src = imageUrl;
+                enlargedImage.alt = imageName;
+                imageViewer.classList.add('show');
+            };
+            img.onerror = () => {
+                enlargedImage.src = 'https://via.placeholder.com/400x300/f5f5f5/999999?text=图片加载失败';
+                enlargedImage.alt = imageName + ' (加载失败)';
+                imageViewer.classList.add('show');
+            };
+            img.src = imageUrl;
+        }
+
+        // 关闭图片放大查看
+        function closeImageViewer() {
+            document.getElementById('imageViewer').classList.remove('show');
+        }
+
+        // 查看订单详情
+        function viewOrderDetail(rowIndex) {
+            const orderData = orderDetailData[rowIndex];
+            if (!orderData) {
+                alert('订单数据不存在');
+                return;
+            }
+            
+            // 填充学员信息
+            document.getElementById('studentName').textContent = orderData.student.name || '-';
+            document.getElementById('studentPhone').textContent = orderData.student.phone || '-';
+            document.getElementById('studentNickname').textContent = orderData.student.nickname || '-';
+            document.getElementById('studentEmail').textContent = orderData.student.email || '-';
+            document.getElementById('studentWorkplace').textContent = orderData.student.workplace || '-';
+            
+            // 填充订单信息
+            document.getElementById('orderId').textContent = orderData.order.id || '-';
+            document.getElementById('paymentStatus').innerHTML = getStatusTag(orderData.order.paymentStatus, 'success');
+            document.getElementById('paymentTime').textContent = orderData.order.paymentTime || '-';
+            document.getElementById('orderAmount').textContent = orderData.order.orderAmount || '-';
+            document.getElementById('paidAmount').textContent = orderData.order.paidAmount || '-';
+            document.getElementById('paymentMethod').textContent = orderData.order.paymentMethod || '-';
+            document.getElementById('freezeStatus').innerHTML = getStatusTag(orderData.order.freezeStatus, 'success');
+            document.getElementById('validityType').textContent = orderData.order.validityType || '-';
+            document.getElementById('validEndTime').textContent = orderData.order.validEndTime || '-';
+            document.getElementById('courseName').textContent = orderData.order.courseName || '-';
+            document.getElementById('createTime').textContent = orderData.order.createTime || '-';
+            
+            // 填充退款信息
+            document.getElementById('refundId').textContent = orderData.refund.id || '-';
+            document.getElementById('refundStatus').innerHTML = getRefundStatusTag(orderData.refund.status);
+            document.getElementById('refundReason').textContent = orderData.refund.reason || '-';
+            document.getElementById('refundApplyTime').textContent = orderData.refund.applyTime || '-';
+            document.getElementById('refundTime').textContent = orderData.refund.refundTime || '-';
+            document.getElementById('refundCancelTime').textContent = orderData.refund.cancelTime || '-';
+            document.getElementById('refundAmount').textContent = orderData.refund.amount || '-';
+            document.getElementById('refundDescription').textContent = orderData.refund.description || '-';
+            
+            // 填充退款凭证
+            const vouchersDisplay = document.getElementById('refundVouchersDisplay');
+            const vouchers = refundVouchersData[rowIndex] || [];
+            
+            if (vouchers.length === 0) {
+                vouchersDisplay.innerHTML = '<span style="color: #999;">暂无凭证</span>';
+            } else {
+                let vouchersHTML = '';
+                const maxDisplay = 3; // 最多显示3张缩略图
+                
+                vouchers.slice(0, maxDisplay).forEach((voucher, index) => {
+                    vouchersHTML += `
+                        <img src="${voucher.url}" 
+                             alt="${voucher.name}" 
+                             class="voucher-thumbnail" 
+                             onclick="enlargeImage('${voucher.url}', '${voucher.name}')"
+                             title="${voucher.name}">
+                    `;
+                });
+                
+                // 如果还有更多图片，显示数量提示
+                if (vouchers.length > maxDisplay) {
+                    vouchersHTML += `
+                        <div class="voucher-count" onclick="viewRefundVouchers(${rowIndex})">
+                            +${vouchers.length - maxDisplay}
+                        </div>
+                    `;
+                }
+                
+                vouchersDisplay.innerHTML = vouchersHTML;
+            }
+            
+            // 填充课程详情
+            const courseTableBody = document.getElementById('courseDetailTableBody');
+            courseTableBody.innerHTML = `
+                <tr>
+                    <td>${orderData.course.name}</td>
+                    <td>${orderData.course.type}</td>
+                    <td>${orderData.course.applicableYears}</td>
+                    <td>${orderData.course.videoCount}</td>
+                    <td>${orderData.course.skillType}</td>
+                </tr>
+            `;
+            
+            // 显示弹窗
+            document.getElementById('orderDetailModal').classList.add('show');
+        }
+
+        // 隐藏订单详情弹窗
+        function hideOrderDetailModal() {
+            document.getElementById('orderDetailModal').classList.remove('show');
+        }
+
+        // 生成状态标签
+        function getStatusTag(status, type) {
+            if (!status) return '-';
+            return `<span class="status-tag ${type}">${status}</span>`;
+        }
+
+        // 生成退款状态标签
+        function getRefundStatusTag(status) {
+            if (!status) return '-';
+            let type = 'pending';
+            if (status === '已完成') type = 'success';
+            else if (status === '处理中') type = 'processing';
+            else if (status === '待处理') type = 'pending';
+            else if (status === '失败') type = 'failed';
+            return `<span class="status-tag ${type}">${status}</span>`;
+        }
+
+        // 绑定退款凭证弹窗事件
+        function bindRefundVouchersModalEvents() {
+            // 点击退款凭证弹窗外部关闭
+            const refundVouchersModal = document.getElementById('refundVouchersModal');
+            if (refundVouchersModal) {
+                refundVouchersModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        hideRefundVouchersModal();
+                    }
+                });
+            }
+            
+            // 点击图片放大查看外部关闭
+            const imageViewer = document.getElementById('imageViewer');
+            if (imageViewer) {
+                imageViewer.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        closeImageViewer();
+                    }
+                });
+            }
+            
+            // 点击订单详情弹窗外部关闭
+            const orderDetailModal = document.getElementById('orderDetailModal');
+            if (orderDetailModal) {
+                orderDetailModal.addEventListener('click', function(e) {
+                    if (e.target === this) {
+                        hideOrderDetailModal();
+                    }
+                });
+            }
+            
+            // ESC键关闭弹窗
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    hideRefundVouchersModal();
+                    closeImageViewer();
+                    hideOrderDetailModal();
+                }
+            });
         }
     </script>
 </body>

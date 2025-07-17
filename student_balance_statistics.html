@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学员账户余额统计报表</title>
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/sidebar.css">
+    <style>
+        body { background: #f8f8f8; }
+        .statistics-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
+        .statistics-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); position: relative; }
+        .statistics-title { font-size: 14px; color: #666; margin-bottom: 8px; font-weight: 500; }
+        .statistics-value { font-size: 28px; font-weight: 700; color: #1890ff; margin-bottom: 12px; }
+        .dimension-switch { display: flex; gap: 12px; margin-bottom: 20px; }
+        .dimension-btn { padding: 6px 18px; border-radius: 6px; border: 1px solid #d9d9d9; background: #fff; color: #666; font-size: 15px; cursor: pointer; transition: all 0.2s; }
+        .dimension-btn.active, .dimension-btn:hover { background: #1890ff; color: #fff; border-color: #1890ff; }
+        .search-section { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; gap: 16px; }
+        .search-group { display: flex; flex-direction: column; gap: 6px; }
+        .search-group label { font-size: 13px; color: #666; font-weight: 500; }
+        .search-group input, .search-group select { padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; min-width: 160px; }
+        .btn-search { background: #1890ff; color: #fff; border: none; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; margin-left: 12px; }
+        .btn-search:hover { background: #096dd9; }
+        .table-section { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .table-header { background: #fafafa; padding: 16px 20px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        .table-title { font-size: 16px; font-weight: 600; color: #1890ff; }
+        .table-container { width: 100%; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px 8px; text-align: center; border-bottom: 1px solid #f0f0f0; font-size: 15px; }
+        th { background: #f5f7fa; color: #666; font-weight: 500; }
+        tr:last-child td { border-bottom: none; }
+        .chart-section { background: #fff; border-radius: 12px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 20px; }
+        .chart-title { font-size: 15px; color: #1890ff; font-weight: 600; margin-bottom: 12px; }
+        .chart-placeholder { width: 100%; height: 260px; background: repeating-linear-gradient(135deg, #f5f7fa, #f5f7fa 20px, #e9ecef 20px, #e9ecef 40px); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏可复用 -->
+    <div class="sidebar"><!-- ... --></div>
+    <div class="main-content" style="margin-left:220px; padding:32px 24px 24px 24px;">
+        <div class="statistics-container">
+            <div class="statistics-card">
+                <div class="statistics-title">总充值金额</div>
+                <div class="statistics-value">￥0.00</div>
+            </div>
+            <div class="statistics-card">
+                <div class="statistics-title">总扣减金额</div>
+                <div class="statistics-value">￥0.00</div>
+            </div>
+            <div class="statistics-card">
+                <div class="statistics-title">当前账户余额</div>
+                <div class="statistics-value">￥0.00</div>
+            </div>
+        </div>
+        <div class="dimension-switch">
+            <button class="dimension-btn active">按日统计</button>
+            <button class="dimension-btn">按月统计</button>
+        </div>
+        <div class="search-section">
+            <div class="search-group">
+                <label>日期范围</label>
+                <input type="date"> - <input type="date">
+            </div>
+            <button class="btn-search">查询</button>
+        </div>
+        <div class="chart-section">
+            <div class="chart-title">账户余额变化趋势</div>
+            <div class="chart-placeholder">[ 余额变化折线图 ]</div>
+        </div>
+        <div class="table-section">
+            <div class="table-header">
+                <div class="table-title">账户余额明细</div>
+            </div>
+            <div class="table-container">
+                <!-- 日维度表格 -->
+                <table id="table-day">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>充值金额</th>
+                            <th>扣减金额</th>
+                            <th>期末余额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-07-01</td>
+                            <td>￥100.00</td>
+                            <td>￥0.00</td>
+                            <td>￥100.00</td>
+                        </tr>
+                        <tr>
+                            <td>2024-07-02</td>
+                            <td>￥0.00</td>
+                            <td>￥20.00</td>
+                            <td>￥80.00</td>
+                        </tr>
+                        <tr>
+                            <td>2024-07-03</td>
+                            <td>￥50.00</td>
+                            <td>￥0.00</td>
+                            <td>￥130.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <!-- 月维度表格示例（切换时显示） -->
+                <!--
+                <table id="table-month">
+                    <thead>
+                        <tr>
+                            <th>月份</th>
+                            <th>充值金额</th>
+                            <th>扣减金额</th>
+                            <th>期末余额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2024-06</td>
+                            <td>￥500.00</td>
+                            <td>￥120.00</td>
+                            <td>￥380.00</td>
+                        </tr>
+                        <tr>
+                            <td>2024-07</td>
+                            <td>￥150.00</td>
+                            <td>￥20.00</td>
+                            <td>￥510.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+                -->
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
