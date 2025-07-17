@@ -162,104 +162,265 @@
             color: #fff;
             cursor: pointer;
         }
-        /* 退课申请弹窗样式 */
+
+        /* 退款弹窗样式 */
         .modal-mask {
             position: fixed;
             left: 0; top: 0; right: 0; bottom: 0;
             background: rgba(0,0,0,0.25);
             z-index: 1000;
             display: none;
-            align-items: center;
+            align-items: flex-end;
             justify-content: center;
         }
         .modal {
             background: #fff;
-            border-radius: 12px;
-            width: 88vw;
-            max-width: 380px;
-            box-shadow: 0 8px 32px rgba(22,134,255,0.12);
-            padding: 24px 20px 18px 20px;
+            border-radius: 12px 12px 0 0;
+            width: 100vw;
+            max-width: 400px;
+            max-height: 85vh;
+            box-shadow: 0 -8px 32px rgba(22,134,255,0.12);
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+        }
+        .modal-mask.show {
+            display: flex;
+        }
+        .modal.show {
+            transform: translateY(0);
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         .modal-title {
             font-size: 18px;
             font-weight: 600;
             color: #222;
-            margin-bottom: 16px;
-            text-align: center;
         }
-        .modal textarea {
-            width: 100%;
-            min-height: 64px;
-            border: 1px solid #e5e5e5;
-            border-radius: 8px;
-            font-size: 15px;
-            padding: 8px;
-            resize: none;
-            margin-bottom: 10px;
-        }
-        .modal-actions {
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 24px;
+            height: 24px;
             display: flex;
-            justify-content: flex-end;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
             gap: 12px;
-            margin-top: 8px;
         }
         .modal-btn {
+            flex: 1;
             border: none;
-            border-radius: 16px;
-            padding: 6px 20px;
-            font-size: 15px;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 16px;
             cursor: pointer;
+            font-weight: 500;
         }
         .modal-btn.cancel {
             background: #f5f5f5;
-            color: #888;
+            color: #666;
         }
         .modal-btn.submit {
             background: #1686ff;
             color: #fff;
         }
-        .modal-error {
-            color: #ff3b30;
-            font-size: 13px;
-            margin-bottom: 6px;
-            text-align: left;
-            min-height: 18px;
+        .modal-btn:disabled {
+            background: #ccc;
+            color: #999;
+            cursor: not-allowed;
         }
-        .textarea-wrapper {
+
+        /* 退款原因选择样式 */
+        .reason-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .reason-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+        .reason-item:last-child {
+            border-bottom: none;
+        }
+        .reason-radio {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            margin-right: 12px;
             position: relative;
-            width: 100%;
+            flex-shrink: 0;
         }
-        .textarea-wrapper textarea {
+        .reason-radio.selected {
+            border-color: #1686ff;
+            background: #1686ff;
+        }
+        .reason-radio.selected::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+        }
+        .reason-text {
+            flex: 1;
+            font-size: 16px;
+            color: #222;
+        }
+
+        /* 确认退款页面样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 16px;
+            color: #222;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-label.required::after {
+            content: '*';
+            color: #ff3b30;
+            margin-left: 4px;
+        }
+        .form-input {
             width: 100%;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            font-size: 15px;
+            padding: 12px;
             box-sizing: border-box;
-            padding-bottom: 28px;
-            padding-right: 60px;
             resize: none;
         }
-        .modal-char-count {
-            position: absolute;
-            right: 16px;
-            bottom: 22px;
-            color: #888;
-            font-size: 13px;
-            background: #fff;
-            line-height: 1;
-            pointer-events: none;
-            z-index: 2;
-            padding: 0 2px;
+        .form-input:focus {
+            outline: none;
+            border-color: #1686ff;
         }
+        .textarea-container {
+            position: relative;
+        }
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+            padding-bottom: 30px;
+        }
+        .char-count {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-size: 12px;
+            color: #999;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .char-count.error {
+            color: #ff3b30;
+        }
+
+        /* 图片上传样式 */
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #1686ff;
+        }
+        .upload-icon {
+            font-size: 32px;
+            color: #999;
+            margin-bottom: 8px;
+        }
+        .upload-text {
+            font-size: 14px;
+            color: #666;
+        }
+        .upload-input {
+            display: none;
+        }
+        .image-preview {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .image-item {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f5f5f5;
+        }
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 错误提示样式 */
+        .error-message {
+            color: #ff3b30;
+            font-size: 13px;
+            margin-top: 4px;
+            min-height: 18px;
+        }
+
         @media (max-width: 500px) {
             .order-card { margin: 14px 4px 0 4px; }
-            .modal-char-count {
-                right: 10px;
-                bottom: 18px;
-                font-size: 12px;
-            }
-            .textarea-wrapper textarea {
-                padding-right: 44px;
-                padding-bottom: 24px;
+            .modal { width: 96vw; }
+            .image-preview {
+                grid-template-columns: repeat(3, 1fr);
             }
         }
     </style>
@@ -267,7 +428,6 @@
 <body>
     <div class="top-bar">
         <div class="status-bar">
-            <!-- 状态栏占位，可根据需要自定义 -->
             <span style="margin-left:auto;">24</span>
             <span style="margin-left:8px;">🔋</span>
         </div>
@@ -295,7 +455,7 @@
                 </div>
             </div>
             <div class="order-actions">
-                <button class="order-btn refund-btn">申请退课</button>
+                <button class="order-btn refund-btn">申请退款</button>
                 <button class="order-btn">评价</button>
                 <button class="order-btn primary">查看详情</button>
             </div>
@@ -313,7 +473,7 @@
                 </div>
             </div>
             <div class="order-actions">
-                <button class="order-btn refund-btn">申请退课</button>
+                <button class="order-btn refund-btn">申请退款</button>
                 <button class="order-btn">评价</button>
                 <button class="order-btn primary">查看详情</button>
             </div>
@@ -331,82 +491,311 @@
                 </div>
             </div>
             <div class="order-actions">
-                <button class="order-btn refund-btn">申请退课</button>
+                <button class="order-btn refund-btn">申请退款</button>
                 <button class="order-btn">评价</button>
                 <button class="order-btn primary">查看详情</button>
             </div>
         </div>
     </div>
-    <!-- 退课申请弹窗 -->
-    <div class="modal-mask" id="refundModalMask">
+
+    <!-- 退款原因选择弹窗 -->
+    <div class="modal-mask" id="reasonModalMask">
         <div class="modal">
-            <div class="modal-title">申请退课</div>
-            <div class="modal-error" id="refundError"></div>
-            <div class="textarea-wrapper">
-                <textarea id="refundReason" placeholder="请填写退课原因（必填）" maxlength="200"></textarea>
-                <span class="modal-char-count" id="refundCharCount">1/200</span>
+            <div class="modal-header">
+                <div class="modal-title">选择退款原因</div>
+                <button class="modal-close" id="reasonModalClose">&times;</button>
             </div>
-            <div class="modal-actions">
-                <button class="modal-btn cancel" id="refundCancelBtn">取消</button>
-                <button class="modal-btn submit" id="refundSubmitBtn">提交</button>
+            <div class="modal-content">
+                <ul class="reason-list" id="reasonList">
+                    <li class="reason-item" data-reason="买多/买错/不想要">
+                        <div class="reason-radio"></div>
+                        <div class="reason-text">买多/买错/不想要</div>
+                    </li>
+                    <li class="reason-item" data-reason="价格问题">
+                        <div class="reason-radio"></div>
+                        <div class="reason-text">价格问题</div>
+                    </li>
+                    <li class="reason-item" data-reason="协商一致退款">
+                        <div class="reason-radio"></div>
+                        <div class="reason-text">协商一致退款</div>
+                    </li>
+                    <li class="reason-item" data-reason="教学质量与宣传不符">
+                        <div class="reason-radio"></div>
+                        <div class="reason-text">教学质量与宣传不符</div>
+                    </li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="reasonModalCancel">取消</button>
+                <button class="modal-btn submit" id="reasonModalSubmit" disabled>下一步</button>
             </div>
         </div>
     </div>
+
+    <!-- 确认退款弹窗 -->
+    <div class="modal-mask" id="confirmModalMask">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">确认退款申请</div>
+                <button class="modal-close" id="confirmModalClose">&times;</button>
+            </div>
+            <div class="modal-content">
+                <div class="form-group">
+                    <label class="form-label required">申请原因</label>
+                    <select class="form-input" id="refundReason">
+                        <option value="">请选择退款原因</option>
+                        <option value="买多/买错/不想要">买多/买错/不想要</option>
+                        <option value="价格问题">价格问题</option>
+                        <option value="协商一致退款">协商一致退款</option>
+                        <option value="教学质量与宣传不符">教学质量与宣传不符</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">问题描述</label>
+                    <div class="textarea-container">
+                        <textarea class="form-input form-textarea" id="problemDescription" placeholder="请详细描述问题（可选）" maxlength="500"></textarea>
+                        <div class="char-count" id="descriptionCharCount">0/500</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">上传凭证</label>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">点击上传图片（最多9张）</div>
+                        <input type="file" class="upload-input" id="imageUpload" accept="image/*" multiple>
+                    </div>
+                    <div class="image-preview" id="imagePreview"></div>
+                </div>
+                <div class="error-message" id="confirmError"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel" id="confirmModalCancel">取消</button>
+                <button class="modal-btn submit" id="confirmModalSubmit">提交申请</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-    // 退课弹窗逻辑
-    const refundBtns = document.querySelectorAll('.refund-btn');
-    const refundModal = document.getElementById('refundModalMask');
-    const refundCancelBtn = document.getElementById('refundCancelBtn');
-    const refundSubmitBtn = document.getElementById('refundSubmitBtn');
-    const refundReason = document.getElementById('refundReason');
-    const refundError = document.getElementById('refundError');
-    const refundCharCount = document.getElementById('refundCharCount');
-    refundBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            refundModal.style.display = 'flex';
-            refundReason.value = '';
-            refundError.textContent = '';
-            refundCharCount.textContent = '1/200';
+        // 返回按钮事件
+        document.querySelector('.back-btn').addEventListener('click', function() {
+            window.location.href = 'index.html';
         });
-    });
-    refundCancelBtn.onclick = function() {
-        refundModal.style.display = 'none';
-    };
-    refundSubmitBtn.onclick = function() {
-        if (!refundReason.value.trim()) {
-            refundError.textContent = '退课原因不能为空';
-            refundReason.focus();
-            return;
+
+        // 退款申请相关变量
+        let selectedReason = '';
+        let uploadedImages = [];
+
+        // 退款原因选择弹窗
+        const reasonModal = document.getElementById('reasonModalMask');
+        const reasonModalClose = document.getElementById('reasonModalClose');
+        const reasonModalCancel = document.getElementById('reasonModalCancel');
+        const reasonModalSubmit = document.getElementById('reasonModalSubmit');
+        const reasonList = document.getElementById('reasonList');
+
+        // 确认退款弹窗
+        const confirmModal = document.getElementById('confirmModalMask');
+        const confirmModalClose = document.getElementById('confirmModalClose');
+        const confirmModalCancel = document.getElementById('confirmModalCancel');
+        const confirmModalSubmit = document.getElementById('confirmModalSubmit');
+        const refundReasonSelect = document.getElementById('refundReason');
+        const problemDescription = document.getElementById('problemDescription');
+        const descriptionCharCount = document.getElementById('descriptionCharCount');
+        const uploadArea = document.getElementById('uploadArea');
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreview = document.getElementById('imagePreview');
+        const confirmError = document.getElementById('confirmError');
+
+        // 绑定退款按钮事件
+        document.querySelectorAll('.refund-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                reasonModal.classList.add('show');
+                reasonModal.querySelector('.modal').classList.add('show');
+                selectedReason = '';
+                uploadedImages = [];
+                resetReasonModal();
+                resetConfirmModal();
+            });
+        });
+
+        // 退款原因选择逻辑
+        reasonList.addEventListener('click', (e) => {
+            const reasonItem = e.target.closest('.reason-item');
+            if (!reasonItem) return;
+
+            // 移除其他选中状态
+            document.querySelectorAll('.reason-radio').forEach(radio => {
+                radio.classList.remove('selected');
+            });
+
+            // 设置当前选中状态
+            reasonItem.querySelector('.reason-radio').classList.add('selected');
+            selectedReason = reasonItem.dataset.reason;
+            refundReasonSelect.value = selectedReason; // 更新select的值
+            reasonModalSubmit.disabled = false;
+        });
+
+        // 退款原因弹窗关闭
+        reasonModalClose.onclick = reasonModalCancel.onclick = function() {
+            reasonModal.classList.remove('show');
+            reasonModal.querySelector('.modal').classList.remove('show');
+        };
+
+        // 退款原因弹窗下一步
+        reasonModalSubmit.onclick = function() {
+            if (!selectedReason) return;
+            reasonModal.classList.remove('show');
+            reasonModal.querySelector('.modal').classList.remove('show');
+            refundReasonSelect.value = selectedReason; // 确保select的值与selectedReason一致
+            confirmModal.classList.add('show');
+            confirmModal.querySelector('.modal').classList.add('show');
+        };
+
+        // 确认退款弹窗关闭
+        confirmModalClose.onclick = confirmModalCancel.onclick = function() {
+            confirmModal.classList.remove('show');
+            confirmModal.querySelector('.modal').classList.remove('show');
+        };
+
+        // 问题描述字数统计
+        problemDescription.addEventListener('input', function() {
+            const length = this.value.length;
+            descriptionCharCount.textContent = length + '/500';
+            if (length > 500) {
+                descriptionCharCount.classList.add('error');
+            } else {
+                descriptionCharCount.classList.remove('error');
+            }
+        });
+
+        // 图片上传处理
+        uploadArea.addEventListener('click', () => {
+            imageUpload.click();
+        });
+
+        imageUpload.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            const remainingSlots = 9 - uploadedImages.length;
+            const filesToAdd = files.slice(0, remainingSlots);
+
+            filesToAdd.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        uploadedImages.push({
+                            file: file,
+                            url: e.target.result
+                        });
+                        updateImagePreview();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        // 更新图片预览
+        function updateImagePreview() {
+            imagePreview.innerHTML = '';
+            uploadedImages.forEach((image, index) => {
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+                imageItem.innerHTML = `
+                    <img src="${image.url}" alt="凭证图片">
+                    <button class="image-remove" onclick="removeImage(${index})">&times;</button>
+                `;
+                imagePreview.appendChild(imageItem);
+            });
+
+            // 如果图片数量少于9张，显示上传区域
+            if (uploadedImages.length < 9) {
+                uploadArea.style.display = 'block';
+            } else {
+                uploadArea.style.display = 'none';
+            }
         }
-        refundError.textContent = '';
-        refundModal.style.display = 'none';
-        alert('退课申请已提交：' + refundReason.value.trim());
-    };
-    // 点击遮罩关闭弹窗（可选）
-    refundModal.addEventListener('click', function(e) {
-        if (e.target === refundModal) refundModal.style.display = 'none';
-    });
 
-    // 退课原因字数统计和限制
-    refundReason.addEventListener('input', function() {
-        let val = refundReason.value;
-        if (val.length > 200) {
-            refundReason.value = val.slice(0, 200);
-            val = refundReason.value;
+        // 移除图片
+        function removeImage(index) {
+            uploadedImages.splice(index, 1);
+            updateImagePreview();
         }
-        refundCharCount.textContent = (val.length === 0 ? 1 : val.length) + '/200';
-    });
 
-    // 订单卡片和查看详情按钮跳转逻辑
-    // 保证所有“查看详情”按钮都能跳转到 order_detail.html
-    // 并阻止事件冒泡
+        // 提交退款申请
+        confirmModalSubmit.onclick = function() {
+            confirmError.textContent = '';
+            if (!refundReasonSelect.value) { // 检查select的值
+                confirmError.textContent = '请选择退款原因';
+                return;
+            }
 
-    document.querySelectorAll('.order-btn.primary, .view-detail-btn').forEach(function(btn) {
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        window.location.href = 'order_detail.html';
-      });
-    });
+            // 模拟提交
+            const formData = {
+                reason: refundReasonSelect.value, // 使用select的值
+                description: problemDescription.value.trim(),
+                images: uploadedImages.length
+            };
+
+            console.log('退款申请数据:', formData);
+            alert('退款申请已提交，我们会尽快处理！');
+            confirmModal.classList.remove('show');
+            confirmModal.querySelector('.modal').classList.remove('show');
+        };
+
+        // 重置退款原因弹窗
+        function resetReasonModal() {
+            document.querySelectorAll('.reason-radio').forEach(radio => {
+                radio.classList.remove('selected');
+            });
+            reasonModalSubmit.disabled = true;
+        }
+
+        // 重置确认退款弹窗
+        function resetConfirmModal() {
+            refundReasonSelect.value = ''; // 重置select的值
+            problemDescription.value = '';
+            descriptionCharCount.textContent = '0/500';
+            descriptionCharCount.classList.remove('error');
+            uploadedImages = [];
+            updateImagePreview();
+            confirmError.textContent = '';
+        }
+
+        // 点击遮罩关闭弹窗
+        reasonModal.addEventListener('click', function(e) {
+            if (e.target === reasonModal) {
+                reasonModal.classList.remove('show');
+                reasonModal.querySelector('.modal').classList.remove('show');
+            }
+        });
+
+        confirmModal.addEventListener('click', function(e) {
+            if (e.target === confirmModal) {
+                confirmModal.classList.remove('show');
+                confirmModal.querySelector('.modal').classList.remove('show');
+            }
+        });
+
+        // 标签切换事件
+        document.querySelectorAll('.tab-item').forEach(function(tab, index) {
+            tab.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+                // 添加active类到当前标签
+                this.classList.add('active');
+                
+                // 如果是"退款/售后"标签（第4个标签，索引为3），跳转到退款订单页面
+                if (index === 3) {
+                    window.location.href = 'my_refund_orders.html';
+                }
+            });
+        });
+
+        // 订单卡片和查看详情按钮跳转逻辑
+        document.querySelectorAll('.order-btn.primary, .view-detail-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                window.location.href = 'order_detail.html';
+            });
+        });
     </script>
 </body>
 </html> 
