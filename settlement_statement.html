@@ -75,6 +75,9 @@
                     <span class="refund-count">审核通过：<strong>6</strong> 条</span>
                     <span class="refund-count">审核拒绝：<strong>1</strong> 条</span>
                 </div>
+                <div class="action-right">
+                    <button class="btn btn-info" onclick="showExportRecordModal()">查看导出记录</button>
+                </div>
             </div>
 
             <!-- 表格区域 -->
@@ -531,6 +534,37 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" onclick="hideDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 导出记录模态框 -->
+    <div class="modal" id="exportRecordModal">
+        <div class="modal-content" style="width: 80%; max-width: 1000px;">
+            <div class="modal-header">
+                <h2 class="modal-title">导出记录</h2>
+                <button class="close-btn" onclick="hideExportRecordModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="export-record-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>文件名称</th>
+                                <th>导出状态</th>
+                                <th>操作时间</th>
+                                <th>操作人</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="exportRecordTableBody">
+                            <!-- 导出记录数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideExportRecordModal()">关闭</button>
             </div>
         </div>
     </div>
