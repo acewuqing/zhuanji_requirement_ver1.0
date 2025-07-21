@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>胶装送审 - 资料管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1677ff;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            border-right: 1px solid #eee;
+            padding-top: 56px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .menu-item.active {
+            background-color: #e6f7ff;
+            color: #1677ff;
+            border-right: 3px solid #1677ff;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 76px 15px 15px;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .breadcrumb {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        /* Business explanation card */
+        .business-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .business-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .business-content {
+            line-height: 1.4;
+        }
+        
+        .business-item {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .business-label {
+            font-weight: 500;
+            margin-right: 8px;
+            min-width: 80px;
+        }
+        
+        /* Card styles */
+        .card {
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        /* Customer info */
+        .customer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label {
+            color: #666;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+        }
+        
+        /* Status management */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .status-section {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+        
+        .status-section:hover {
+            border-color: #1677ff;
+            box-shadow: 0 2px 8px rgba(22, 119, 255, 0.1);
+        }
+        
+        .status-section-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-section-icon {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .status-options {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .status-option {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .status-option:hover {
+            border-color: #1677ff;
+            background-color: #f0f7ff;
+        }
+        
+        .status-option.selected {
+            border-color: #1677ff;
+            background-color: #e6f7ff;
+        }
+        
+        .status-radio {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #d9d9d9;
+            border-radius: 50%;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .status-option.selected .status-radio {
+            border-color: #1677ff;
+            background-color: #1677ff;
+        }
+        
+        .status-option.selected .status-radio::after {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        .status-text {
+            flex: 1;
+            font-size: 13px;
+        }
+        
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding-left: 25px;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 12px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e8e8e8;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -18px;
+            top: 4px;
+            width: 10px;
+            height: 10px;
+            background-color: #e8e8e8;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #e8e8e8;
+        }
+        
+        .timeline-item.completed::before {
+            background-color: #52c41a;
+            box-shadow: 0 0 0 1px #52c41a;
+        }
+        
+        .timeline-item.current::before {
+            background-color: #1677ff;
+            box-shadow: 0 0 0 1px #1677ff;
+        }
+        
+        .timeline-content {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            border-left: 3px solid #e8e8e8;
+        }
+        
+        .timeline-item.completed .timeline-content {
+            border-left-color: #52c41a;
+        }
+        
+        .timeline-item.current .timeline-content {
+            border-left-color: #1677ff;
+        }
+        
+        .timeline-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+        
+        .timeline-desc {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        
+        .timeline-time {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        /* Form styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1677ff;
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background-color: #1677ff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0958d9;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e8e8e8;
+        }
+        
+        .btn-success {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #389e0d;
+        }
+        
+        .btn-warning {
+            background-color: #fa8c16;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d46b08;
+        }
+        
+        .btn-large {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .status-processing {
+            background-color: #e6f7ff;
+            color: #1677ff;
+        }
+        
+        .status-completed {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-rejected {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 500px;
+            max-width: 700px;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Summary card */
+        .summary-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+        }
+        
+        .summary-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+        
+        .summary-value {
+            font-size: 14px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </div>
+            <div class="logo-text">资料管理系统</div>
+        </div>
+        <div class="header-actions">
+            <div class="avatar">用户</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                首页
+            </div>
+            <div class="menu-item active">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                胶装送审
+            </div>
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                返回列表
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">胶装送审</h1>
+                    <div class="breadcrumb">
+                        <a href="management.html">资料制作列表</a> / <a href="index.html">客户详情</a> / 胶装送审
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Explanation Card -->
+            <div class="business-card">
+                <div class="business-title">胶装送审阶段说明</div>
+                <div class="business-content">
+                    <div class="business-item">
+                        <span class="business-label">• 业务目标：</span>
+                        <span>将资料进行胶装整理并提交相关部门送审</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 操作流程：</span>
+                        <span>资料胶装 → 递交送审 → 等待审核结果 → 记录最终结果</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 状态管理：</span>
+                        <span>胶装状态、送审状态、送审结果（通过/未通过）</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 完成条件：</span>
+                        <span>送审结果确定 → 整个资料制作流程结束</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">👤</span>
+                        客户信息
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="customer-info">
+                        <div class="info-item">
+                            <span class="info-label">客户姓名：</span>
+                            <span class="info-value">张三</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">联系电话：</span>
+                            <span class="info-value">138****8888</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">申报职称：</span>
+                            <span class="info-value">高级工程师</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">当前状态：</span>
+                            <span class="status-badge status-processing">未开始</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Management -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">⚙️</span>
+                        状态管理
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-primary" onclick="saveAllStatus()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17,21 17,13 7,13 7,21"></polyline>
+                                <polyline points="7,3 7,8 15,8"></polyline>
+                            </svg>
+                            保存所有状态
+                        </button>
+                        <button class="btn btn-success" onclick="completeProcess()" id="completeBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            完成整个流程
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="status-grid">
+                        <!-- Binding Status -->
+                        <div class="status-section">
+                            <div class="status-section-title">
+                                <span class="status-section-icon">📖</span>
+                                胶装状态
+                            </div>
+                            <div class="status-options">
+                                <div class="status-option" onclick="selectStatus('binding', 'pending', this)">
+                                    <div class="status-radio"></div>
+                                    <div class="status-text">未胶装</div>
+                                </div>
+                                <div class="status-option" onclick="selectStatus('binding', 'completed', this)">
+                                    <div class="status-radio"></div>
+                                    <div class="status-text">已胶装</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Status -->
+                        <div class="status-section">
+                            <div class="status-section-title">
+                                <span class="status-section-icon">📤</span>
+                                送审状态
+                            </div>
+                            <div class="status-options">
+                                <div class="status-option" onclick="selectStatus('submit', 'pending', this)">
+                                    <div class="status-radio"></div>
+                                    <div class="status-text">未送审</div>
+                                </div>
+                                <div class="status-option" onclick="selectStatus('submit', 'submitted', this)">
+                                    <div class="status-radio"></div>
+                                    <div class="status-text">已送审</div>
+                                </div>
+                                <div class="status-option" onclick="selectStatus('submit', 'failed', this)">
+                                    <div class="status-radio"></div>
+                                    <div class="status-text">送审不成功</div>
+                                </div>
+                            </div>
+                            <!-- 备注输入框 -->
+                            <div class="status-remark" id="submitRemark" style="display: none; margin-top: 12px;">
+                                <label class="form-label" style="font-size: 13px; margin-bottom: 6px;">
+                                    <span style="color: #ff4d4f;">*</span> 
+                                    <span id="submitRemarkLabel">备注说明</span>
+                                </label>
+                                <textarea class="form-control" id="submitRemarkText" placeholder="请输入详细说明..." rows="3" style="font-size: 13px;"></textarea>
+                                <div class="remark-hint" style="font-size: 12px; color: #999; margin-top: 4px;">
+                                    请详细说明具体情况，以便后续跟进处理
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Review Result -->
+                        <div class="status-section">
+                            <div class="status-section-title">
+                                <span class="status-section-icon">📋</span>
+                                送审结果
+                            </div>
+                            <div class="status-options">
+                                <div class="status-option" onclick="selectStatus('result', 'approved', this)">
+                                    <div class="status-radio"></div>
+                                    <div class="status-text">通过</div>
+                                </div>
+                                <div class="status-option" onclick="selectStatus('result', 'rejected', this)">
+                                    <div class="status-radio"></div>
+                                    <div class="status-text">未通过</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Complete Process Confirmation Modal -->
+    <div class="modal" id="completeProcessModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" style="display: flex; align-items: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fa8c16" stroke-width="2" style="margin-right: 10px;">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    确认完成整个流程
+                </div>
+                <button class="modal-close" onclick="closeModal('completeProcessModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="line-height: 1.6; color: #666; margin-bottom: 20px;">
+                    您即将完成整个资料制作流程，系统将执行以下操作：
+                </p>
+                <ul style="color: #666; line-height: 1.8; margin-left: 20px; margin-bottom: 20px;">
+                    <li>确认所有状态已设置完成</li>
+                    <li>标记整个资料制作流程为已完成</li>
+                    <li>记录最终送审结果</li>
+                    <li>正式结束该客户的业务流程</li>
+                </ul>
+                <div style="background-color: #fff7e6; border: 1px solid #ffd591; border-radius: 4px; padding: 12px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; color: #fa8c16;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4M12 8h.01"></path>
+                        </svg>
+                        <span style="font-weight: 500;">当前状态概览</span>
+                    </div>
+                    <div style="margin: 8px 0 0 24px; font-size: 14px; color: #666;" id="statusSummary">
+                        正在检查状态...
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('completeProcessModal')">取消</button>
+                <button class="btn btn-success" onclick="confirmCompleteProcess()">确认完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification Modal -->
+    <div class="modal" id="processSuccessModal">
+        <div class="modal-content" style="text-align: center; max-width: 400px;">
+            <div class="modal-header" style="border-bottom: none; justify-content: center; padding-bottom: 10px;">
+                <div style="width: 60px; height: 60px; background-color: #f6ffed; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#52c41a" stroke-width="3">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="modal-body" style="padding-top: 0;">
+                <h3 style="color: #52c41a; margin-bottom: 15px; font-size: 18px;">🎉 流程完成！</h3>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                    整个资料制作流程已成功完成<br>
+                    <span id="finalResultText">客户业务已正式结束</span>
+                </p>
+                <div style="background-color: #f9f9f9; border-radius: 4px; padding: 12px; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #666;">
+                        <div style="margin-bottom: 8px;">✓ 胶装状态已确认</div>
+                        <div style="margin-bottom: 8px;">✓ 送审状态已确认</div>
+                        <div style="margin-bottom: 8px;">✓ 送审结果已记录</div>
+                        <div>✓ 资料制作流程已完成</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center; border-top: none;">
+                <button class="btn btn-primary" onclick="returnToList()" style="min-width: 120px;">
+                    返回客户列表
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remark Modal -->
+    <div class="modal" id="remarkModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">添加备注</div>
+                <button class="modal-close" onclick="closeModal('remarkModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">备注类型</label>
+                    <select class="form-control" id="remarkType">
+                        <option value="general">一般备注</option>
+                        <option value="important">重要提醒</option>
+                        <option value="issue">问题记录</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注内容</label>
+                    <textarea class="form-control" id="remarkContent" placeholder="请输入备注内容..." rows="4"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('remarkModal')">取消</button>
+                <button class="btn btn-primary" onclick="addRemark()">确认添加</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Status tracking
+        let currentStatus = {
+            binding: null,  // 改为null表示未选择
+            submit: null,
+            result: null
+        };
+
+        // 状态备注
+        let statusRemarks = {
+            submit: ''
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // 不设置默认选择，保持空值状态
+            updateSummary();
+            
+            // 监听备注输入框变化，实时保存备注内容
+            const submitRemarkText = document.getElementById('submitRemarkText');
+            if (submitRemarkText) {
+                submitRemarkText.addEventListener('input', function() {
+                    statusRemarks.submit = this.value;
+                });
+            }
+        });
+
+        // Select status
+        function selectStatus(category, status, element) {
+            const categorySection = element.closest('.status-section');
+            const isCurrentlySelected = element.classList.contains('selected');
+            
+            // Remove previous selection in the same category
+            categorySection.querySelectorAll('.status-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // 如果点击的是已选中的选项，则取消选择（设为空值）
+            if (isCurrentlySelected) {
+                currentStatus[category] = null;
+                hideRemarkInput(category);
+            } else {
+                // Add selection to current element
+                element.classList.add('selected');
+                currentStatus[category] = status;
+                
+                // 处理送审状态的备注逻辑
+                if (category === 'submit') {
+                    handleSubmitStatusRemark(status);
+                }
+            }
+            
+            // Update summary and check completion
+            updateSummary();
+            checkCompletion();
+        }
+
+        // 处理送审状态备注
+        function handleSubmitStatusRemark(status) {
+            const remarkDiv = document.getElementById('submitRemark');
+            const remarkLabel = document.getElementById('submitRemarkLabel');
+            const remarkText = document.getElementById('submitRemarkText');
+            
+            if (status === 'pending' || status === 'failed') {
+                // 显示备注输入框
+                remarkDiv.style.display = 'block';
+                
+                // 设置不同的标签和占位符
+                if (status === 'pending') {
+                    remarkLabel.textContent = '未送审原因说明';
+                    remarkText.placeholder = '请说明未送审的具体原因，如：材料不齐全、时间安排等...';
+                } else if (status === 'failed') {
+                    remarkLabel.textContent = '送审失败原因说明';
+                    remarkText.placeholder = '请说明送审不成功的具体原因，如：材料被退回、要求补充材料等...';
+                }
+                
+                // 清空之前的内容
+                remarkText.value = statusRemarks.submit || '';
+            } else {
+                // 隐藏备注输入框
+                hideRemarkInput('submit');
+            }
+        }
+
+        // 隐藏备注输入框
+        function hideRemarkInput(category) {
+            if (category === 'submit') {
+                document.getElementById('submitRemark').style.display = 'none';
+                document.getElementById('submitRemarkText').value = '';
+                statusRemarks.submit = '';
+            }
+        }
+
+        // Update summary display
+        function updateSummary() {
+            const statusTexts = {
+                binding: {
+                    null: '未设置',
+                    pending: '待胶装',
+                    processing: '胶装中',
+                    completed: '已完成胶装'
+                },
+                submit: {
+                    null: '未设置',
+                    pending: '未送审',
+                    submitted: '已递交送审',
+                    failed: '送审不成功'
+                },
+                result: {
+                    null: '未设置',
+                    pending: '待审核',
+                    approved: '审核通过',
+                    rejected: '审核未通过'
+                }
+            };
+            
+            // 如果页面上有总结显示元素，更新它们
+            const bindingSummary = document.getElementById('bindingStatusSummary');
+            const submitSummary = document.getElementById('submitStatusSummary');
+            const resultSummary = document.getElementById('resultStatusSummary');
+            
+            if (bindingSummary) bindingSummary.textContent = statusTexts.binding[currentStatus.binding];
+            if (submitSummary) submitSummary.textContent = statusTexts.submit[currentStatus.submit];
+            if (resultSummary) resultSummary.textContent = statusTexts.result[currentStatus.result];
+            
+            // Calculate overall progress
+            let progress = 0;
+            let totalSteps = 0;
+            
+            if (currentStatus.binding !== null) {
+                totalSteps++;
+                if (currentStatus.binding === 'completed') progress++;
+            }
+            if (currentStatus.submit !== null) {
+                totalSteps++;
+                if (currentStatus.submit === 'submitted') progress++;
+            }
+            if (currentStatus.result !== null) {
+                totalSteps++;
+                if (currentStatus.result !== 'pending') progress++;
+            }
+            
+            const overallProgress = totalSteps > 0 ? Math.round((progress / totalSteps) * 100) : 0;
+            const overallProgressElement = document.getElementById('overallProgress');
+            if (overallProgressElement) overallProgressElement.textContent = overallProgress + '%';
+        }
+
+        // Check if process can be completed
+        function checkCompletion() {
+            // 移除按钮禁用逻辑，按钮始终可用
+            // const canComplete = currentStatus.binding === 'completed' && 
+            //                    currentStatus.submit === 'submitted' && 
+            //                    (currentStatus.result === 'approved' || currentStatus.result === 'rejected');
+            
+            // const completeBtn = document.getElementById('completeBtn');
+            // if (completeBtn) completeBtn.disabled = !canComplete;
+        }
+
+        // Save all status
+        function saveAllStatus() {
+            // 验证送审状态的备注
+            if (currentStatus.submit === 'pending' || currentStatus.submit === 'failed') {
+                const remarkText = document.getElementById('submitRemarkText').value.trim();
+                if (!remarkText) {
+                    alert('请填写送审状态的备注说明！');
+                    document.getElementById('submitRemarkText').focus();
+                    return;
+                }
+                statusRemarks.submit = remarkText;
+            }
+            
+            if (confirm('确认保存当前所有状态？')) {
+                // 构建状态描述
+                const statusDesc = [];
+                if (currentStatus.binding !== null) {
+                    const bindingTexts = {
+                        pending: '待胶装',
+                        processing: '胶装中',
+                        completed: '已完成胶装'
+                    };
+                    statusDesc.push(`胶装：${bindingTexts[currentStatus.binding]}`);
+                }
+                if (currentStatus.submit !== null) {
+                    const submitTexts = {
+                        pending: '未送审',
+                        submitted: '已递交送审',
+                        failed: '送审不成功'
+                    };
+                    let submitDesc = `送审：${submitTexts[currentStatus.submit]}`;
+                    if (statusRemarks.submit) {
+                        submitDesc += `（${statusRemarks.submit}）`;
+                    }
+                    statusDesc.push(submitDesc);
+                }
+                if (currentStatus.result !== null) {
+                    const resultTexts = {
+                        pending: '待审核',
+                        approved: '审核通过',
+                        rejected: '审核未通过'
+                    };
+                    statusDesc.push(`结果：${resultTexts[currentStatus.result]}`);
+                }
+                
+                // Add timeline entry
+                const description = statusDesc.length > 0 ? statusDesc.join('，') : '状态已保存';
+                addTimelineEntry('状态更新', description);
+                alert('状态已保存！');
+            }
+        }
+
+        // Complete process
+        function completeProcess() {
+            // 移除状态检查，允许在任何状态下完成流程
+            // if (currentStatus.binding !== 'completed' || 
+            //     currentStatus.submit !== 'submitted' || 
+            //     (currentStatus.result !== 'approved' && currentStatus.result !== 'rejected')) {
+            //     alert('请确保所有状态都已正确设置后再完成流程！');
+            //     return;
+            // }
+            
+            // 更新确认模态框中的状态概览
+            updateStatusSummaryInModal();
+            
+            // 显示确认模态框
+            document.getElementById('completeProcessModal').style.display = 'block';
+        }
+
+        // 更新确认模态框中的状态概览
+        function updateStatusSummaryInModal() {
+            const statusTexts = {
+                binding: {
+                    null: '未设置',
+                    pending: '待胶装',
+                    processing: '胶装中',
+                    completed: '已完成胶装'
+                },
+                submit: {
+                    null: '未设置',
+                    pending: '未送审',
+                    submitted: '已递交送审',
+                    failed: '送审不成功'
+                },
+                result: {
+                    null: '未设置',
+                    pending: '待审核',
+                    approved: '审核通过',
+                    rejected: '审核未通过'
+                }
+            };
+            
+            const summaryItems = [];
+            summaryItems.push(`胶装状态：${statusTexts.binding[currentStatus.binding] || '未设置'}`);
+            summaryItems.push(`送审状态：${statusTexts.submit[currentStatus.submit] || '未设置'}`);
+            summaryItems.push(`送审结果：${statusTexts.result[currentStatus.result] || '未设置'}`);
+            
+            document.getElementById('statusSummary').innerHTML = summaryItems.join('<br>');
+        }
+
+        // Confirm complete process
+        function confirmCompleteProcess() {
+            // 关闭确认模态框
+            closeModal('completeProcessModal');
+            
+            // 设置成功模态框中的最终结果文本
+            const resultText = currentStatus.result === 'approved' ? '送审通过，客户业务成功完成' : '送审未通过，客户业务已完成';
+            document.getElementById('finalResultText').textContent = resultText;
+            
+            // 显示成功提示模态框
+            document.getElementById('processSuccessModal').style.display = 'block';
+        }
+
+        // 返回客户列表
+        function returnToList() {
+            // 关闭成功提示模态框
+            closeModal('processSuccessModal');
+            
+            // 这里可以添加实际的页面跳转逻辑
+            // window.location.href = 'management.html';
+            
+            // 临时提示（实际项目中应该直接跳转）
+            console.log('跳转到客户列表页面...');
+        }
+
+        // Open remark modal
+        function openRemarkModal() {
+            document.getElementById('remarkModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            // Clear form
+            if (modalId === 'remarkModal') {
+                document.getElementById('remarkType').value = 'general';
+                document.getElementById('remarkContent').value = '';
+            }
+        }
+
+        // Add remark
+        function addRemark() {
+            const type = document.getElementById('remarkType').value;
+            const content = document.getElementById('remarkContent').value.trim();
+            
+            if (!content) {
+                alert('请输入备注内容');
+                return;
+            }
+            
+            const typeTexts = {
+                general: '一般备注',
+                important: '重要提醒',
+                issue: '问题记录'
+            };
+            
+            addTimelineEntry(typeTexts[type], content);
+            closeModal('remarkModal');
+            alert('备注已添加！');
+        }
+
+        // Add timeline entry
+        function addTimelineEntry(title, description) {
+            const timeline = document.getElementById('statusTimeline');
+            if (!timeline) return;
+            
+            const timelineItem = document.createElement('div');
+            timelineItem.className = 'timeline-item current';
+            
+            const currentTime = new Date().toLocaleString('zh-CN');
+            
+            timelineItem.innerHTML = `
+                <div class="timeline-content">
+                    <div class="timeline-title">${title}</div>
+                    <div class="timeline-desc">${description}</div>
+                    <div class="timeline-time">${currentTime}</div>
+                </div>
+            `;
+            
+            // Remove current class from previous items
+            timeline.querySelectorAll('.timeline-item.current').forEach(item => {
+                item.classList.remove('current');
+                item.classList.add('completed');
+            });
+            
+            timeline.appendChild(timelineItem);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

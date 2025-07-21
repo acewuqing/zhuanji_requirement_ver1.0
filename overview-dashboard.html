@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>业务概览仪表板 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div class="logo-text">数据统计中心</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='data-statistics.html'">← 返回导航</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu-section">
+                <div class="menu-section-title">数据分析模块</div>
+                <a href="overview-dashboard.html" class="menu-item active" data-module="overview">
+                    <span class="menu-icon">📊</span>
+                    业务概览仪表板
+                </a>
+                <a href="production-statistics.html" class="menu-item" data-module="production">
+                    <span class="menu-icon">📋</span>
+                    产品制作统计
+                </a>
+                <a href="regional-analysis.html" class="menu-item" data-module="regional">
+                    <span class="menu-icon">🌍</span>
+                    区域业绩分析
+                </a>
+                <a href="customer-analysis.html" class="menu-item" data-module="customer">
+                    <span class="menu-icon">👥</span>
+                    客户分析报告
+                </a>
+                <a href="exception-monitoring.html" class="menu-item" data-module="exception">
+                    <span class="menu-icon">⚠️</span>
+                    异常数据监控
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <h1 class="content-title" id="moduleTitle">业务概览仪表板</h1>
+                <p class="content-subtitle" id="moduleSubtitle">全面掌握职称交付系统整体运营状况</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-item">
+                    <span class="filter-label">时间范围：</span>
+                    <select class="filter-select" id="timeRange">
+                        <option value="thisYear">今年</option>
+                        <option value="thisMonth">本月</option>
+                        <option value="lastMonth">上月</option>
+                        <option value="thisQuarter">本季度</option>
+                        <option value="lastQuarter">上季度</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">产品类型：</span>
+                    <select class="filter-select" id="productType">
+                        <option value="all">全部</option>
+                        <option value="material">资料制作</option>
+                        <option value="paper">论文</option>
+                        <option value="education">继续教育</option>
+                        <option value="patent">知识产权</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">区域分校：</span>
+                    <select class="filter-select" id="region">
+                        <option value="all">全部</option>
+                        <option value="first">一分校</option>
+                        <option value="second">二分校</option>
+                        <option value="third">三分校</option>
+                        <option value="changde">常德分校</option>
+                        <option value="other">其他分校</option>
+                    </select>
+                </div>
+                <button class="export-btn" onclick="exportCurrentData()">
+                    📊 导出数据
+                </button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <nav class="tab-nav">
+                <ul class="tab-nav-list">
+                    <li class="tab-nav-item">
+                        <a href="#" class="tab-nav-link active" onclick="TabManager.switchTab(event, 'overview-tab')">📈 总体概况</a>
+                    </li>
+                    <li class="tab-nav-item">
+                        <a href="#" class="tab-nav-link" onclick="TabManager.switchTab(event, 'analysis-tab')">📊 数据分析</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- 总体概况 Tab -->
+                <div id="overview-tab" class="tab-pane active">
+                    <div class="dashboard-grid" id="overviewCards">
+                        <!-- 卡片内容将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 数据分析 Tab -->
+                <div id="analysis-tab" class="tab-pane">
+                    <!-- 统计图表区域 -->
+                    <div class="chart-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📊 数据图表分析</h3>
+                            <div class="section-actions">
+                                <button class="btn" onclick="downloadChart()">📥 下载图表</button>
+                                <button class="btn" onclick="refreshChart()">🔄 刷新数据</button>
+                            </div>
+                        </div>
+                        <div class="chart-grid" id="chartsContainer">
+                            <!-- 图表内容将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 数据表格区域 -->
+                    <div class="table-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📋 详细数据表格</h3>
+                            <div class="section-actions">
+                                <button class="btn" onclick="downloadTable()">📥 下载表格</button>
+                                <button class="btn" onclick="printTable()">🖨️ 打印表格</button>
+                            </div>
+                        </div>
+                        <div id="tablesContainer">
+                            <!-- 表格内容将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/data-config.js"></script>
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadModuleContent('overview');
+        });
+
+        // 加载模块内容
+        function loadModuleContent(module) {
+            const config = DataConfig[module];
+            
+            // 设置页面标题
+            Utils.setPageTitle(config.title, config.subtitle);
+            
+            // 加载概况卡片
+            loadOverviewCards(config.cards);
+        }
+
+        // 加载概况卡片
+        function loadOverviewCards(cards) {
+            const container = document.getElementById('overviewCards');
+            container.innerHTML = cards.map(card => `
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-title">
+                            <div class="stat-icon ${card.color}">${card.icon}</div>
+                            ${card.title}
+                        </div>
+                    </div>
+                    <div class="stat-value">${card.value}</div>
+                    <div class="stat-trend trend-up">${card.trend}</div>
+                </div>
+            `).join('');
+        }
+
+        // 监听标签切换事件
+        window.addEventListener('tabSwitch', function(e) {
+            if (e.detail.tabId === 'analysis-tab') {
+                setTimeout(() => {
+                    loadCharts();
+                    loadTables();
+                }, 100);
+            }
+        });
+
+        // 加载图表
+        function loadCharts() {
+            const container = document.getElementById('chartsContainer');
+            container.innerHTML = `
+                <div class="chart-card">
+                    <div class="chart-title">月度趋势分析</div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">分类占比分析</div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            `;
+            
+            // 延迟渲染图表
+            setTimeout(() => {
+                const trendCtx = document.getElementById('trendChart');
+                const pieCtx = document.getElementById('pieChart');
+                
+                if (trendCtx) {
+                    Utils.renderTrendChart(trendCtx.getContext('2d'));
+                }
+                
+                if (pieCtx) {
+                    const pieData = {
+                        labels: DataConfig.overview.pieChartData.labels,
+                        datasets: [{
+                            data: DataConfig.overview.pieChartData.data,
+                            backgroundColor: DataConfig.overview.pieChartData.colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    };
+                    Utils.renderPieChart(pieCtx.getContext('2d'), pieData);
+                }
+            }, 100);
+        }
+
+        // 加载表格
+        function loadTables() {
+            const container = document.getElementById('tablesContainer');
+            const tableData = DataConfig.overview.tableData;
+            
+            container.innerHTML = `
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">${tableData.title}</div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                ${tableData.headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableData.rows.map(row => `
+                                <tr>
+                                    ${row.map(cell => `<td>${cell}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // 导出当前数据
+        function exportCurrentData() {
+            Utils.exportToExcel(DataConfig.overview.tableData, '业务概览数据');
+        }
+
+        // 下载图表
+        function downloadChart() {
+            Utils.downloadChart('trendChart', '业务概览_趋势图');
+            setTimeout(() => {
+                Utils.downloadChart('pieChart', '业务概览_分布图');
+            }, 500);
+            alert('图表下载完成！请查看下载文件夹。');
+        }
+
+        // 下载表格
+        function downloadTable() {
+            Utils.exportToExcel(DataConfig.overview.tableData, '业务概览表格');
+        }
+
+        // 刷新图表
+        function refreshChart() {
+            loadCharts();
+            alert('图表数据已刷新！');
+        }
+
+        // 打印表格
+        function printTable() {
+            window.print();
+        }
+    </script>
+</body>
+</html> 

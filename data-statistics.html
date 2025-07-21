@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据统计中心 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="nav-page">
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div class="logo-text">数据统计中心</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='index.html'">← 返回首页</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu-section">
+                <div class="menu-section-title">数据分析模块</div>
+                <a href="overview-dashboard.html" class="menu-item" data-module="overview">
+                    <span class="menu-icon">📊</span>
+                    业务概览仪表板
+                </a>
+                <a href="production-statistics.html" class="menu-item" data-module="production">
+                    <span class="menu-icon">📋</span>
+                    产品制作统计
+                </a>
+                <a href="regional-analysis.html" class="menu-item" data-module="regional">
+                    <span class="menu-icon">🌍</span>
+                    区域业绩分析
+                </a>
+                <a href="customer-analysis.html" class="menu-item" data-module="customer">
+                    <span class="menu-icon">👥</span>
+                    客户分析报告
+                </a>
+                <a href="exception-monitoring.html" class="menu-item" data-module="exception">
+                    <span class="menu-icon">⚠️</span>
+                    异常数据监控
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <h1 class="content-title">欢迎使用数据统计中心</h1>
+                <p class="content-subtitle">选择左侧菜单项查看相应的数据分析模块</p>
+            </div>
+
+            <!-- Welcome Content -->
+            <div class="tab-content">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-title">
+                                <div class="stat-icon blue">📊</div>
+                                业务概览仪表板
+                            </div>
+                        </div>
+                        <div class="stat-value">总览</div>
+                        <div class="stat-trend trend-up">全面掌握系统运营状况</div>
+                        <div style="margin-top: 12px;">
+                            <a href="overview-dashboard.html" class="btn primary">进入模块</a>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-title">
+                                <div class="stat-icon green">📋</div>
+                                产品制作统计
+                            </div>
+                        </div>
+                        <div class="stat-value">制作</div>
+                        <div class="stat-trend trend-up">各类产品制作进度分析</div>
+                        <div style="margin-top: 12px;">
+                            <a href="production-statistics.html" class="btn primary">进入模块</a>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-title">
+                                <div class="stat-icon orange">🌍</div>
+                                区域业绩分析
+                            </div>
+                        </div>
+                        <div class="stat-value">区域</div>
+                        <div class="stat-trend trend-up">各分校业绩对比分析</div>
+                        <div style="margin-top: 12px;">
+                            <a href="regional-analysis.html" class="btn primary">进入模块</a>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-title">
+                                <div class="stat-icon purple">👥</div>
+                                客户分析报告
+                            </div>
+                        </div>
+                        <div class="stat-value">客户</div>
+                        <div class="stat-trend trend-up">客户结构与服务分析</div>
+                        <div style="margin-top: 12px;">
+                            <a href="customer-analysis.html" class="btn primary">进入模块</a>
+                        </div>
+                                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-header">
+                            <div class="stat-title">
+                                <div class="stat-icon red">⚠️</div>
+                                异常数据监控
+                            </div>
+                        </div>
+                        <div class="stat-value">监控</div>
+                        <div class="stat-trend trend-up">异常订单处理分析</div>
+                        <div style="margin-top: 12px;">
+                            <a href="exception-monitoring.html" class="btn primary">进入模块</a>
+                </div>
+                    </div>
+                </div>
+                    </div>
+        </main>
+                </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/data-config.js"></script>
+    <script>
+        // 设置当前页面的活动状态
+        document.addEventListener('DOMContentLoaded', function() {
+            // 根据URL参数设置活动菜单项
+            const params = Utils.getUrlParams();
+            if (params.module) {
+                SidebarManager.setActiveMenuItem(params.module);
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双签扫描 - 资料管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1677ff;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            border-right: 1px solid #eee;
+            padding-top: 56px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .menu-item.active {
+            background-color: #e6f7ff;
+            color: #1677ff;
+            border-right: 3px solid #1677ff;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 76px 15px 15px;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .breadcrumb {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        /* Business explanation card */
+        .business-card {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .business-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .business-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .business-title::before {
+            content: '📸';
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .business-content {
+            line-height: 1.4;
+        }
+        
+        .business-item {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .business-label {
+            font-weight: 500;
+            margin-right: 8px;
+            min-width: 80px;
+        }
+        
+        /* Card styles */
+        .card {
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        /* Customer info */
+        .customer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label {
+            color: #666;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+        }
+        
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed #d9d9d9;
+            border-radius: 6px;
+            padding: 40px 15px;
+            text-align: center;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #1677ff;
+            background-color: #f0f7ff;
+        }
+        
+        .upload-area.dragover {
+            border-color: #1677ff;
+            background-color: #e6f7ff;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #d9d9d9;
+            margin-bottom: 15px;
+        }
+        
+        .upload-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .upload-hint {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 15px;
+        }
+        
+        .upload-btn {
+            background-color: #1677ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .upload-btn:hover {
+            background-color: #0958d9;
+        }
+        
+        /* File list */
+        .file-list {
+            margin-top: 15px;
+        }
+        
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 1px solid #e8e8e8;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+        
+        .file-item:hover {
+            border-color: #1677ff;
+            background-color: #f0f7ff;
+        }
+        
+        .file-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 3px;
+        }
+        
+        .file-meta {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .file-preview {
+            background: none;
+            border: 1px solid #1677ff;
+            color: #1677ff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-preview:hover {
+            background-color: #1677ff;
+            color: white;
+        }
+        
+        .file-delete {
+            background: none;
+            border: 1px solid #ff4d4f;
+            color: #ff4d4f;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-delete:hover {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        
+        /* Progress bar */
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #52c41a;
+            transition: width 0.3s;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background-color: #1677ff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0958d9;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e8e8e8;
+        }
+        
+        .btn-success {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #389e0d;
+        }
+        
+        .btn-large {
+            padding: 12px 24px;
+            font-size: 16px;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .status-processing {
+            background-color: #e6f7ff;
+            color: #1677ff;
+        }
+        
+        .status-completed {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+        }
+        
+        /* Statistics */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-item {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1677ff;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 30px 15px;
+            color: #999;
+        }
+        
+        .empty-icon {
+            font-size: 36px;
+            margin-bottom: 12px;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .empty-hint {
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </div>
+            <div class="logo-text">资料管理系统</div>
+        </div>
+        <div class="header-actions">
+            <div class="avatar">用户</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                首页
+            </div>
+            <div class="menu-item active">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                双签扫描
+            </div>
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                返回列表
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">双签扫描</h1>
+                    <div class="breadcrumb">
+                        <a href="management.html">资料制作列表</a> / <a href="index.html">客户详情</a> / 双签扫描
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Explanation Card -->
+            <div class="business-card">
+                <div class="business-title">双签扫描阶段说明</div>
+                <div class="business-content">
+                    <div class="business-item">
+                        <span class="business-label">• 业务目标：</span>
+                        <span>将客户盖章签字的纸质资料扫描上传至系统</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 操作流程：</span>
+                        <span>接收盖章材料 → 扫描上传 → 文件检查 → 确认完成</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 注意事项：</span>
+                        <span>确保扫描件清晰完整，客户签字和盖章部分清楚可见</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 完成条件：</span>
+                        <span>所有资料扫描上传完成 → 流转至邮寄小组进行胶装</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">👤</span>
+                        客户信息
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="customer-info">
+                        <div class="info-item">
+                            <span class="info-label">客户姓名：</span>
+                            <span class="info-value">张三</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">联系电话：</span>
+                            <span class="info-value">138****8888</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">申报职称：</span>
+                            <span class="info-value">高级工程师</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">当前状态：</span>
+                            <span class="status-badge status-processing">未开始</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Upload Statistics -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">📊</span>
+                        扫描统计
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalFiles">0</div>
+                            <div class="stat-label">已上传文件</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalSize">0 MB</div>
+                            <div class="stat-label">总文件大小</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="uploadProgress">0%</div>
+                            <div class="stat-label">上传进度</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="scanStatus">待扫描</div>
+                            <div class="stat-label">扫描状态</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">📁</span>
+                        上传扫描件
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="clearAllFiles()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18l-2 13H5L3 6z"></path>
+                                <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                            清空所有文件
+                        </button>
+                        <button class="btn btn-success" onclick="completeScanning()" id="completeBtn" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            完成扫描
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">点击上传或拖拽文件到此处</div>
+                        <div class="upload-hint">支持 PDF、JPG、PNG 格式，单个文件不超过 20MB<br>支持单文件、多文件或整个文件夹上传</div>
+                        <div style="display: flex; gap: 10px; margin-top: 10px; justify-content: center;">
+                            <button class="upload-btn" type="button" onclick="document.getElementById('fileInput').click(); event.stopPropagation();">选择文件</button>
+                            <button class="upload-btn" type="button" onclick="document.getElementById('folderInput').click(); event.stopPropagation();" style="background-color: #52c41a;">选择文件夹</button>
+                        </div>
+                        <input type="file" id="fileInput" style="display: none;" multiple accept=".pdf,.jpg,.jpeg,.png">
+                        <input type="file" id="folderInput" style="display: none;" webkitdirectory directory multiple>
+                    </div>
+                    
+                    <div id="fileListContainer">
+                        <div class="empty-state" id="emptyState">
+                            <div class="empty-icon">📄</div>
+                            <div class="empty-text">暂无上传文件</div>
+                            <div class="empty-hint">请上传客户盖章签字的资料扫描件</div>
+                        </div>
+                        <div class="file-list" id="fileList" style="display: none;"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Complete Scanning Confirmation Modal -->
+    <div class="modal" id="completeScanningModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" style="display: flex; align-items: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1677ff" stroke-width="2" style="margin-right: 10px;">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    确认完成扫描
+                </div>
+                <button class="modal-close" onclick="closeModal('completeScanningModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="line-height: 1.6; color: #666; margin-bottom: 20px;">
+                    您即将完成双签扫描阶段，系统将执行以下操作：
+                </p>
+                <ul style="color: #666; line-height: 1.8; margin-left: 20px; margin-bottom: 20px;">
+                    <li>确认所有扫描件已上传完成</li>
+                    <li>标记双签扫描阶段为已完成</li>
+                    <li>将资料流转至邮寄小组</li>
+                    <li>准备进入胶装处理阶段</li>
+                </ul>
+                <div style="background-color: #f0f7ff; border: 1px solid #91d5ff; border-radius: 4px; padding: 12px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; color: #1677ff;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4M12 8h.01"></path>
+                        </svg>
+                        <span style="font-weight: 500;">当前扫描情况</span>
+                    </div>
+                    <p style="margin: 8px 0 0 24px; font-size: 14px; color: #666;" id="scanSummary">
+                        已上传 0 个文件，总大小 0 MB
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('completeScanningModal')">取消</button>
+                <button class="btn btn-success" onclick="confirmCompleteScanning()">确认完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification Modal -->
+    <div class="modal" id="scanningSuccessModal">
+        <div class="modal-content" style="text-align: center; max-width: 400px;">
+            <div class="modal-header" style="border-bottom: none; justify-content: center; padding-bottom: 10px;">
+                <div style="width: 60px; height: 60px; background-color: #f6ffed; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#52c41a" stroke-width="3">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="modal-body" style="padding-top: 0;">
+                <h3 style="color: #52c41a; margin-bottom: 15px; font-size: 18px;">扫描完成！</h3>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                    双签扫描阶段已成功完成<br>
+                    资料正在流转至邮寄小组进行胶装
+                </p>
+                <div style="background-color: #f9f9f9; border-radius: 4px; padding: 12px; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #666;">
+                        <div style="margin-bottom: 8px;">✓ 扫描件已全部上传</div>
+                        <div style="margin-bottom: 8px;">✓ 文件质量检查完成</div>
+                        <div style="margin-bottom: 8px;">✓ 资料已流转至邮寄小组</div>
+                        <div>✓ 准备进入胶装处理阶段</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center; border-top: none;">
+                <button class="btn btn-primary" onclick="proceedToBinding()" style="min-width: 120px;">
+                    进入胶装阶段
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Modal -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="previewTitle">文件预览</div>
+                <button class="modal-close" onclick="closeModal('previewModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <img id="previewImage" class="preview-image" src="" alt="预览图片">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let uploadedFiles = [];
+        let totalSize = 0;
+
+        // File input change handler
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            handleFiles(e.target.files);
+        });
+
+        // Folder input change handler
+        document.getElementById('folderInput').addEventListener('change', function(e) {
+            handleFiles(e.target.files, true);
+        });
+
+        // Drag and drop handlers
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelector('.upload-area').classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelector('.upload-area').classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            document.querySelector('.upload-area').classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        }
+
+        // Handle file upload
+        function handleFiles(files, isFolder = false) {
+            let validFiles = 0;
+            let skippedFiles = [];
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                
+                // Validate file type
+                if (!file.type.match(/^(image\/(jpeg|jpg|png)|application\/pdf)$/)) {
+                    skippedFiles.push(file.name);
+                    continue;
+                }
+                
+                // Validate file size (20MB)
+                if (file.size > 20 * 1024 * 1024) {
+                    skippedFiles.push(`${file.name} (文件过大)`);
+                    continue;
+                }
+                
+                // Add to uploaded files
+                const fileObj = {
+                    id: Date.now() + i,
+                    file: file,
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    uploadTime: new Date().toLocaleString(),
+                    path: isFolder ? file.webkitRelativePath : file.name
+                };
+                
+                uploadedFiles.push(fileObj);
+                totalSize += file.size;
+                validFiles++;
+                
+                // Create file preview
+                createFileItem(fileObj);
+            }
+            
+            // 显示上传结果
+            if (isFolder) {
+                let message = `文件夹上传完成！`;
+                if (validFiles > 0) {
+                    message += `\n成功上传 ${validFiles} 个文件`;
+                }
+                if (skippedFiles.length > 0) {
+                    message += `\n跳过 ${skippedFiles.length} 个不支持的文件`;
+                    if (skippedFiles.length <= 5) {
+                        message += `：\n${skippedFiles.join('\n')}`;
+                    } else {
+                        message += `（仅显示前5个）：\n${skippedFiles.slice(0, 5).join('\n')}`;
+                    }
+                }
+                alert(message);
+            } else if (skippedFiles.length > 0) {
+                alert(`跳过 ${skippedFiles.length} 个不支持的文件：\n${skippedFiles.join('\n')}`);
+            }
+            
+            updateStatistics();
+            updateCompleteButton();
+            
+            // Clear file inputs
+            document.getElementById('fileInput').value = '';
+            document.getElementById('folderInput').value = '';
+        }
+
+        // Create file item in list
+        function createFileItem(fileObj) {
+            const fileList = document.getElementById('fileList');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Hide empty state and show file list
+            emptyState.style.display = 'none';
+            fileList.style.display = 'block';
+            
+            const fileItem = document.createElement('div');
+            fileItem.className = 'file-item';
+            fileItem.setAttribute('data-file-id', fileObj.id);
+            
+            const fileIcon = getFileIcon(fileObj.type);
+            const fileSize = formatFileSize(fileObj.size);
+            const displayName = fileObj.path || fileObj.name;
+            
+            fileItem.innerHTML = `
+                <div class="file-icon">${fileIcon}</div>
+                <div class="file-info">
+                    <div class="file-name" title="${displayName}">${displayName}</div>
+                    <div class="file-meta">${fileSize} • ${fileObj.uploadTime}</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button class="file-preview" onclick="previewFile(${fileObj.id})">预览</button>
+                    <button class="file-delete" onclick="deleteFile(${fileObj.id})">删除</button>
+                </div>
+            `;
+            
+            fileList.appendChild(fileItem);
+        }
+
+        // Get file icon based on type
+        function getFileIcon(type) {
+            if (type.startsWith('image/')) {
+                return '🖼️';
+            } else if (type === 'application/pdf') {
+                return '📄';
+            }
+            return '📁';
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            document.getElementById('totalFiles').textContent = uploadedFiles.length;
+            document.getElementById('totalSize').textContent = formatFileSize(totalSize);
+            document.getElementById('uploadProgress').textContent = uploadedFiles.length > 0 ? '100%' : '0%';
+            document.getElementById('scanStatus').textContent = uploadedFiles.length > 0 ? '已上传' : '待扫描';
+        }
+
+        // Update complete button state
+        function updateCompleteButton() {
+            const completeBtn = document.getElementById('completeBtn');
+            completeBtn.disabled = uploadedFiles.length === 0;
+        }
+
+        // Preview file
+        function previewFile(fileId) {
+            const fileObj = uploadedFiles.find(f => f.id === fileId);
+            if (!fileObj) return;
+            
+            if (fileObj.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewTitle').textContent = fileObj.name;
+                    document.getElementById('previewImage').src = e.target.result;
+                    document.getElementById('previewModal').style.display = 'block';
+                };
+                reader.readAsDataURL(fileObj.file);
+            } else {
+                alert('PDF 文件预览功能暂未实现，请下载后查看。');
+            }
+        }
+
+        // Delete file
+        function deleteFile(fileId) {
+            if (confirm('确认删除此文件？')) {
+                const fileIndex = uploadedFiles.findIndex(f => f.id === fileId);
+                if (fileIndex > -1) {
+                    const fileObj = uploadedFiles[fileIndex];
+                    totalSize -= fileObj.size;
+                    uploadedFiles.splice(fileIndex, 1);
+                    
+                    // Remove from DOM
+                    const fileItem = document.querySelector(`[data-file-id="${fileId}"]`);
+                    if (fileItem) {
+                        fileItem.remove();
+                    }
+                    
+                    // Show empty state if no files
+                    if (uploadedFiles.length === 0) {
+                        document.getElementById('emptyState').style.display = 'block';
+                        document.getElementById('fileList').style.display = 'none';
+                    }
+                    
+                    updateStatistics();
+                    updateCompleteButton();
+                }
+            }
+        }
+
+        // Clear all files
+        function clearAllFiles() {
+            if (uploadedFiles.length === 0) {
+                alert('没有文件需要清空。');
+                return;
+            }
+            
+            if (confirm('确认清空所有已上传的文件？')) {
+                uploadedFiles = [];
+                totalSize = 0;
+                
+                // Clear file list
+                document.getElementById('fileList').innerHTML = '';
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('fileList').style.display = 'none';
+                
+                updateStatistics();
+                updateCompleteButton();
+                
+                alert('所有文件已清空。');
+            }
+        }
+
+        // Complete scanning
+        function completeScanning() {
+            if (uploadedFiles.length === 0) {
+                alert('请先上传扫描件。');
+                return;
+            }
+            
+            // 更新模态框中的扫描情况
+            document.getElementById('scanSummary').textContent = `已上传 ${uploadedFiles.length} 个文件，总大小 ${formatFileSize(totalSize)}`;
+            
+            // 显示确认模态框
+            document.getElementById('completeScanningModal').style.display = 'block';
+        }
+
+        // Confirm complete scanning
+        function confirmCompleteScanning() {
+            // 关闭确认模态框
+            closeModal('completeScanningModal');
+            
+            // 显示成功提示模态框
+            document.getElementById('scanningSuccessModal').style.display = 'block';
+        }
+
+        // 进入胶装阶段
+        function proceedToBinding() {
+            // 关闭成功提示模态框
+            closeModal('scanningSuccessModal');
+            
+            // 这里可以添加实际的页面跳转逻辑
+            // window.location.href = 'binding.html';
+            
+            // 临时提示（实际项目中应该直接跳转）
+            console.log('跳转到胶装处理页面...');
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // Prevent default drag behaviors
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    </script>
+</body>
+</html> 

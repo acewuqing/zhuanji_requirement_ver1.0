@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>邮寄盖章 - 资料管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1677ff;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            border-right: 1px solid #eee;
+            padding-top: 56px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .menu-item.active {
+            background-color: #e6f7ff;
+            color: #1677ff;
+            border-right: 3px solid #1677ff;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 76px 15px 15px;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .breadcrumb {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        /* Business explanation card */
+        .business-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .business-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .business-title::before {
+            content: '📦';
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .business-content {
+            line-height: 1.4;
+        }
+        
+        .business-item {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .business-label {
+            font-weight: 500;
+            margin-right: 8px;
+            min-width: 80px;
+        }
+        
+        /* Card styles */
+        .card {
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        /* Customer info */
+        .customer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label {
+            color: #666;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+        }
+        
+        /* Mailing options */
+        .mailing-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .mailing-option {
+            border: 2px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .mailing-option:hover {
+            border-color: #1677ff;
+            background-color: #f0f7ff;
+        }
+        
+        .mailing-option.selected {
+            border-color: #1677ff;
+            background-color: #e6f7ff;
+        }
+        
+        .mailing-option.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #1677ff;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .mailing-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .mailing-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .mailing-desc {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* Form styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1677ff;
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        /* Status tracking */
+        .status-steps {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            position: relative;
+        }
+        
+        .status-steps::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            height: 2px;
+            background-color: #e8e8e8;
+            z-index: 1;
+        }
+        
+        .status-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .step-circle.completed {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .step-circle.current {
+            background-color: #1677ff;
+            color: white;
+        }
+        
+        .step-text {
+            font-size: 11px;
+            text-align: center;
+            max-width: 70px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background-color: #1677ff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0958d9;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e8e8e8;
+        }
+        
+        .btn-success {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #389e0d;
+        }
+        
+        .btn-warning {
+            background-color: #fa8c16;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d46b08;
+        }
+        
+        .btn-danger {
+            background-color: #ff4d4f;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d9363e;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .status-processing {
+            background-color: #e6f7ff;
+            color: #1677ff;
+        }
+        
+        .status-completed {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-rejected {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 500px;
+            max-width: 700px;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </div>
+            <div class="logo-text">资料管理系统</div>
+        </div>
+        <div class="header-actions">
+            <div class="avatar">用户</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                首页
+            </div>
+            <div class="menu-item active">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                邮寄盖章
+            </div>
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                返回列表
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">邮寄盖章</h1>
+                    <div class="breadcrumb">
+                        <a href="management.html">资料制作列表</a> / <a href="index.html">客户详情</a> / 邮寄盖章
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Explanation Card -->
+            <div class="business-card">
+                <div class="business-title">邮寄盖章阶段说明</div>
+                <div class="business-content">
+                    <div class="business-item">
+                        <span class="business-label">• 业务目标：</span>
+                        <span>安排资料邮寄给客户，客户盖章后回收</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 操作流程：</span>
+                        <span>选择邮寄方式 → 填写物流信息 → 跟踪邮寄状态 → 客户盖章回收</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 注意事项：</span>
+                        <span>邮寄给客户前，需求线下对资料进行检核，确保检核无误后，方可邮寄</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 完成条件：</span>
+                        <span>客户盖章材料回收 + 对客户盖章资料检核通过 → 分配给扫描小组</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">👤</span>
+                        客户信息
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="customer-info">
+                        <div class="info-item">
+                            <span class="info-label">客户姓名：</span>
+                            <span class="info-value">张三</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">联系电话：</span>
+                            <span class="info-value">138****8888</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">申报职称：</span>
+                            <span class="info-value">高级工程师</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">当前状态：</span>
+                            <span class="status-badge status-processing">未开始</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mailing Method Selection -->
+            <div class="card" id="mailingCard">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">📮</span>
+                        选择邮寄方式
+                    </div>
+                </div>
+                <div class="card-content">
+                    <p style="margin-bottom: 15px; color: #666;">请选择资料邮寄方式：</p>
+                    <div class="mailing-options">
+                        <div class="mailing-option" onclick="selectMailingMethod(this, 'advisor')">
+                            <div class="mailing-icon">👨‍💼</div>
+                            <div class="mailing-title">课程顾问拿走</div>
+                            <div class="mailing-desc">由课程顾问直接取走资料</div>
+                        </div>
+                        <div class="mailing-option" onclick="selectMailingMethod(this, 'department')">
+                            <div class="mailing-icon">🏢</div>
+                            <div class="mailing-title">职称部邮寄</div>
+                            <div class="mailing-desc">通过职称部统一邮寄</div>
+                        </div>
+                        <div class="mailing-option" onclick="selectMailingMethod(this, 'customer')">
+                            <div class="mailing-icon">🏠</div>
+                            <div class="mailing-title">客户取走</div>
+                            <div class="mailing-desc">客户自行到场取走资料</div>
+                        </div>
+                    </div>
+                    
+                    <!-- 物流信息表单 - 选择邮寄方式后显示 -->
+                    <div id="logisticsForm" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                        <h4 style="margin-bottom: 15px; color: #333; font-size: 16px;">填写物流信息</h4>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">物流单号</label>
+                                <input type="text" class="form-control" id="trackingInput" placeholder="请输入物流单号">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">预计送达时间</label>
+                                <input type="date" class="form-control" id="deliveryDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">收件人信息</label>
+                            <input type="text" class="form-control" id="recipientInfo" placeholder="请输入收件人姓名和联系方式">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">收件地址</label>
+                            <textarea class="form-control" id="deliveryAddress" placeholder="请输入详细收件地址"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">备注信息</label>
+                            <textarea class="form-control" id="remarkInput" placeholder="请输入备注信息（可选）" rows="3"></textarea>
+                        </div>
+                        <button class="btn btn-primary" onclick="submitLogistics()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            提交物流信息
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mailing Status Tracking -->
+            <div class="card" id="statusCard" style="display: none;">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">📊</span>
+                        邮寄状态跟踪
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="editLogistics()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            编辑物流信息
+                        </button>
+                        <button class="btn btn-success" onclick="completeStamping()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            客户盖章完成
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="status-steps">
+                        <div class="status-step">
+                            <div class="step-circle completed">1</div>
+                            <div class="step-text">邮寄发出</div>
+                        </div>
+                        <div class="status-step">
+                            <div class="step-circle current">2</div>
+                            <div class="step-text">客户盖章</div>
+                        </div>
+                        <div class="status-step">
+                            <div class="step-circle">3</div>
+                            <div class="step-text">材料回收</div>
+                        </div>
+                        <div class="status-step">
+                            <div class="step-circle">4</div>
+                            <div class="step-text">分配扫描</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <span class="info-label">邮寄方式：</span>
+                            <span class="info-value" id="selectedMethod">-</span>
+                        </div>
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <span class="info-label">物流单号：</span>
+                            <span class="info-value" id="trackingNumber">-</span>
+                        </div>
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <span class="info-label">预计送达时间：</span>
+                            <span class="info-value" id="deliveryDateInfo">-</span>
+                        </div>
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <span class="info-label">收件人信息：</span>
+                            <span class="info-value" id="recipientInfoDisplay">-</span>
+                        </div>
+                        <div class="info-item" style="margin-bottom: 10px;">
+                            <span class="info-label">收件地址：</span>
+                            <span class="info-value" id="deliveryAddressDisplay">-</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">备注信息：</span>
+                            <span class="info-value" id="remarkInfo">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Complete Stamping Confirmation Modal -->
+    <div class="modal" id="completeStampingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" style="display: flex; align-items: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fa8c16" stroke-width="2" style="margin-right: 10px;">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    确认完成盖章收回
+                </div>
+                <button class="modal-close" onclick="closeModal('completeStampingModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="line-height: 1.6; color: #666; margin-bottom: 20px;">
+                    您即将确认客户盖章完成并材料已回收，系统将执行以下操作：
+                </p>
+                <ul style="color: #666; line-height: 1.8; margin-left: 20px; margin-bottom: 20px;">
+                    <li>标记客户盖章为已完成</li>
+                    <li>确认盖章材料已回收</li>
+                    <li>准备进入双签扫描阶段</li>
+                </ul>
+                <div style="background-color: #fff7e6; border: 1px solid #ffd591; border-radius: 4px; padding: 12px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; color: #fa8c16;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span style="font-weight: 500;">重要提醒</span>
+                    </div>
+                    <p style="margin: 8px 0 0 24px; font-size: 14px; color: #666;">
+                        请确保客户已完成所有材料的盖章，并且所有盖章材料已安全回收
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('completeStampingModal')">取消</button>
+                <button class="btn btn-success" onclick="confirmCompleteStamping()">确认完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification Modal -->
+    <div class="modal" id="mailingSuccessModal">
+        <div class="modal-content" style="text-align: center; max-width: 400px;">
+            <div class="modal-header" style="border-bottom: none; justify-content: center; padding-bottom: 10px;">
+                <div style="width: 60px; height: 60px; background-color: #f6ffed; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#52c41a" stroke-width="3">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="modal-body" style="padding-top: 0;">
+                <h3 style="color: #52c41a; margin-bottom: 15px; font-size: 18px;">邮寄盖章完成！</h3>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                    邮寄盖章阶段已成功完成<br>
+                    系统正在准备进入双签扫描阶段
+                </p>
+                <div style="background-color: #f9f9f9; border-radius: 4px; padding: 12px; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #666;">
+                        <div style="margin-bottom: 8px;">✓ 资料已成功邮寄</div>
+                        <div style="margin-bottom: 8px;">✓ 客户盖章已完成</div>
+                        <div style="margin-bottom: 8px;">✓ 盖章材料已回收</div>
+                        <div>✓ 准备进入双签扫描阶段</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center; border-top: none;">
+                <button class="btn btn-primary" onclick="proceedToScanning()" style="min-width: 120px;">
+                    进入扫描阶段
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedMailingMethod = '';
+        
+        // Select mailing method
+        function selectMailingMethod(element, method) {
+            // Remove previous selection
+            document.querySelectorAll('.mailing-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to current element
+            element.classList.add('selected');
+            selectedMailingMethod = method;
+            
+            // Show logistics form
+            document.getElementById('logisticsForm').style.display = 'block';
+        }
+        
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Submit logistics information
+        function submitLogistics() {
+            const trackingNumber = document.getElementById('trackingInput').value;
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            const recipientInfo = document.getElementById('recipientInfo').value;
+            const deliveryAddress = document.getElementById('deliveryAddress').value;
+            const remark = document.getElementById('remarkInput').value;
+            
+            if (!trackingNumber || !recipientInfo || !deliveryAddress) {
+                alert('请填写必要的物流信息');
+                return;
+            }
+            
+            if (confirm('确认提交物流信息？')) {
+                // Update status display
+                const methodNames = {
+                    'advisor': '课程顾问拿走',
+                    'department': '职称部邮寄',
+                    'customer': '客户取走'
+                };
+                
+                document.getElementById('selectedMethod').textContent = methodNames[selectedMailingMethod];
+                document.getElementById('trackingNumber').textContent = trackingNumber;
+                document.getElementById('deliveryDateInfo').textContent = deliveryDate || '未设置';
+                document.getElementById('recipientInfoDisplay').textContent = recipientInfo;
+                document.getElementById('deliveryAddressDisplay').textContent = deliveryAddress;
+                document.getElementById('remarkInfo').textContent = remark || '无';
+                
+                // Hide mailing card and show status tracking card
+                document.getElementById('mailingCard').style.display = 'none';
+                document.getElementById('statusCard').style.display = 'block';
+                
+                alert('物流信息已提交！资料已发出，请跟踪邮寄状态。');
+            }
+        }
+        
+        // Edit logistics information
+        function editLogistics() {
+            // Show mailing card and hide status tracking card
+            document.getElementById('mailingCard').style.display = 'block';
+            document.getElementById('statusCard').style.display = 'none';
+            
+            // Show logistics form
+            document.getElementById('logisticsForm').style.display = 'block';
+            
+            // Keep the selected mailing method
+            const methodMap = {
+                '课程顾问拿走': 'advisor',
+                '职称部邮寄': 'department',
+                '客户取走': 'customer'
+            };
+            
+            const currentMethod = document.getElementById('selectedMethod').textContent;
+            const methodKey = methodMap[currentMethod];
+            
+            if (methodKey) {
+                document.querySelectorAll('.mailing-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                
+                // Re-select the current method
+                const methodSelectors = {
+                    'advisor': 0,
+                    'department': 1,
+                    'customer': 2
+                };
+                
+                const options = document.querySelectorAll('.mailing-option');
+                if (options[methodSelectors[methodKey]]) {
+                    options[methodSelectors[methodKey]].classList.add('selected');
+                }
+                
+                selectedMailingMethod = methodKey;
+            }
+            
+            // Pre-fill form with current values
+            document.getElementById('trackingInput').value = document.getElementById('trackingNumber').textContent !== '-' ? document.getElementById('trackingNumber').textContent : '';
+            
+            // Pre-fill delivery date
+            const currentDeliveryDate = document.getElementById('deliveryDateInfo').textContent;
+            if (currentDeliveryDate !== '-' && currentDeliveryDate !== '未设置') {
+                document.getElementById('deliveryDate').value = currentDeliveryDate;
+            }
+            
+            // Pre-fill recipient info
+            const currentRecipient = document.getElementById('recipientInfoDisplay').textContent;
+            document.getElementById('recipientInfo').value = currentRecipient !== '-' ? currentRecipient : '';
+            
+            // Pre-fill delivery address
+            const currentAddress = document.getElementById('deliveryAddressDisplay').textContent;
+            document.getElementById('deliveryAddress').value = currentAddress !== '-' ? currentAddress : '';
+            
+            // Pre-fill remark
+            const currentRemark = document.getElementById('remarkInfo').textContent;
+            document.getElementById('remarkInput').value = currentRemark !== '无' && currentRemark !== '-' ? currentRemark : '';
+        }
+        
+        // Complete stamping
+        function completeStamping() {
+            // 显示确认模态框
+            document.getElementById('completeStampingModal').style.display = 'block';
+        }
+        
+        // Confirm complete stamping
+        function confirmCompleteStamping() {
+            // 关闭确认模态框
+            closeModal('completeStampingModal');
+            
+            // 直接显示成功提示模态框
+            document.getElementById('mailingSuccessModal').style.display = 'block';
+        }
+        
+        // 进入扫描阶段
+        function proceedToScanning() {
+            // 关闭成功提示模态框
+            closeModal('mailingSuccessModal');
+            
+            // 这里可以添加实际的页面跳转逻辑
+            // window.location.href = 'scanning.html';
+            
+            // 临时提示（实际项目中应该直接跳转）
+            console.log('跳转到双签扫描页面...');
+        }
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

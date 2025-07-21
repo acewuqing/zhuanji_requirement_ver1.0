@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核稿修改 - 资料管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1677ff;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 200px;
+            background-color: #fff;
+            border-right: 1px solid #eee;
+            padding-top: 56px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .menu-item.active {
+            background-color: #e6f7ff;
+            color: #1677ff;
+            border-right: 3px solid #1677ff;
+        }
+        
+        .menu-icon {
+            margin-right: 10px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.8;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 200px;
+            padding: 76px 15px 15px;
+        }
+        
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .page-title {
+            font-size: 20px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .breadcrumb {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        /* Business explanation card */
+        .business-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .business-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+        
+        .business-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .business-title::before {
+            content: '📋';
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .business-content {
+            line-height: 1.4;
+        }
+        
+        .business-item {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .business-label {
+            font-weight: 500;
+            margin-right: 8px;
+            min-width: 80px;
+        }
+        
+        /* Card styles */
+        .card {
+            background-color: #fff;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-title-icon {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+        
+        .card-content {
+            padding: 15px;
+        }
+        
+        /* Customer info */
+        .customer-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-label {
+            color: #666;
+            margin-right: 10px;
+            min-width: 80px;
+        }
+        
+        .info-value {
+            font-weight: 500;
+        }
+        
+        /* File selection */
+        .file-selection {
+            margin-bottom: 15px;
+        }
+        
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        
+        .file-item {
+            border: 2px dashed #d9d9d9;
+            border-radius: 4px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .file-item:hover {
+            border-color: #1677ff;
+            background-color: #f0f7ff;
+        }
+        
+        .file-item.selected {
+            border-color: #1677ff;
+            background-color: #e6f7ff;
+        }
+        
+        .file-item.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            color: #1677ff;
+            font-weight: bold;
+        }
+        
+        .file-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .file-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .file-size {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* Status monitoring */
+        .status-timeline {
+            margin: 15px 0;
+        }
+        
+        .timeline-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            position: relative;
+        }
+        
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 25px;
+            width: 2px;
+            height: 30px;
+            background-color: #e8e8e8;
+        }
+        
+        .timeline-item:last-child::before {
+            display: none;
+        }
+        
+        .timeline-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            position: relative;
+            z-index: 1;
+            font-size: 11px;
+        }
+        
+        .timeline-dot.completed {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .timeline-dot.current {
+            background-color: #1677ff;
+            color: white;
+        }
+        
+        .timeline-content {
+            flex: 1;
+        }
+        
+        .timeline-title {
+            font-weight: 500;
+            margin-bottom: 3px;
+            font-size: 14px;
+        }
+        
+        .timeline-desc {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .timeline-time {
+            font-size: 11px;
+            color: #999;
+            margin-left: auto;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background-color: #1677ff;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0958d9;
+        }
+        
+        .btn-secondary {
+            background-color: #f5f5f5;
+            color: #666;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e8e8e8;
+        }
+        
+        .btn-success {
+            background-color: #52c41a;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #389e0d;
+        }
+        
+        .btn-warning {
+            background-color: #fa8c16;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #d46b08;
+        }
+        
+        /* Upload area */
+        .upload-area {
+            border: 2px dashed #d9d9d9;
+            border-radius: 4px;
+            padding: 25px 15px;
+            text-align: center;
+            margin-top: 12px;
+            transition: all 0.3s;
+        }
+        
+        .upload-icon {
+            font-size: 36px;
+            color: #d9d9d9;
+            margin-bottom: 10px;
+        }
+        
+        .upload-text {
+            color: #666;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .upload-hint {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            min-width: 400px;
+            max-width: 600px;
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1677ff;
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .status-processing {
+            background-color: #e6f7ff;
+            color: #1677ff;
+        }
+        
+        .status-completed {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-rejected {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        /* File results styles */
+        .file-results-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .file-result-card {
+            border: 1px solid #e8e8e8;
+            border-radius: 6px;
+            padding: 15px;
+            background-color: #fff;
+            transition: all 0.3s;
+        }
+        
+        .file-result-card.approved {
+            border-left: 4px solid #52c41a;
+            background-color: #f6ffed;
+        }
+        
+        .file-result-card.needs-modification {
+            border-left: 4px solid #fa8c16;
+            background-color: #fff7e6;
+        }
+        
+        .file-result-card.pending {
+            border-left: 4px solid #1677ff;
+            background-color: #f0f7ff;
+        }
+        
+        .file-result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .file-result-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+        
+        .file-result-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        
+        .file-result-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .file-result-meta {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .file-result-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        .status-approved {
+            background-color: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+        
+        .status-modification {
+            background-color: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+        
+        .status-pending {
+            background-color: #e6f7ff;
+            color: #1677ff;
+            border: 1px solid #91d5ff;
+        }
+        
+        .file-result-feedback {
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 4px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .feedback-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .feedback-content {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+        
+        .approved-feedback {
+            color: #52c41a;
+            font-style: italic;
+        }
+        
+        .feedback-time {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        .file-result-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        /* Proofreading summary */
+        .proofreading-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        
+        .summary-item {
+            text-align: center;
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .summary-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .approved-count {
+            color: #52c41a;
+        }
+        
+        .modification-count {
+            color: #fa8c16;
+        }
+        
+        .page-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+            </div>
+            <div class="logo-text">资料管理系统</div>
+        </div>
+        <div class="header-actions">
+            <div class="avatar">用户</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                首页
+            </div>
+            <div class="menu-item active">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                </svg>
+                核稿修改
+            </div>
+            <div class="menu-item">
+                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                返回列表
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">核稿修改</h1>
+                    <div class="breadcrumb">
+                        <a href="management.html">资料制作列表</a> / <a href="index.html">客户详情</a> / 核稿修改
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Explanation Card -->
+            <div class="business-card">
+                <div class="business-title">核稿修改阶段说明</div>
+                <div class="business-content">
+                    <div class="business-item">
+                        <span class="business-label">• 业务目标：</span>
+                        <span>将完成的评审表、述职报告发送给客户进行核稿确认</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 操作流程：</span>
+                        <span>选择文件 → 发送客户 → 监控核稿结果 → 处理修改需求 → 上传检核证明</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 注意事项：</span>
+                        <span>如客户长时间未核稿，在客户同意的情况下，可手动填写核稿结果推进流程</span>
+                    </div>
+                    <div class="business-item">
+                        <span class="business-label">• 完成条件：</span>
+                        <span>客户核稿无误 + 上传纸质资料检核证明 → 进入邮寄盖章阶段</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Information -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">👤</span>
+                        客户信息
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="customer-info">
+                        <div class="info-item">
+                            <span class="info-label">客户姓名：</span>
+                            <span class="info-value">张三</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">联系电话：</span>
+                            <span class="info-value">138****8888</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">申报职称：</span>
+                            <span class="info-value">高级工程师</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">当前状态：</span>
+                            <span class="status-badge status-processing">未开始</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Selection -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">📄</span>
+                        选择发送文件
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <!-- 暂时注释掉编辑资料功能
+                        <button class="btn btn-warning" onclick="openModifyFilesModal()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            编辑资料
+                        </button>
+                        -->
+                        <button class="btn btn-primary" onclick="sendFiles()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                            </svg>
+                            发送给客户
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="file-selection">
+                        <p style="margin-bottom: 15px; color: #666;">请选择需要发送给客户核稿的文件：</p>
+                        <div class="file-list">
+                            <div class="file-item" onclick="toggleFileSelection(this)">
+                                <div class="file-icon">📋</div>
+                                <div class="file-name">评审表.pdf</div>
+                                <div class="file-size">2.3 MB</div>
+                            </div>
+                            <div class="file-item" onclick="toggleFileSelection(this)">
+                                <div class="file-icon">📝</div>
+                                <div class="file-name">述职报告.docx</div>
+                                <div class="file-size">1.8 MB</div>
+                            </div>
+                          
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Proofreading Results -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-title-icon">📊</span>
+                        客户核稿结果
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="refreshResults()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                            </svg>
+                            刷新结果
+                        </button>
+                        <button class="btn btn-success" onclick="completeProofreading()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20,6 9,17 4,12"></polyline>
+                            </svg>
+                            完成核稿修改
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="file-results-container">
+                        <!-- 评审表核稿结果 -->
+                        <div class="file-result-card needs-modification">
+                            <div class="file-result-header">
+                                <div class="file-result-info">
+                                    <div class="file-result-icon">📋</div>
+                                    <div class="file-result-details">
+                                        <div class="file-result-name">职称评审表.pdf</div>
+                                        <div class="file-result-meta">文件大小: 2.3 MB • 发送时间: 2024-01-15 10:30</div>
+                                    </div>
+                                </div>
+                                <div class="file-result-status status-modification">
+                                    <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg> -->
+                                    需要修改
+                                </div>
+                            </div>
+                            <div class="file-result-feedback">
+                                <div class="feedback-title">客户反馈意见：</div>
+                                <div class="feedback-content">
+                                    第3页工作经历描述需要调整，请将"负责项目管理"改为"担任项目负责人"；第5页的工作业绩中缺少具体的项目金额数据，需要补充完善。
+                                </div>
+                                <div class="feedback-time">反馈时间：2024-01-15 16:45</div>
+                            </div>
+                            <div class="file-result-actions">
+                                <button class="btn btn-warning" onclick="enterFileModification('evaluation-form')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                    </svg>
+                                    进入修改界面
+                                </button>
+                                <button class="btn btn-secondary" onclick="viewOriginalFile('evaluation-form')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    查看原文件
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 述职报告核稿结果 -->
+                        <div class="file-result-card approved">
+                            <div class="file-result-header">
+                                <div class="file-result-info">
+                                    <div class="file-result-icon">📝</div>
+                                    <div class="file-result-details">
+                                        <div class="file-result-name">述职报告.docx</div>
+                                        <div class="file-result-meta">文件大小: 1.8 MB • 发送时间: 2024-01-15 10:30</div>
+                                    </div>
+                                </div>
+                                <div class="file-result-status status-approved">
+                                    <!-- <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="20,6 9,17 4,12"></polyline>
+                                    </svg> -->
+                                    确认无误
+                                </div>
+                            </div>
+                            <div class="file-result-feedback">
+                                <div class="feedback-content approved-feedback">
+                                    客户确认此文件内容无误，可以进入邮寄盖章阶段。
+                                </div>
+                                <div class="feedback-time">确认时间：2024-01-15 16:20</div>
+                            </div>
+                            <div class="file-result-actions">
+                                <button class="btn btn-secondary" onclick="viewOriginalFile('report')">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                    查看文件
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 等待核稿的文件（如果有的话） -->
+                        <div class="file-result-card pending" style="display: none;" id="pendingFiles">
+                            <div class="file-result-header">
+                                <div class="file-result-info">
+                                    <div class="file-result-icon">⏳</div>
+                                    <div class="file-result-details">
+                                        <div class="file-result-name">其他待核稿文件</div>
+                                        <div class="file-result-meta">等待客户核稿中...</div>
+                                    </div>
+                                </div>
+                                <div class="file-result-status status-pending">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12,6 12,12 16,14"></polyline>
+                                    </svg>
+                                    待核稿
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Manual Proof Modal -->
+    <div class="modal" id="manualProofModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">手动填写核稿结果</div>
+                <button class="modal-close" onclick="closeModal('manualProofModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">核稿结果</label>
+                    <select class="form-control" id="proofResult">
+                        <option value="">请选择核稿结果</option>
+                        <option value="approved">确认无误</option>
+                        <option value="needModify">需要修改</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注说明</label>
+                    <textarea class="form-control" id="proofRemark" placeholder="请输入备注说明..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('manualProofModal')">取消</button>
+                <button class="btn btn-primary" onclick="submitManualProof()">确认提交</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complete Proofreading Confirmation Modal -->
+    <div class="modal" id="completeProofreadingModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" style="display: flex; align-items: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1677ff" stroke-width="2" style="margin-right: 10px;">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    确认完成核稿修改
+                </div>
+                <button class="modal-close" onclick="closeModal('completeProofreadingModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="line-height: 1.6; color: #666; margin-bottom: 20px;">
+                    您即将完成核稿修改阶段，系统将执行以下操作：
+                </p>
+                <ul style="color: #666; line-height: 1.8; margin-left: 20px; margin-bottom: 20px;">
+                    <li>标记核稿修改阶段为已完成</li>
+                    <li>更新客户状态为"待邮寄盖章"</li>
+                    <li>自动进入邮寄盖章阶段</li>
+                </ul>
+                <div style="background-color: #f0f7ff; border: 1px solid #91d5ff; border-radius: 4px; padding: 12px; margin-bottom: 15px;">
+                    <div style="display: flex; align-items: center; color: #1677ff;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M12 16v-4M12 8h.01"></path>
+                        </svg>
+                        <span style="font-weight: 500;">提示</span>
+                    </div>
+                    <p style="margin: 8px 0 0 24px; font-size: 14px; color: #666;">
+                        完成确认后无法撤销，请确保核稿工作已全部完成
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('completeProofreadingModal')">取消</button>
+                <button class="btn btn-success" onclick="confirmCompleteProofreading()">确认完成</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Notification Modal -->
+    <div class="modal" id="successNotificationModal">
+        <div class="modal-content" style="text-align: center; max-width: 400px;">
+            <div class="modal-header" style="border-bottom: none; justify-content: center; padding-bottom: 10px;">
+                <div style="width: 60px; height: 60px; background-color: #f6ffed; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;">
+                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#52c41a" stroke-width="3">
+                        <polyline points="20,6 9,17 4,12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="modal-body" style="padding-top: 0;">
+                <h3 style="color: #52c41a; margin-bottom: 15px; font-size: 18px;">核稿修改完成！</h3>
+                <p style="color: #666; line-height: 1.6; margin-bottom: 20px;">
+                    核稿修改阶段已成功完成<br>
+                    系统正在准备进入邮寄盖章阶段
+                </p>
+                <div style="background-color: #f9f9f9; border-radius: 4px; padding: 12px; margin-bottom: 20px;">
+                    <div style="font-size: 14px; color: #666;">
+                        <div style="margin-bottom: 8px;">✓ 客户核稿结果已确认</div>
+                        <div style="margin-bottom: 8px;">✓ 修改工作已完成</div>
+                        <div>✓ 准备进入邮寄盖章阶段</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center; border-top: none;">
+                <button class="btn btn-primary" onclick="proceedToMailing()" style="min-width: 120px;">
+                    进入邮寄阶段
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modify Files Modal -->
+    <!-- 暂时注释掉修改文件模态框
+    <div class="modal" id="modifyFilesModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title" style="display: flex; align-items: center;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fa8c16" stroke-width="2" style="margin-right: 10px;">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    编辑资料
+                </div>
+                <button class="modal-close" onclick="closeModal('modifyFilesModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="background-color: #fff7e6; border: 1px solid #ffd591; border-radius: 6px; padding: 16px; margin-bottom: 20px;">
+                    <div style="display: flex; align-items: flex-start; gap: 12px;">
+                        <div style="color: #fa8c16; font-size: 24px; line-height: 1;">⚠️</div>
+                        <div style="flex: 1;">
+                            <div style="font-weight: 500; color: #fa8c16; margin-bottom: 10px; font-size: 16px;">
+                                特殊情况修改提醒
+                            </div>
+                            <div style="color: #666; line-height: 1.6; margin-bottom: 12px;">
+                                <p style="margin-bottom: 8px;">• <strong>资料制作审核流程已完成</strong>，正常情况下不应再修改文件</p>
+                                <p style="margin-bottom: 8px;">• 此修改属于<strong>特殊情况处理</strong>，与之前制作流程不相关</p>
+                                <p style="margin: 0;">• 请确认修改的必要性和合理性</p>
+                            </div>
+                            <div style="background-color: rgba(250, 140, 22, 0.1); border-radius: 4px; padding: 10px; font-size: 14px;">
+                                <strong>注意：</strong>特殊修改将会记录在系统日志中，请谨慎操作
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="background-color: #f8f9fa; border-radius: 4px; padding: 12px; margin-top: 15px;">
+                    <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                        <input type="checkbox" id="modifyConfirmation" style="margin-right: 8px; margin-top: 2px;">
+                        <span style="font-size: 14px; color: #666; line-height: 1.5;">
+                            我确认理解此次修改的特殊性质，已评估修改的必要性，并愿意承担相应责任。修改后将重新进行相关审核流程。
+                        </span>
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modifyFilesModal')">取消</button>
+                <button class="btn btn-warning" onclick="confirmModifyFiles()" id="confirmModifyBtn" disabled>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    确认修改
+                </button>
+            </div>
+        </div>
+    </div>
+    -->
+
+    <script>
+        // Toggle file selection
+        function toggleFileSelection(element) {
+            element.classList.toggle('selected');
+        }
+
+        // Send files to customer
+        function sendFiles() {
+            const selectedFiles = document.querySelectorAll('.file-item.selected');
+            if (selectedFiles.length === 0) {
+                alert('请至少选择一个文件');
+                return;
+            }
+            
+            if (confirm('确认发送选中的文件给客户进行核稿？')) {
+                alert('文件发送成功！客户将收到核稿通知。');
+                // 这里可以添加实际的发送逻辑
+            }
+        }
+
+        // Open manual proof modal
+        function openManualProofModal() {
+            document.getElementById('manualProofModal').style.display = 'block';
+        }
+
+        // Close modal
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Submit manual proof
+        function submitManualProof() {
+            const result = document.getElementById('proofResult').value;
+            const remark = document.getElementById('proofRemark').value;
+            
+            if (!result) {
+                alert('请选择核稿结果');
+                return;
+            }
+            
+            if (confirm('确认提交核稿结果？')) {
+                alert('核稿结果已提交！');
+                closeModal('manualProofModal');
+                // 这里可以添加实际的提交逻辑
+            }
+        }
+
+        // Redirect to modify
+        function redirectToModify() {
+            if (confirm('确认跳转到修改界面？')) {
+                // 这里应该跳转到实际的修改页面
+                alert('即将跳转到修改界面...');
+            }
+        }
+
+        // 完成核稿修改
+        function completeProofreading() {
+            // 显示确认模态框
+            document.getElementById('completeProofreadingModal').style.display = 'block';
+        }
+
+        // 确认完成核稿修改
+        function confirmCompleteProofreading() {
+            // 关闭确认模态框
+            closeModal('completeProofreadingModal');
+            
+            // 显示成功提示模态框
+            document.getElementById('successNotificationModal').style.display = 'block';
+        }
+
+        // 进入邮寄阶段
+        function proceedToMailing() {
+            // 关闭成功提示模态框
+            closeModal('successNotificationModal');
+            
+            // 这里可以添加实际的页面跳转逻辑
+            // window.location.href = 'mailing.html';
+            
+            // 临时提示（实际项目中应该直接跳转）
+            console.log('跳转到邮寄盖章页面...');
+        }
+
+        // File upload handling - 删除这个函数，因为不再需要上传文件
+        // document.getElementById('fileInput').addEventListener('change', function(e) {
+        //     const files = e.target.files;
+        //     if (files.length > 0) {
+        //         let fileNames = [];
+        //         for (let i = 0; i < files.length; i++) {
+        //             fileNames.push(files[i].name);
+        //         }
+        //         alert('已选择文件：' + fileNames.join(', '));
+        //     }
+        // });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // File results management
+        function refreshResults() {
+            // 模拟刷新核稿结果
+            if (confirm('确认刷新客户核稿结果？这将获取最新的核稿状态。')) {
+                // 这里应该调用API获取最新的核稿结果
+                showLoadingIndicator();
+                
+                setTimeout(() => {
+                    hideLoadingIndicator();
+                    alert('核稿结果已刷新！');
+                    updateBatchModifyButton();
+                }, 1500);
+            }
+        }
+        
+        // 进入文件修改界面
+        function enterFileModification(fileType) {
+            const fileNames = {
+                'evaluation-form': '职称评审表',
+                'report': '述职报告'
+            };
+            
+            const fileName = fileNames[fileType] || fileType;
+            
+            if (confirm(`确认进入 "${fileName}" 的修改界面？\n\n将跳转到专门的文件修改页面，您可以根据客户反馈进行相应调整。`)) {
+                // 这里应该跳转到实际的文件修改界面
+                // 可以传递文件ID和客户反馈内容作为参数
+                const modificationUrl = `file-modification.html?file=${fileType}&feedback=true`;
+                
+                // 模拟跳转
+                alert(`即将跳转到 "${fileName}" 修改界面...\n\n跳转URL: ${modificationUrl}`);
+                
+                // 实际项目中应该使用：
+                // window.location.href = modificationUrl;
+            }
+        }
+        
+        // 查看原文件
+        function viewOriginalFile(fileType) {
+            const fileNames = {
+                'evaluation-form': '职称评审表.pdf',
+                'report': '述职报告.docx'
+            };
+            
+            const fileName = fileNames[fileType] || fileType;
+            
+            // 模拟文件查看
+            alert(`正在打开文件：${fileName}\n\n这里应该调用文件预览或下载功能。`);
+            
+            // 实际项目中可以：
+            // 1. 打开文件预览模态框
+            // 2. 下载文件
+            // 3. 在新窗口中打开文件
+        }
+        
+        // 显示加载指示器
+        function showLoadingIndicator() {
+            // 可以添加加载动画
+            const refreshBtn = document.querySelector('[onclick="refreshResults()"]');
+            if (refreshBtn) {
+                refreshBtn.disabled = true;
+                refreshBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"></path></svg> 刷新中...';
+                refreshBtn.style.opacity = '0.6';
+            }
+        }
+        
+        // 隐藏加载指示器
+        function hideLoadingIndicator() {
+            const refreshBtn = document.querySelector('[onclick="refreshResults()"]');
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg> 刷新结果';
+                refreshBtn.style.opacity = '1';
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateBatchModifyButton();
+            
+            // 暂时注释掉修改文件表单变化监听
+            // const modifyConfirmation = document.getElementById('modifyConfirmation');
+            // modifyConfirmation.addEventListener('change', updateModifyButton);
+        });
+
+        /* 暂时注释掉编辑资料相关函数
+        // 打开修改资料文件模态框
+        function openModifyFilesModal() {
+            // 重置表单
+            document.getElementById('modifyConfirmation').checked = false;
+            
+            // 禁用确认按钮
+            document.getElementById('confirmModifyBtn').disabled = true;
+            
+            // 显示模态框
+            document.getElementById('modifyFilesModal').style.display = 'block';
+        }
+
+        // 更新确认修改按钮状态
+        function updateModifyButton() {
+            const confirmation = document.getElementById('modifyConfirmation').checked;
+            document.getElementById('confirmModifyBtn').disabled = !confirmation;
+        }
+
+        // 确认修改文件
+        function confirmModifyFiles() {
+            if (!document.getElementById('modifyConfirmation').checked) {
+                alert('请确认责任声明');
+                return;
+            }
+            
+            // 确认对话框
+            const confirmMessage = `确认执行特殊情况修改？\n\n` +
+                                 `注意：此操作将记录在系统日志中，修改后需重新审核。`;
+            
+            if (confirm(confirmMessage)) {
+                // 执行修改操作
+                executeFileModification();
+            }
+        }
+
+        // 执行文件修改
+        function executeFileModification() {
+            // 显示加载状态
+            const confirmBtn = document.getElementById('confirmModifyBtn');
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.disabled = true;
+            confirmBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"></path></svg> 处理中...';
+            
+            // 模拟处理过程
+            setTimeout(() => {
+                // 恢复按钮状态
+                confirmBtn.disabled = false;
+                confirmBtn.innerHTML = originalText;
+                
+                // 关闭模态框
+                closeModal('modifyFilesModal');
+                
+                // 显示成功提示
+                alert(`特殊修改申请已提交！\n\n` +
+                      `系统已记录此次特殊修改操作，相关人员将收到通知。\n` +
+                      `修改完成后将重新进入审核流程。`);
+                
+                // 这里可以添加实际的业务逻辑
+                // 例如：跳转到文件修改界面、发送通知等
+                redirectToFileModificationInterface();
+                
+            }, 2000);
+        }
+
+        // 重定向到文件修改界面（预留接口）
+        function redirectToFileModificationInterface() {
+            // 构建修改界面URL参数
+            const params = new URLSearchParams({
+                type: 'special-modification'
+            });
+            
+            // 实际项目中应该跳转到修改界面
+            const modificationUrl = `file-modification.html?${params.toString()}`;
+            console.log('应该跳转到:', modificationUrl);
+            
+            // window.location.href = modificationUrl;
+        }
+        */
+    </script>
+</body>
+</html> 

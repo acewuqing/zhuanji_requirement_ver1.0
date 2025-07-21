@@ -1,0 +1,1063 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>暂停率详情分析 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #fa8c16;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #fa8c16;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: #d46b08;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding-top: 56px;
+            min-height: 100vh;
+        }
+        
+        .content-header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb a {
+            color: #fa8c16;
+            text-decoration: none;
+        }
+        
+        /* Summary card */
+        .summary-card {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #fa8c16;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        /* Tab navigation */
+        .tab-nav {
+            background: white;
+            margin: 0 20px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tab-nav-list {
+            display: flex;
+            list-style: none;
+        }
+        
+        .tab-nav-item {
+            flex: 1;
+        }
+        
+        .tab-nav-link {
+            display: block;
+            padding: 16px 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-right: 1px solid #f0f0f0;
+        }
+        
+        .tab-nav-item:last-child .tab-nav-link {
+            border-right: none;
+        }
+        
+        .tab-nav-link:hover {
+            color: #fa8c16;
+            background: #f8f9fa;
+        }
+        
+        .tab-nav-link.active {
+            color: #fa8c16;
+            border-bottom-color: #fa8c16;
+            background: white;
+        }
+        
+        /* Tab content */
+        .tab-content {
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            border-top: none;
+        }
+        
+        .tab-pane {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* Chart and table layout */
+        .analysis-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            border-color: #fa8c16;
+            color: #fa8c16;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fff7e6 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #fa8c16, #d46b08);
+            border-radius: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Table styles */
+        .table-container {
+            background: linear-gradient(135deg, #ffffff 0%, #fff7e6 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(250, 140, 22, 0.1);
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            position: relative;
+        }
+        
+        .table-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #fa8c16, #d46b08);
+            border-radius: 2px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 16px 12px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            background: white;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .data-table tr:hover td {
+            background: #fff7e6;
+            transform: scale(1.01);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tab-nav-list {
+                flex-wrap: wrap;
+            }
+            
+            .tab-nav-item {
+                flex: 0 0 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">⏸️</div>
+            <div class="logo-text">暂停率详情分析</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='data-statistics.html'">← 返回统计</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Content Header -->
+        <div class="content-header">
+            <div class="breadcrumb">
+                <a href="data-statistics.html">数据统计</a> > <a href="production-statistics.html">产品制作统计</a> > 暂停率详情
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-metrics">
+                <div class="metric-item">
+                    <div class="metric-value">3.2%</div>
+                    <div class="metric-label">总暂停率</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">136</div>
+                    <div class="metric-label">暂停订单数量</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">4,250</div>
+                    <div class="metric-label">订单总数</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">4,114</div>
+                    <div class="metric-label">正常进行数量</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <ul class="tab-nav-list">
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link active" onclick="switchTab(event, 'product-type')">📋 产品目录</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'order-name')">📄 产品内容</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'campus')">🏫 校区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'region')">🌍 地区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'major')">🎓 专业</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- 产品目录维度 -->
+            <div id="product-type" class="tab-pane active">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品目录暂停率分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('product-type')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('product-type')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品目录暂停率对比</div>
+                            <div class="chart-container">
+                                <canvas id="productTypeChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">产品目录暂停分布</div>
+                            <div class="chart-container">
+                                <canvas id="productTypePieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 暂停情况统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('product-type')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('product-type')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="productTypeTable">
+                            <thead>
+                                <tr>
+                                    <th>产品目录</th>
+                                    <th>订单总数</th>
+                                    <th>暂停数量</th>
+                                    <th>正常进行</th>
+                                    <th>暂停率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTypeTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品内容维度 -->
+            <div id="order-name" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品内容暂停率分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('order-name')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('order-name')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品内容暂停率对比</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">热门产品暂停分布</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameTopChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 暂停情况统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('order-name')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('order-name')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="orderNameTable">
+                            <thead>
+                                <tr>
+                                    <th>产品内容</th>
+                                    <th>订单总数</th>
+                                    <th>暂停数量</th>
+                                    <th>正常进行</th>
+                                    <th>暂停率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderNameTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 校区维度 -->
+            <div id="campus" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 校区暂停率分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('campus')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('campus')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">校区暂停率对比</div>
+                            <div class="chart-container">
+                                <canvas id="campusChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">校区订单量分布</div>
+                            <div class="chart-container">
+                                <canvas id="campusPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 校区暂停详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('campus')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('campus')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">校区暂停情况统计表</div>
+                        </div>
+                        <table class="data-table" id="campusTable">
+                            <thead>
+                                <tr>
+                                    <th>校区名称</th>
+                                    <th>订单总数</th>
+                                    <th>暂停数量</th>
+                                    <th>正常进行</th>
+                                    <th>暂停率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="campusTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地区维度 -->
+            <div id="region" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 地区暂停率分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('region')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('region')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">地区暂停率对比</div>
+                            <div class="chart-container">
+                                <canvas id="regionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">地区订单量分布</div>
+                            <div class="chart-container">
+                                <canvas id="regionPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 地区暂停详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('region')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('region')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">地区暂停情况统计表</div>
+                        </div>
+                        <table class="data-table" id="regionTable">
+                            <thead>
+                                <tr>
+                                    <th>地区名称</th>
+                                    <th>订单总数</th>
+                                    <th>暂停数量</th>
+                                    <th>正常进行</th>
+                                    <th>暂停率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regionTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 专业维度 -->
+            <div id="major" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 专业暂停率分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('major')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('major')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">专业暂停率排名</div>
+                            <div class="chart-container">
+                                <canvas id="majorChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">专业类别暂停分布</div>
+                            <div class="chart-container">
+                                <canvas id="majorPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 专业暂停详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('major')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('major')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">专业暂停情况统计表</div>
+                        </div>
+                        <table class="data-table" id="majorTable">
+                            <thead>
+                                <tr>
+                                    <th>专业名称</th>
+                                    <th>专业类别</th>
+                                    <th>订单数量</th>
+                                    <th>暂停数量</th>
+                                    <th>正常进行</th>
+                                    <th>暂停率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="majorTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 暂停率数据配置
+        const pageData = {
+            'product-type': {
+                chartData: {
+                    bar: {
+                        labels: ['研究生认定', '中工', '高工', '助理'],
+                        data: [2.8, 3.1, 3.6, 4.2],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800']
+                    },
+                    pie: {
+                        labels: ['研究生认定', '中工', '高工', '助理'],
+                        data: [38, 29, 42, 27],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800']
+                    }
+                },
+                tableData: [
+                    ['研究生认定', '1,357', '38', '1,319', '2.8%'],
+                    ['中工', '935', '29', '906', '3.1%'],
+                    ['高工', '1,167', '42', '1,125', '3.6%'],
+                    ['助理', '641', '27', '614', '4.2%']
+                ]
+            },
+            'order-name': {
+                chartData: {
+                    bar: {
+                        labels: ['资料A', '资料B', '论文A', '论文B'],
+                        data: [2.6, 3.2, 4.1, 3.8],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800']
+                    },
+                    pie: {
+                        labels: ['资料A', '资料B', '论文A', '论文B'],
+                        data: [32, 28, 35, 24],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800']
+                    }
+                },
+                tableData: [
+                    ['资料A', '1,231', '32', '1,199', '2.6%'],
+                    ['资料B', '875', '28', '847', '3.2%'],
+                    ['论文A', '854', '35', '819', '4.1%'],
+                    ['论文B', '632', '24', '608', '3.8%']
+                ]
+            },
+            'campus': {
+                chartData: {
+                    bar: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [3.0, 3.3, 2.9, 3.8, 2.5],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800', '#614700']
+                    },
+                    pie: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [42, 35, 28, 21, 10],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800', '#614700']
+                    }
+                },
+                tableData: [
+                    ['一分校', '1,400', '42', '1,358', '3.0%'],
+                    ['二分校', '1,061', '35', '1,026', '3.3%'],
+                    ['三分校', '966', '28', '938', '2.9%'],
+                    ['常德分校', '553', '21', '532', '3.8%'],
+                    ['其他分校', '400', '10', '390', '2.5%']
+                ]
+            },
+            'region': {
+                chartData: {
+                    bar: {
+                        labels: ['长沙市', '邵阳市', '衡阳市', '娄底市', '岳阳市', '益阳市'],
+                        data: [2.9, 3.2, 3.5, 3.8, 2.8, 3.1],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800', '#614700', '#391085']
+                    },
+                    pie: {
+                        labels: ['长沙市', '邵阳市', '衡阳市', '娄底市', '岳阳市', '益阳市'],
+                        data: [48, 32, 25, 18, 8, 5],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800', '#614700', '#391085']
+                    }
+                },
+                tableData: [
+                    ['长沙市', '1,655', '48', '1,607', '2.9%'],
+                    ['邵阳市', '1,000', '32', '968', '3.2%'],
+                    ['衡阳市', '714', '25', '689', '3.5%'],
+                    ['娄底市', '474', '18', '456', '3.8%'],
+                    ['岳阳市', '286', '8', '278', '2.8%'],
+                    ['益阳市', '161', '5', '156', '3.1%']
+                ]
+            },
+            'major': {
+                chartData: {
+                    bar: {
+                        labels: ['建筑工程', '信息技术', '水利工程', '交通运输', '综合专业'],
+                        data: [3.1, 3.4, 3.6, 3.9, 2.8],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00', '#873800', '#614700']
+                    },
+                    pie: {
+                        labels: ['工程类', '技术类', '综合类'],
+                        data: [89, 28, 19],
+                        colors: ['#fa8c16', '#d46b08', '#ad4e00']
+                    }
+                },
+                tableData: [
+                    ['建筑工程', '工程类', '1,419', '44', '1,375', '3.1%'],
+                    ['信息技术', '技术类', '824', '28', '796', '3.4%'],
+                    ['水利工程', '工程类', '889', '32', '857', '3.6%'],
+                    ['交通运输', '工程类', '667', '26', '641', '3.9%'],
+                    ['综合专业', '综合类', '679', '19', '660', '2.8%']
+                ]
+            }
+        };
+
+        // 当前活跃的图表实例
+        let activeCharts = {};
+
+        // 注册数据标签插件
+        Chart.register(ChartDataLabels);
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTabContent('product-type');
+        });
+
+        // 切换标签
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            // 更新标签导航状态
+            document.querySelectorAll('.tab-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新标签内容
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            
+            // 加载当前标签内容
+            loadTabContent(tabId);
+        }
+
+        // 加载标签内容
+        function loadTabContent(tabId) {
+            setTimeout(() => {
+                loadChart(tabId);
+                loadTable(tabId);
+            }, 100);
+        }
+
+        // 加载图表
+        function loadChart(tabId) {
+            const data = pageData[tabId];
+            if (!data) return;
+
+            // 销毁现有图表
+            Object.values(activeCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            activeCharts = {};
+
+            // 柱状图
+            const barCtx = document.getElementById(tabId === 'product-type' ? 'productTypeChart' : 
+                                                 tabId === 'order-name' ? 'orderNameChart' :
+                                                 tabId === 'campus' ? 'campusChart' :
+                                                 tabId === 'region' ? 'regionChart' : 'majorChart');
+            if (barCtx) {
+                activeCharts[tabId + 'Chart'] = new Chart(barCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.chartData.bar.labels,
+                        datasets: [{
+                            label: '暂停率(%)',
+                            data: data.chartData.bar.data,
+                            backgroundColor: data.chartData.bar.colors.map(color => color + '80'),
+                            borderColor: data.chartData.bar.colors,
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            hoverBackgroundColor: data.chartData.bar.colors,
+                            hoverBorderWidth: 3,
+                            maxBarThickness: 60,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            datalabels: {
+                                display: true,
+                                color: '#262626',
+                                font: {
+                                    weight: 'bold',
+                                    size: 12
+                                },
+                                anchor: 'end',
+                                align: 'top',
+                                formatter: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 5,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 饼图
+            const pieCtx = document.getElementById(tabId === 'product-type' ? 'productTypePieChart' : 
+                                                 tabId === 'order-name' ? 'orderNameTopChart' :
+                                                 tabId === 'campus' ? 'campusPieChart' :
+                                                 tabId === 'region' ? 'regionPieChart' : 'majorPieChart');
+            if (pieCtx) {
+                activeCharts[tabId + 'PieChart'] = new Chart(pieCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.chartData.pie.labels,
+                        datasets: [{
+                            data: data.chartData.pie.data,
+                            backgroundColor: data.chartData.pie.colors.map(color => color + 'CC'),
+                            borderColor: data.chartData.pie.colors,
+                            borderWidth: 3,
+                            hoverBackgroundColor: data.chartData.pie.colors,
+                            hoverBorderWidth: 4,
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                align: 'start',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 13,
+                                        weight: '600'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 12,
+                                    boxHeight: 12
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 加载表格
+        function loadTable(tabId) {
+            const data = pageData[tabId];
+            if (!data) return;
+
+            const tableBodyId = tabId === 'product-type' ? 'productTypeTableBody' : 
+                               tabId === 'order-name' ? 'orderNameTableBody' :
+                               tabId === 'campus' ? 'campusTableBody' :
+                               tabId === 'region' ? 'regionTableBody' : 'majorTableBody';
+            
+            const tableBody = document.getElementById(tableBodyId);
+            if (tableBody) {
+                tableBody.innerHTML = data.tableData.map(row => {
+                    const cells = row.map((cell, index) => {
+                        if (index === row.length - 1) {
+                            // 最后一列（暂停率）特殊样式
+                            return `<td><span style="color: #fa8c16; font-weight: 600;">${cell}</span></td>`;
+                        }
+                        return `<td>${cell}</td>`;
+                    }).join('');
+                    
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+            }
+        }
+
+        // 导出功能
+        function exportTable(type) {
+            const data = pageData[type];
+            if (!data) return;
+
+            const headers = type === 'major' ? 
+                ['专业名称', '专业类别', '订单数量', '暂停数量', '正常进行', '暂停率'] :
+                ['名称', '订单总数', '暂停数量', '正常进行', '暂停率'];
+            
+            const ws_data = [headers, ...data.tableData];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '暂停率详情');
+            
+            const fileName = `暂停率_${type}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        function downloadChart(type) {
+            alert('下载' + type + '图表');
+        }
+
+        function refreshData(type) {
+            loadTabContent(type);
+            alert('数据已刷新');
+        }
+
+        function printTable(type) {
+            window.print();
+        }
+    </script>
+</body>
+</html> 

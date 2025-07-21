@@ -1,0 +1,1965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工作交接 - 资料管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .logo-icon {
+            color: #1677ff;
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-icon {
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background-color: #ccc;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 210px;
+            background-color: #fff;
+            border-right: 1px solid #e8e8e8;
+            padding-top: 56px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .menu {
+            padding: 8px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .menu-item.active {
+            background-color: #f0f7ff;
+            color: #1677ff;
+            border-right: 3px solid #1677ff;
+        }
+        
+        .menu-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .menu-arrow {
+            margin-left: auto;
+            font-size: 12px;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 210px;
+            padding-top: 56px;
+            padding-bottom: 20px;
+        }
+        
+        .page-header {
+            padding: 16px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #e8e8e8;
+        }
+        
+        .page-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #999;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        
+        .content-wrapper {
+            padding: 20px;
+        }
+        
+        .filter-bar {
+            background-color: #fff;
+            padding: 16px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        .search-input {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 0 12px;
+            height: 36px;
+            width: 240px;
+        }
+        
+        .search-input input {
+            border: none;
+            outline: none;
+            flex: 1;
+            height: 100%;
+            font-size: 14px;
+        }
+        
+        .search-icon {
+            color: #999;
+            cursor: pointer;
+        }
+        
+        .select-wrapper {
+            position: relative;
+            height: 36px;
+            min-width: 150px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .select-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .select-arrow {
+            color: #999;
+        }
+        
+        .filter-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            border-color: #1677ff;
+            color: #1677ff;
+        }
+        
+        .btn-icon {
+            margin-right: 4px;
+        }
+        
+        .btn-primary {
+            background-color: #1677ff;
+            border-color: #1677ff;
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background-color: #4096ff;
+            border-color: #4096ff;
+        }
+        
+        .btn-primary:disabled {
+            background-color: #d9d9d9;
+            border-color: #d9d9d9;
+            color: #fff;
+            cursor: not-allowed;
+        }
+        
+        .btn-danger {
+            background-color: #ff4d4f;
+            border-color: #ff4d4f;
+            color: #fff;
+        }
+        
+        .btn-danger:hover {
+            background-color: #ff7875;
+            border-color: #ff7875;
+        }
+        
+        .table-wrapper {
+            background-color: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #fafafa;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .selected-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .selected-count {
+            color: #1677ff;
+            font-weight: 500;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            text-align: left;
+            padding: 12px 8px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+        
+        th {
+            background-color: #fafafa;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .checkbox.checked {
+            background-color: #1677ff;
+            border-color: #1677ff;
+        }
+        
+        .checkbox.checked::after {
+            content: "✓";
+            position: absolute;
+            top: -2px;
+            left: 2px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .status-tag {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .status-tag.blue {
+            background-color: #e6f7ff;
+            color: #1677ff;
+        }
+        
+        .status-tag.green {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-tag.orange {
+            background-color: #fff2e8;
+            color: #fa8c16;
+        }
+        
+        .status-tag.red {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        .status-tag.purple {
+            background-color: #f9f0ff;
+            color: #722ed1;
+        }
+        
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            margin-right: 4px;
+            background-color: #f0f7ff;
+            color: #1677ff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .action-btn:hover {
+            background-color: #e6f7ff;
+        }
+        
+        .action-btn.danger {
+            background-color: #fff2f0;
+            color: #ff4d4f;
+        }
+        
+        .action-btn.danger:hover {
+            background-color: #ffece8;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .modal-footer {
+            padding: 12px 20px;
+            border-top: 1px solid #e8e8e8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+        
+        .btn-modal {
+            padding: 8px 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-modal.btn-primary {
+            background-color: #1677ff;
+            border-color: #1677ff;
+            color: #fff;
+        }
+        
+        .btn-modal.btn-secondary {
+            color: #666;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: #1677ff;
+        }
+        
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            color: #666;
+            font-size: 14px;
+            background-color: #fff;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .pagination-info {
+            color: #999;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .page-btn {
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #fff;
+        }
+        
+        .page-btn.active {
+            background-color: #1677ff;
+            color: #fff;
+            border-color: #1677ff;
+        }
+        
+        .page-btn.disabled {
+            color: #d9d9d9;
+            cursor: not-allowed;
+        }
+        
+        .per-page {
+            display: flex;
+            align-items: center;
+            margin-left: 16px;
+        }
+        
+        /* 新增：负责人和客户行样式 */
+        .staff-main-row {
+            transition: background-color 0.3s;
+        }
+        
+        .staff-main-row:hover {
+            background-color: #f8f9fa !important;
+        }
+        
+        .client-detail-row {
+            transition: all 0.3s;
+            animation: slideDown 0.3s ease-out;
+        }
+        
+        .client-detail-row:hover {
+            background-color: #f0f7ff !important;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        /* 展开图标旋转动画 */
+        .expand-icon {
+            transition: transform 0.3s ease;
+        }
+        
+        .expand-icon.expanded {
+            transform: rotate(90deg);
+        }
+        
+        /* 角色标签样式 */
+        .role-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 客户详情行的缩进效果 */
+        .client-detail-row td:first-child {
+            position: relative;
+        }
+        
+        .client-detail-row td:first-child::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e6f7ff;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">📋</span>
+            <span>资料管理系统</span>
+        </div>
+        <div class="header-right">
+            <span class="header-icon">🔔</span>
+            <span class="header-icon">🌙</span>
+            <span class="header-icon">🔍</span>
+            <span class="header-icon">⚙️</span>
+            <div class="avatar">U</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu">
+                <div class="menu-item" onclick="window.location.href='index.html'">
+                    <span class="menu-icon">🏠</span>
+                    <span>首页</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📋</span>
+                    <span>订单管理</span>
+                    <span class="menu-arrow">▼</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">👤</span>
+                    <span>客户管理</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span>客户群管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='management.html'">
+                    <span class="menu-icon">📁</span>
+                    <span>资料制作列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📝</span>
+                    <span>知识产权列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📚</span>
+                    <span>继续教育列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📄</span>
+                    <span>论文列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">🔄</span>
+                    <span>共享盘</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span>政策管理</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">🔑</span>
+                    <span>权限管理</span>
+                    <span class="menu-arrow">▼</span>
+                </div>
+                <div class="menu-item active">
+                    <span class="menu-icon">🔄</span>
+                    <span>工作交接</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">⚙️</span>
+                    <span>设置</span>
+                    <span class="menu-arrow">▼</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">工作交接</h1>
+                <div class="breadcrumb">
+                    <a href="index.html">首页</a> / <a href="management.html">资料制作列表</a> / 工作交接
+                </div>
+            </div>
+
+            <div class="content-wrapper">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="search-input">
+                        <span>👤</span>
+                        <input type="text" placeholder="搜索负责人姓名或客户姓名" id="searchInput">
+                        <span class="search-icon">🔍</span>
+                    </div>
+
+                    <div class="select-wrapper" onclick="toggleDropdown('responsiblePersonDropdown')">
+                        <span class="select-text" id="responsiblePersonText">全部负责人</span>
+                        <span class="select-arrow">▼</span>
+                    </div>
+
+                    <div class="select-wrapper" onclick="toggleDropdown('stageDropdown')">
+                        <span class="select-text" id="stageText">全部阶段</span>
+                        <span class="select-arrow">▼</span>
+                    </div>
+
+                    <div class="select-wrapper" onclick="toggleDropdown('statusDropdown')">
+                        <span class="select-text" id="statusText">全部状态</span>
+                        <span class="select-arrow">▼</span>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="btn" onclick="resetFilters()">
+                            <span class="btn-icon">🔄</span>
+                            <span>重置</span>
+                        </button>
+                        <button class="btn" onclick="refreshTable()">
+                            <span class="btn-icon">↻</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrapper">
+                    <div class="table-header">
+                        <div class="selected-info">
+                            已选择 <span class="selected-count" id="selectedCount">0</span> 项，共 <span id="totalCount">0</span> 项
+                        </div>
+                        <div class="table-actions">
+                         
+                            <button class="btn btn-primary" onclick="openBatchHandoverModal()" id="batchHandoverBtn" disabled>
+                                <span class="btn-icon">🔄</span>
+                                批量交接
+                            </button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">
+                                    <div class="checkbox" id="selectAllCheckbox" onclick="toggleSelectAll()"></div>
+                                </th>
+                                <th style="width: 50px;">序号</th>
+                                <th style="width: 120px;">负责人信息</th>
+                                <th style="width: 100px;">负责客户数</th>
+                                <th style="width: 140px;">工作状态</th>
+                                <th style="width: 80px;">人员状态</th>
+                                <th style="width: 120px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientTableBody">
+                            <!-- 负责人数据将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <div class="pagination-info">共 <span id="totalItems">0</span> 条</div>
+                        <div class="pagination-controls">
+                            <div class="page-btn active">1</div>
+                            <div class="page-btn disabled">></div>
+                            <div class="per-page">
+                                <span>15 条/页</span>
+                                <span style="margin-left: 4px;">▼</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 单个交接模态框 -->
+    <div class="modal" id="handoverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">工作交接</div>
+                <button class="modal-close" onclick="closeModal('handoverModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: #666;">
+                    客户：<span id="handoverCustomerName" style="font-weight: 500; color: #333;"></span><br>
+                    当前负责人：<span id="currentResponsible" style="font-weight: 500; color: #333;"></span>
+                </p>
+                <div class="form-group">
+                    <label class="form-label">选择新负责人 <span style="color: #ff4d4f;">*</span></label>
+                    <select class="form-control" id="newResponsibleSelect">
+                        <!-- 选项将根据权限动态生成 -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">交接原因 <span style="color: #ff4d4f;">*</span></label>
+                    <select class="form-control" id="handoverReasonSelect">
+                        <option value="">请选择交接原因</option>
+                        <option value="resignation">人员离职</option>
+                        <option value="workload">工作量调整</option>
+                        <option value="other">其他原因</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注说明</label>
+                    <textarea class="form-control" id="handoverRemark" placeholder="请输入交接备注..." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-secondary" onclick="closeModal('handoverModal')">取消</button>
+                <button class="btn-modal btn-primary" onclick="confirmHandover()">确认交接</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 批量交接模态框 -->
+    <div class="modal" id="batchHandoverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">批量工作交接</div>
+                <button class="modal-close" onclick="closeModal('batchHandoverModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="margin-bottom: 20px; color: #666;">
+                    将要交接 <span class="selected-count" id="batchHandoverCount">0</span> 位客户的工作
+                </p>
+                <div class="form-group">
+                    <label class="form-label">选择新负责人 <span style="color: #ff4d4f;">*</span></label>
+                    <select class="form-control" id="batchNewResponsibleSelect">
+                        <!-- 选项将根据权限动态生成 -->
+                    </select>
+                    <div style="font-size: 12px; color: #999; margin-top: 4px;">
+                        <span style="color: #fa8c16;">⚠️</span> 权限说明：二级组长只能交接给同级或更高级别人员，双重身份人员显示 🔄 标识
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">交接原因 <span style="color: #ff4d4f;">*</span></label>
+                    <select class="form-control" id="batchHandoverReasonSelect">
+                        <option value="">请选择交接原因</option>
+                        <option value="resignation">人员离职</option>
+                        <option value="workload">工作量调整</option>
+                        <option value="other">其他原因</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注说明</label>
+                    <textarea class="form-control" id="batchHandoverRemark" placeholder="请输入交接备注..." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-secondary" onclick="closeModal('batchHandoverModal')">取消</button>
+                <button class="btn-modal btn-primary" onclick="confirmBatchHandover()">确认批量交接</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 交接记录模态框 -->
+    <div class="modal" id="handoverHistoryModal" style="z-index: 1001;">
+        <div class="modal-content" style="width: 800px; max-width: 95vw;">
+            <div class="modal-header">
+                <div class="modal-title">交接记录</div>
+                <button class="modal-close" onclick="closeModal('handoverHistoryModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 0;">
+                <!-- 搜索筛选栏 -->
+                <div style="padding: 16px; border-bottom: 1px solid #f0f0f0;">
+                    <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; border: 1px solid #d9d9d9; border-radius: 4px; padding: 0 12px; height: 32px; width: 200px;">
+                            <span>👤</span>
+                            <input type="text" placeholder="搜索客户姓名" id="historySearchInput" style="border: none; outline: none; flex: 1; height: 100%; font-size: 14px;">
+                        </div>
+                        <select style="border: 1px solid #d9d9d9; border-radius: 4px; padding: 6px 12px; font-size: 14px;" id="historyReasonFilter">
+                            <option value="">全部原因</option>
+                            <option value="resignation">人员离职</option>
+                            <option value="workload">工作量调整</option>
+                            <option value="other">其他原因</option>
+                        </select>
+                        <input type="date" id="historyDateFrom" style="border: 1px solid #d9d9d9; border-radius: 4px; padding: 6px 12px; font-size: 14px;">
+                        <span>至</span>
+                        <input type="date" id="historyDateTo" style="border: 1px solid #d9d9d9; border-radius: 4px; padding: 6px 12px; font-size: 14px;">
+                        <button class="btn" onclick="filterHistoryRecords()" style="height: 32px; padding: 0 12px;">
+                            <span>🔍</span>
+                            搜索
+                        </button>
+                        <button class="btn" onclick="resetHistoryFilters()" style="height: 32px; padding: 0 12px;">
+                            <span>🔄</span>
+                            重置
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- 记录列表 -->
+                <div style="max-height: 400px; overflow-y: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background-color: #fafafa;">
+                                <th style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px; font-weight: 500; color: #666;">时间</th>
+                                <th style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px; font-weight: 500; color: #666;">客户</th>
+                                <th style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px; font-weight: 500; color: #666;">原负责人</th>
+                                <th style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px; font-weight: 500; color: #666;">新负责人</th>
+                                <th style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px; font-weight: 500; color: #666;">交接原因</th>
+                                <th style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px; font-weight: 500; color: #666;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- 交接记录将通过JavaScript动态加载 -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 无数据提示 -->
+                <div id="noHistoryData" style="text-align: center; padding: 40px; color: #999; display: none;">
+                    <div style="font-size: 48px; margin-bottom: 12px;">📋</div>
+                    <div>暂无交接记录</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div style="flex: 1; color: #666; font-size: 14px;">
+                    共 <span id="historyTotalCount">0</span> 条记录
+                </div>
+                <button class="btn-modal btn-secondary" onclick="closeModal('handoverHistoryModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 交接记录详情模态框 -->
+    <div class="modal" id="handoverDetailModal" style="z-index: 1002;">
+        <div class="modal-content" style="width: 500px;">
+            <div class="modal-header">
+                <div class="modal-title">交接记录详情</div>
+                <button class="modal-close" onclick="closeModal('handoverDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 16px;">
+                    <strong style="color: #333;">基本信息</strong>
+                </div>
+                <div style="display: grid; grid-template-columns: 80px 1fr; gap: 12px; margin-bottom: 20px;">
+                    <div style="color: #666;">客户姓名:</div>
+                    <div id="detailCustomerName" style="font-weight: 500;"></div>
+                    <div style="color: #666;">交接时间:</div>
+                    <div id="detailHandoverTime"></div>
+                    <div style="color: #666;">原负责人:</div>
+                    <div id="detailOldResponsible"></div>
+                    <div style="color: #666;">新负责人:</div>
+                    <div id="detailNewResponsible"></div>
+                    <div style="color: #666;">交接原因:</div>
+                    <div id="detailReason"></div>
+                </div>
+                <div style="margin-bottom: 16px;">
+                    <strong style="color: #333;">备注说明</strong>
+                </div>
+                <div style="background-color: #f8f9fa; padding: 12px; border-radius: 4px; min-height: 60px; color: #666;" id="detailRemark">
+                    无备注
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-secondary" onclick="closeModal('handoverDetailModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 人员角色定义
+        const ROLES = {
+            'admin': { name: '管理员', level: 100, color: '#722ed1' },
+            'level1_leader': { name: '一级组长', level: 90, color: '#fa8c16' },
+            'level2_leader': { name: '二级组长', level: 80, color: '#1677ff' },
+            'material_maker': { name: '资料制作员', level: 60, color: '#52c41a' },
+            'mail_specialist': { name: '邮寄专员', level: 50, color: '#13c2c2' },
+            'scan_specialist': { name: '扫描专员', level: 40, color: '#eb2f96' }
+        };
+
+        // 人员数据 - 支持多重角色
+        const staffData = [
+            { id: 'yangmiao', name: '杨苗', roles: ['level2_leader'], status: 'active' },
+            { id: 'xiangying', name: '向莹', roles: ['material_maker'], status: 'active' },
+            { id: 'caojianhong', name: '曹建红', roles: ['material_maker'], status: 'active' },
+            { id: 'zhangsan', name: '张三', roles: ['material_maker'], status: 'active' },
+            { id: 'zhaoliu', name: '赵六', roles: ['mail_specialist'], status: 'active' },
+            { id: 'qianqi', name: '钱七', roles: ['level1_leader', 'level2_leader'], status: 'active' }, // 双重身份
+            { id: 'wushi', name: '吴十', roles: ['scan_specialist'], status: 'active' },
+            { id: 'sunyi', name: '孙一', roles: ['material_maker'], status: 'active' },
+            { id: 'lihua', name: '李华', roles: ['level1_leader', 'level2_leader'], status: 'active' } // 双重身份
+        ];
+
+        // 重构客户数据，添加负责人ID
+        let clientsData = [
+            {
+                id: 1,
+                name: 'zzc009',
+                profession: '船舶工程与水运工程',
+                status: '【二级组长】业绩梳理',
+                stage: '业务梳理',
+                responsibleId: 'yangmiao',
+                responsible: '杨苗',
+                assignTime: '2025-01-15',
+                statusClass: 'blue'
+            },
+            {
+                id: 2,
+                name: '周莹',
+                profession: '建筑工程',
+                status: '【资料制作员+二级组长】初审',
+                stage: '资料制作',
+                responsibleId: 'xiangying',
+                responsible: '向莹',
+                assignTime: '2025-01-14',
+                campus: '二分校',
+                statusClass: 'green'
+            },
+            {
+                id: 3,
+                name: 'ly023',
+                profession: '港口与航道工程',
+                status: '【资料制作员】进度二进行中',
+                stage: '资料制作',
+                responsibleId: 'caojianhong',
+                responsible: '曹建红',
+                assignTime: '2025-01-13',
+                statusClass: 'orange'
+            },
+            {
+                id: 4,
+                name: '李四',
+                profession: '软件工程师',
+                status: '【资料制作员】资料待核稿',
+                stage: '核稿修改',
+                responsibleId: 'zhangsan',
+                responsible: '张三',
+                assignTime: '2025-01-12',
+                campus: '总校',
+                statusClass: 'purple'
+            },
+            {
+                id: 5,
+                name: '王五',
+                profession: '中级会计师',
+                status: '【资料制作员】邮寄待分配',
+                stage: '邮寄盖章',
+                responsibleId: 'zhaoliu',
+                responsible: '赵六',
+                assignTime: '2025-01-11',
+                campus: '三分校',
+                statusClass: 'red'
+            },
+            {
+                id: 6,
+                name: '赵六客户',
+                profession: '高级教师',
+                status: '【邮寄小组】资料待邮寄',
+                stage: '邮寄盖章',
+                responsibleId: 'qianqi',
+                responsible: '钱七',
+                assignTime: '2025-01-10',
+                campus: '四分校',
+                statusClass: 'blue'
+            },
+            {
+                id: 7,
+                name: '周九',
+                profession: '高级教师',
+                status: '【资料制作员】扫描待分配',
+                stage: '双签扫描',
+                responsibleId: 'wushi',
+                responsible: '吴十',
+                assignTime: '2025-01-09',
+                campus: '四分校',
+                statusClass: 'red'
+            },
+            {
+                id: 8,
+                name: '吴十客户',
+                profession: '中级工程师',
+                status: '【扫描小组】资料待扫描',
+                stage: '双签扫描',
+                responsibleId: 'sunyi',
+                responsible: '孙一',
+                assignTime: '2025-01-08',
+                campus: '总校',
+                statusClass: 'blue'
+            },
+            {
+                id: 9,
+                name: '张三客户2',
+                profession: '网络工程师',
+                status: '【资料制作员】待提交',
+                stage: '资料制作',
+                responsibleId: 'zhangsan',
+                responsible: '张三',
+                assignTime: '2025-01-07',
+                campus: '总校',
+                statusClass: 'green'
+            },
+            {
+                id: 10,
+                name: '杨苗客户2',
+                profession: '水利工程',
+                status: '【二级组长】审核中',
+                stage: '业务梳理',
+                responsibleId: 'yangmiao',
+                responsible: '杨苗',
+                assignTime: '2025-01-06',
+                statusClass: 'orange'
+            },
+            {
+                id: 11,
+                name: '钱七客户1',
+                profession: '电气工程师',
+                status: '【一级组长】终审',
+                stage: '终审阶段',
+                responsibleId: 'qianqi',
+                responsible: '钱七',
+                assignTime: '2025-01-05',
+                campus: '总校',
+                statusClass: 'blue'
+            },
+            {
+                id: 12,
+                name: '钱七客户2',
+                profession: '建筑工程师',
+                status: '【二级组长】复审',
+                stage: '业务梳理',
+                responsibleId: 'qianqi',
+                responsible: '钱七',
+                assignTime: '2025-01-04',
+                campus: '二分校',
+                statusClass: 'green'
+            }
+        ];
+
+        // 交接记录数据
+        let handoverHistory = [
+            {
+                id: 1,
+                clientId: 1,
+                clientName: 'zzc009',
+                oldResponsible: '李明',
+                newResponsible: '杨苗',
+                reason: 'resignation',
+                reasonText: '人员离职',
+                remark: '李明因工作调动离职，将客户zzc009的业绩梳理工作交接给杨苗继续负责。',
+                handoverTime: '2025-01-15 14:30:00',
+                handoverBy: '管理员'
+            },
+            {
+                id: 2,
+                clientId: 2,
+                clientName: '周莹',
+                oldResponsible: '王红',
+                newResponsible: '向莹',
+                reason: 'workload',
+                reasonText: '工作量调整',
+                remark: '为平衡工作量，将周莹的资料制作工作从王红交接给向莹。',
+                handoverTime: '2025-01-14 10:15:00',
+                handoverBy: '管理员'
+            }
+        ];
+
+        let selectedStaff = new Set();
+        let selectedClients = new Set();
+        let expandedStaff = new Set();
+        let filteredStaffData = [];
+        let filteredHistory = [...handoverHistory];
+
+        // 获取人员的主要角色（最高级别）
+        function getPrimaryRole(staff) {
+            if (!staff.roles || staff.roles.length === 0) return 'material_maker';
+            
+            // 按权限级别排序，返回最高级别
+            const sortedRoles = staff.roles.sort((a, b) => ROLES[b].level - ROLES[a].level);
+            return sortedRoles[0];
+        }
+
+        // 检查是否为双重身份
+        function isDualRole(staff) {
+            return staff.roles && staff.roles.length > 1;
+        }
+
+        // 获取角色显示文本
+        function getRoleDisplayText(staff) {
+            if (!isDualRole(staff)) {
+                const role = getPrimaryRole(staff);
+                return ROLES[role].name;
+            }
+            
+            // 双重身份显示
+            const roleNames = staff.roles.map(roleId => ROLES[roleId].name);
+            return roleNames.join(' / ');
+        }
+
+        // 获取角色颜色（双重身份使用渐变色）
+        function getRoleColor(staff) {
+            if (!isDualRole(staff)) {
+                const role = getPrimaryRole(staff);
+                return ROLES[role].color;
+            }
+            
+            // 双重身份使用特殊标识色
+            return '#722ed1'; // 紫色表示双重身份
+        }
+
+        // 按负责人分组客户数据
+        function groupClientsByResponsible() {
+            const staffMap = new Map();
+            
+            // 初始化所有员工
+            staffData.forEach(staff => {
+                staffMap.set(staff.id, {
+                    ...staff,
+                    clients: [],
+                    totalClients: 0,
+                    activeClients: 0
+                });
+            });
+            
+            // 分配客户到对应负责人
+            clientsData.forEach(client => {
+                if (staffMap.has(client.responsibleId)) {
+                    staffMap.get(client.responsibleId).clients.push(client);
+                }
+            });
+            
+            // 计算统计信息
+            staffMap.forEach(staff => {
+                staff.totalClients = staff.clients.length;
+                staff.activeClients = staff.clients.filter(c => 
+                    c.statusClass === 'blue' || c.statusClass === 'green' || c.statusClass === 'orange'
+                ).length;
+            });
+            
+            return Array.from(staffMap.values()).filter(staff => staff.totalClients > 0);
+        }
+
+        // 初始化
+        function init() {
+            filteredStaffData = groupClientsByResponsible();
+            renderTable();
+            updateStats();
+            // 设置默认日期范围（最近30天）
+            const today = new Date();
+            const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+            document.getElementById('historyDateTo').value = today.toISOString().split('T')[0];
+            document.getElementById('historyDateFrom').value = thirtyDaysAgo.toISOString().split('T')[0];
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.getElementById('clientTableBody');
+            tbody.innerHTML = '';
+            
+            filteredStaffData.forEach((staff, index) => {
+                // 主行 - 负责人信息
+                const mainRow = document.createElement('tr');
+                mainRow.className = 'staff-main-row';
+                mainRow.style.cursor = 'pointer';
+                mainRow.style.backgroundColor = selectedStaff.has(staff.id) ? '#f0f7ff' : '';
+                
+                const roleInfo = ROLES[getPrimaryRole(staff)];
+                const isExpanded = expandedStaff.has(staff.id);
+                
+                mainRow.innerHTML = `
+                    <td>
+                        <div class="checkbox ${selectedStaff.has(staff.id) ? 'checked' : ''}" 
+                             onclick="event.stopPropagation(); toggleStaffSelection('${staff.id}')"></div>
+                    </td>
+                    <td>${index + 1}</td>
+                    <td style="display: flex; align-items: center;">
+                        <span style="margin-right: 8px; font-size: 16px; transition: transform 0.3s; transform: rotate(${isExpanded ? '90deg' : '0deg'});">▶</span>
+                        <div>
+                            <div style="font-weight: 500;">${staff.name}</div>
+                            <div style="font-size: 12px; color: ${getRoleColor(staff)};">
+                                <span style="background-color: ${getRoleColor(staff)}20; color: ${getRoleColor(staff)}; padding: 2px 6px; border-radius: 2px;">
+                                    ${getRoleDisplayText(staff)}
+                                </span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span style="color: #1677ff; font-weight: 500;">${staff.totalClients}</span>
+                            <span style="color: #999;">个客户</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 4px;">
+                            <span style="background-color: #f6ffed; color: #52c41a; padding: 2px 6px; border-radius: 2px; font-size: 12px;">
+                                进行中: ${staff.activeClients}
+                            </span>
+                            ${staff.totalClients - staff.activeClients > 0 ? `
+                                <span style="background-color: #fff2f0; color: #ff4d4f; padding: 2px 6px; border-radius: 2px; font-size: 12px;">
+                                    待处理: ${staff.totalClients - staff.activeClients}
+                                </span>
+                            ` : ''}
+                        </div>
+                    </td>
+                    <td>
+                        <span style="background-color: #f6ffed; color: #52c41a; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                            ${staff.status === 'active' ? '在职' : '离职'}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="action-btn" onclick="event.stopPropagation(); handoverStaff('${staff.id}')">
+                            <span style="margin-right: 4px;">🔄</span>
+                            交接
+                        </span>
+                        <span class="action-btn" onclick="event.stopPropagation(); viewStaffHistory('${staff.id}')">
+                            <span style="margin-right: 4px;">📋</span>
+                            记录
+                        </span>
+                    </td>
+                `;
+                
+                mainRow.addEventListener('click', () => toggleExpandStaff(staff.id));
+                tbody.appendChild(mainRow);
+                
+                // 子行 - 客户详情
+                if (isExpanded) {
+                    staff.clients.forEach((client, clientIndex) => {
+                        const clientRow = document.createElement('tr');
+                        clientRow.className = 'client-detail-row';
+                        clientRow.style.backgroundColor = '#fafafa';
+                        clientRow.style.borderLeft = '3px solid #1677ff';
+                        
+                        clientRow.innerHTML = `
+                            <td style="padding-left: 20px;">
+                                <div class="checkbox ${selectedClients.has(client.id) ? 'checked' : ''}" 
+                                     onclick="toggleClientSelection(${client.id})"></div>
+                            </td>
+                            <td style="color: #999; font-size: 12px;">${index + 1}.${clientIndex + 1}</td>
+                            <td style="padding-left: 20px;">
+                                <div style="font-size: 14px;">${client.name}</div>
+                            </td>
+                            <td title="${client.profession}" style="font-size: 13px; max-width: 120px; overflow: hidden; text-overflow: ellipsis;">
+                                ${client.profession}
+                            </td>
+                            <td>
+                                <span class="status-tag ${client.statusClass}" title="${client.status}" style="font-size: 12px;">
+                                    ${client.status}
+                                </span>
+                            </td>
+                            <td style="font-size: 13px;">${client.stage}</td>
+                        `;
+                        
+                        tbody.appendChild(clientRow);
+                    });
+                }
+            });
+        }
+
+        // 切换负责人展开状态
+        function toggleExpandStaff(staffId) {
+            if (expandedStaff.has(staffId)) {
+                expandedStaff.delete(staffId);
+            } else {
+                expandedStaff.add(staffId);
+            }
+            renderTable();
+        }
+
+        // 切换负责人选择
+        function toggleStaffSelection(staffId) {
+            if (selectedStaff.has(staffId)) {
+                selectedStaff.delete(staffId);
+                // 取消选择该负责人的所有客户
+                const staff = filteredStaffData.find(s => s.id === staffId);
+                if (staff) {
+                    staff.clients.forEach(client => selectedClients.delete(client.id));
+                }
+            } else {
+                selectedStaff.add(staffId);
+                // 自动选择该负责人的所有客户
+                const staff = filteredStaffData.find(s => s.id === staffId);
+                if (staff) {
+                    staff.clients.forEach(client => selectedClients.add(client.id));
+                }
+            }
+            renderTable();
+            updateStats();
+        }
+
+        // 切换客户选择
+        function toggleClientSelection(clientId) {
+            if (selectedClients.has(clientId)) {
+                selectedClients.delete(clientId);
+            } else {
+                selectedClients.add(clientId);
+            }
+            renderTable();
+            updateStats();
+        }
+
+        // 全选/取消全选
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            
+            if (selectedStaff.size === filteredStaffData.length && filteredStaffData.length > 0) {
+                // 当前全选，执行取消全选
+                selectedStaff.clear();
+                selectedClients.clear();
+                selectAllCheckbox.classList.remove('checked');
+            } else {
+                // 执行全选
+                selectedStaff.clear();
+                selectedClients.clear();
+                filteredStaffData.forEach(staff => {
+                    selectedStaff.add(staff.id);
+                    staff.clients.forEach(client => selectedClients.add(client.id));
+                });
+                selectAllCheckbox.classList.add('checked');
+            }
+            
+            renderTable();
+            updateStats();
+        }
+
+        // 更新统计信息
+        function updateStats() {
+            const totalClients = filteredStaffData.reduce((sum, staff) => sum + staff.totalClients, 0);
+            document.getElementById('selectedCount').textContent = selectedClients.size;
+            document.getElementById('totalCount').textContent = totalClients;
+            document.getElementById('totalItems').textContent = totalClients;
+            
+            // 更新批量交接按钮状态
+            const batchBtn = document.getElementById('batchHandoverBtn');
+            batchBtn.disabled = selectedClients.size === 0;
+            
+            // 更新全选复选框状态
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            if (selectedStaff.size === filteredStaffData.length && filteredStaffData.length > 0) {
+                selectAllCheckbox.classList.add('checked');
+            } else {
+                selectAllCheckbox.classList.remove('checked');
+            }
+        }
+
+        // 负责人交接
+        function handoverStaff(staffId) {
+            const staff = filteredStaffData.find(s => s.id === staffId);
+            if (!staff) return;
+            
+            // 自动选择该负责人的所有客户
+            selectedClients.clear();
+            staff.clients.forEach(client => selectedClients.add(client.id));
+            
+            document.getElementById('batchHandoverCount').textContent = staff.clients.length;
+            document.getElementById('batchNewResponsibleSelect').innerHTML = generateResponsibleOptions(staff.roles);
+            document.getElementById('batchHandoverReasonSelect').value = '';
+            
+            // 根据是否为双重身份设置不同的备注
+            if (isDualRole(staff)) {
+                document.getElementById('batchHandoverRemark').value = `${staff.name}（${getRoleDisplayText(staff)}）负责的所有客户工作交接 - 注意：该人员具有双重身份，请确认交接权限`;
+                
+                // 显示双重身份特殊提示
+                showDualRoleWarning(staff);
+            } else {
+                document.getElementById('batchHandoverRemark').value = `${staff.name}负责的所有客户工作交接`;
+            }
+            
+            // 存储当前操作的负责人ID
+            document.getElementById('batchHandoverModal').dataset.staffId = staffId;
+            document.getElementById('batchHandoverModal').style.display = 'block';
+        }
+
+        // 显示双重身份警告
+        function showDualRoleWarning(staff) {
+            const modalBody = document.querySelector('#batchHandoverModal .modal-body');
+            
+            // 移除之前的警告（如果存在）
+            const existingWarning = modalBody.querySelector('.dual-role-warning');
+            if (existingWarning) {
+                existingWarning.remove();
+            }
+            
+            // 创建双重身份警告框
+            const warningDiv = document.createElement('div');
+            warningDiv.className = 'dual-role-warning';
+            warningDiv.style.cssText = `
+                background-color: #fff7e6;
+                border: 1px solid #ffd591;
+                border-radius: 4px;
+                padding: 12px;
+                margin-bottom: 16px;
+                font-size: 14px;
+            `;
+            
+            const rolesList = staff.roles.map(roleId => ROLES[roleId].name).join('、');
+            
+            warningDiv.innerHTML = `
+                <div style="display: flex; align-items: flex-start; gap: 8px;">
+                    <span style="color: #fa8c16; font-size: 16px;">⚠️</span>
+                    <div>
+                        <div style="font-weight: 500; color: #fa8c16; margin-bottom: 8px;">
+                            双重身份人员交接提醒
+                        </div>
+                        <div style="color: #666; line-height: 1.5;">
+                            <p><strong>${staff.name}</strong> 在系统中拥有双重身份：<strong>${rolesList}</strong></p>
+                            <p style="margin: 8px 0;">• 该人员可能同时负责不同层级的工作</p>
+                            <p style="margin: 8px 0;">• 交接时请确认接收人具备相应的权限级别</p>
+                            <p style="margin: 8px 0;">• 建议按最高权限级别（${ROLES[getPrimaryRole(staff)].name}）进行交接</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 插入到模态框顶部
+            modalBody.insertBefore(warningDiv, modalBody.firstChild);
+        }
+
+        // 根据角色生成可选负责人选项
+        function generateResponsibleOptions(roles) {
+            let options = '<option value="">请选择新负责人</option>';
+            
+            // 获取当前角色的最高权限级别
+            const maxLevel = Math.max(...roles.map(roleId => ROLES[roleId].level));
+            const hasLevel2Leader = roles.includes('level2_leader');
+            
+            staffData.forEach(staff => {
+                const staffRoles = staff.roles;
+                const staffMaxLevel = Math.max(...staffRoles.map(roleId => ROLES[roleId].level));
+                const roleDisplayText = getRoleDisplayText(staff);
+                
+                // 权限控制逻辑
+                let canTransfer = true;
+                let warningText = '';
+                
+                // 如果原负责人是二级组长，新负责人必须是二级组长或更高级别
+                if (hasLevel2Leader) {
+                    const hasLevel2OrHigher = staffRoles.includes('level2_leader') || 
+                                             staffRoles.includes('level1_leader') || 
+                                             staffRoles.includes('admin');
+                    if (!hasLevel2OrHigher) {
+                        canTransfer = false;
+                    }
+                }
+                
+                // 一般情况下，新负责人级别不能低于原负责人
+                if (canTransfer && staffMaxLevel < maxLevel) {
+                    canTransfer = false;
+                }
+                
+                if (canTransfer) {
+                    // 为双重身份人员添加特殊标识
+                    const dualRoleIndicator = isDualRole(staff) ? ' 🔄' : '';
+                    options += `<option value="${staff.id}">${staff.name} - ${roleDisplayText}${dualRoleIndicator}</option>`;
+                }
+            });
+            
+            return options;
+        }
+
+        // 批量交接
+        function openBatchHandoverModal() {
+            if (selectedClients.size === 0) {
+                alert('请先选择要交接的客户');
+                return;
+            }
+            
+            document.getElementById('batchHandoverCount').textContent = selectedClients.size;
+            document.getElementById('batchNewResponsibleSelect').innerHTML = generateResponsibleOptions(['material_maker']); // 默认权限
+            document.getElementById('batchHandoverReasonSelect').value = '';
+            document.getElementById('batchHandoverRemark').value = '';
+            
+            document.getElementById('batchHandoverModal').style.display = 'block';
+        }
+
+        // 确认批量交接
+        function confirmBatchHandover() {
+            const newResponsibleId = document.getElementById('batchNewResponsibleSelect').value;
+            const reason = document.getElementById('batchHandoverReasonSelect').value;
+            const remark = document.getElementById('batchHandoverRemark').value;
+            
+            if (!newResponsibleId) {
+                alert('请选择新负责人');
+                return;
+            }
+            
+            if (!reason) {
+                alert('请选择交接原因');
+                return;
+            }
+            
+            const newResponsible = staffData.find(s => s.id === newResponsibleId);
+            const handoverCount = selectedClients.size;
+            const handoverList = [];
+            
+            const reasonTexts = {
+                'resignation': '人员离职',
+                'workload': '工作量调整',
+                'other': '其他原因'
+            };
+            
+            // 更新所有选中客户的数据
+            selectedClients.forEach(clientId => {
+                const client = clientsData.find(c => c.id === clientId);
+                if (client) {
+                    const oldResponsible = client.responsible;
+                    client.responsibleId = newResponsibleId;
+                    client.responsible = newResponsible.name;
+                    client.assignTime = new Date().toISOString().split('T')[0];
+                    
+                    // 添加交接记录
+                    const newRecord = {
+                        id: handoverHistory.length + handoverList.length + 1,
+                        clientId: clientId,
+                        clientName: client.name,
+                        oldResponsible: oldResponsible,
+                        newResponsible: newResponsible.name,
+                        reason: reason,
+                        reasonText: reasonTexts[reason] || reason,
+                        remark: remark || '批量交接，无特别备注',
+                        handoverTime: new Date().toISOString().replace('T', ' ').split('.')[0],
+                        handoverBy: '管理员'
+                    };
+                    
+                    handoverList.push(newRecord);
+                }
+            });
+            
+            // 将新记录添加到历史记录开头
+            handoverHistory.unshift(...handoverList);
+            filteredHistory = [...handoverHistory];
+            
+            // 重新分组数据
+            filteredStaffData = groupClientsByResponsible();
+            selectedStaff.clear();
+            selectedClients.clear();
+            expandedStaff.clear();
+            renderTable();
+            updateStats();
+            closeModal('batchHandoverModal');
+            
+            alert(`已成功将 ${handoverCount} 位客户的工作交接给 ${newResponsible.name}`);
+        }
+
+        // 搜索功能
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const allStaffData = groupClientsByResponsible();
+            
+            filteredStaffData = allStaffData.filter(staff => {
+                // 搜索负责人姓名
+                const nameMatch = staff.name.toLowerCase().includes(searchTerm);
+                
+                // 搜索客户姓名或专业
+                const clientMatch = staff.clients.some(client => 
+                    client.name.toLowerCase().includes(searchTerm) ||
+                    client.profession.toLowerCase().includes(searchTerm)
+                );
+                
+                return nameMatch || clientMatch;
+            });
+            
+            // 清除不在筛选结果中的选择
+            const filteredStaffIds = new Set(filteredStaffData.map(s => s.id));
+            selectedStaff.forEach(id => {
+                if (!filteredStaffIds.has(id)) {
+                    selectedStaff.delete(id);
+                }
+            });
+            
+            const filteredClientIds = new Set();
+            filteredStaffData.forEach(staff => {
+                staff.clients.forEach(client => filteredClientIds.add(client.id));
+            });
+            selectedClients.forEach(id => {
+                if (!filteredClientIds.has(id)) {
+                    selectedClients.delete(id);
+                }
+            });
+            
+            renderTable();
+            updateStats();
+        });
+
+        // 重置筛选
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('responsiblePersonText').textContent = '全部负责人';
+            document.getElementById('stageText').textContent = '全部阶段';
+            document.getElementById('statusText').textContent = '全部状态';
+            
+            filteredStaffData = groupClientsByResponsible();
+            selectedStaff.clear();
+            selectedClients.clear();
+            expandedStaff.clear();
+            renderTable();
+            updateStats();
+        }
+
+        // 刷新表格
+        function refreshTable() {
+            filteredStaffData = groupClientsByResponsible();
+            selectedStaff.clear();
+            selectedClients.clear();
+            expandedStaff.clear();
+            renderTable();
+            updateStats();
+            alert('数据已刷新');
+        }
+
+        // 查看负责人历史记录
+        function viewStaffHistory(staffId) {
+            const staff = staffData.find(s => s.id === staffId);
+            if (staff) {
+                // 筛选出该负责人相关的交接记录
+                filteredHistory = handoverHistory.filter(record => 
+                    record.oldResponsible === staff.name || record.newResponsible === staff.name
+                );
+                renderHistoryTable();
+                document.getElementById('handoverHistoryModal').style.display = 'block';
+                
+                // 如果有记录，显示负责人名称
+                if (filteredHistory.length > 0) {
+                    document.getElementById('historySearchInput').value = staff.name;
+                }
+            }
+        }
+
+        // 渲染交接记录表格
+        function renderHistoryTable() {
+            const tbody = document.getElementById('historyTableBody');
+            const noDataDiv = document.getElementById('noHistoryData');
+            
+            tbody.innerHTML = '';
+            
+            if (filteredHistory.length === 0) {
+                noDataDiv.style.display = 'block';
+                document.getElementById('historyTotalCount').textContent = '0';
+                return;
+            }
+            
+            noDataDiv.style.display = 'none';
+            
+            filteredHistory.forEach((record) => {
+                const row = document.createElement('tr');
+                const handoverDate = new Date(record.handoverTime);
+                const formattedDate = handoverDate.toLocaleString('zh-CN', {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                row.innerHTML = `
+                    <td style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${formattedDate}</td>
+                    <td style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${record.clientName}</td>
+                    <td style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${record.oldResponsible}</td>
+                    <td style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${record.newResponsible}</td>
+                    <td style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">${record.reasonText}</td>
+                    <td style="padding: 12px 8px; border-bottom: 1px solid #f0f0f0; font-size: 14px;">
+                        <span class="action-btn" onclick="viewHandoverDetail(${record.id})" style="margin: 0;">
+                            <span style="margin-right: 4px;">👁️</span>
+                            详情
+                        </span>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            document.getElementById('historyTotalCount').textContent = filteredHistory.length;
+        }
+
+        // 查看交接记录
+        function viewHandoverHistory() {
+            filteredHistory = [...handoverHistory];
+            renderHistoryTable();
+            document.getElementById('handoverHistoryModal').style.display = 'block';
+        }
+
+        // 筛选交接记录
+        function filterHistoryRecords() {
+            const searchTerm = document.getElementById('historySearchInput').value.toLowerCase();
+            const reasonFilter = document.getElementById('historyReasonFilter').value;
+            const dateFrom = document.getElementById('historyDateFrom').value;
+            const dateTo = document.getElementById('historyDateTo').value;
+            
+            filteredHistory = handoverHistory.filter(record => {
+                // 搜索客户名称或负责人名称
+                const nameMatch = !searchTerm || 
+                    record.clientName.toLowerCase().includes(searchTerm) ||
+                    record.oldResponsible.toLowerCase().includes(searchTerm) ||
+                    record.newResponsible.toLowerCase().includes(searchTerm);
+                
+                // 筛选原因
+                const reasonMatch = !reasonFilter || record.reason === reasonFilter;
+                
+                // 日期范围筛选
+                let dateMatch = true;
+                if (dateFrom || dateTo) {
+                    const recordDate = new Date(record.handoverTime).toISOString().split('T')[0];
+                    if (dateFrom && recordDate < dateFrom) dateMatch = false;
+                    if (dateTo && recordDate > dateTo) dateMatch = false;
+                }
+                
+                return nameMatch && reasonMatch && dateMatch;
+            });
+            
+            renderHistoryTable();
+        }
+
+        // 重置交接记录筛选
+        function resetHistoryFilters() {
+            document.getElementById('historySearchInput').value = '';
+            document.getElementById('historyReasonFilter').value = '';
+            document.getElementById('historyDateFrom').value = '';
+            document.getElementById('historyDateTo').value = '';
+            
+            filteredHistory = [...handoverHistory];
+            renderHistoryTable();
+        }
+
+        // 查看交接详情
+        function viewHandoverDetail(recordId) {
+            const record = handoverHistory.find(r => r.id === recordId);
+            if (!record) return;
+            
+            document.getElementById('detailCustomerName').textContent = record.clientName;
+            document.getElementById('detailHandoverTime').textContent = new Date(record.handoverTime).toLocaleString('zh-CN');
+            document.getElementById('detailOldResponsible').textContent = record.oldResponsible;
+            document.getElementById('detailNewResponsible').textContent = record.newResponsible;
+            document.getElementById('detailReason').textContent = record.reasonText;
+            document.getElementById('detailRemark').textContent = record.remark || '无备注';
+            
+            document.getElementById('handoverDetailModal').style.display = 'block';
+        }
+
+        // 关闭模态框
+        function closeModal(modalId) {
+            // 清理双重身份警告
+            if (modalId === 'batchHandoverModal') {
+                const modalBody = document.querySelector('#batchHandoverModal .modal-body');
+                const existingWarning = modalBody.querySelector('.dual-role-warning');
+                if (existingWarning) {
+                    existingWarning.remove();
+                }
+            }
+            
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // 下拉框切换（占位符函数）
+        function toggleDropdown(dropdownId) {
+            console.log('切换下拉框:', dropdownId);
+        }
+
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+
+        // 单个客户交接（从展开的客户列表中）
+        function handoverSingle(clientId) {
+            const client = clientsData.find(c => c.id === clientId);
+            if (!client) return;
+            
+            // 获取当前负责人信息，用于权限控制
+            const currentStaff = staffData.find(s => s.id === client.responsibleId);
+            const currentRoles = currentStaff ? currentStaff.roles : ['material_maker'];
+            
+            document.getElementById('handoverCustomerName').textContent = client.name;
+            document.getElementById('currentResponsible').textContent = client.responsible;
+            document.getElementById('newResponsibleSelect').innerHTML = generateResponsibleOptions(currentRoles);
+            document.getElementById('handoverReasonSelect').value = '';
+            document.getElementById('handoverRemark').value = '';
+            
+            // 存储当前操作的客户ID
+            document.getElementById('handoverModal').dataset.clientId = clientId;
+            document.getElementById('handoverModal').style.display = 'block';
+        }
+
+        // 确认单个交接
+        function confirmHandover() {
+            const clientId = parseInt(document.getElementById('handoverModal').dataset.clientId);
+            const newResponsibleId = document.getElementById('newResponsibleSelect').value;
+            const reason = document.getElementById('handoverReasonSelect').value;
+            const remark = document.getElementById('handoverRemark').value;
+            
+            if (!newResponsibleId) {
+                alert('请选择新负责人');
+                return;
+            }
+            
+            if (!reason) {
+                alert('请选择交接原因');
+                return;
+            }
+            
+            // 更新客户数据
+            const client = clientsData.find(c => c.id === clientId);
+            const newResponsible = staffData.find(s => s.id === newResponsibleId);
+            
+            if (client && newResponsible) {
+                const oldResponsible = client.responsible;
+                
+                client.responsibleId = newResponsibleId;
+                client.responsible = newResponsible.name;
+                client.assignTime = new Date().toISOString().split('T')[0];
+                
+                // 添加交接记录
+                const reasonTexts = {
+                    'resignation': '人员离职',
+                    'workload': '工作量调整',
+                    'other': '其他原因'
+                };
+                
+                const newRecord = {
+                    id: handoverHistory.length + 1,
+                    clientId: clientId,
+                    clientName: client.name,
+                    oldResponsible: oldResponsible,
+                    newResponsible: newResponsible.name,
+                    reason: reason,
+                    reasonText: reasonTexts[reason] || reason,
+                    remark: remark || '无备注',
+                    handoverTime: new Date().toISOString().replace('T', ' ').split('.')[0],
+                    handoverBy: '管理员'
+                };
+                
+                handoverHistory.unshift(newRecord);
+                filteredHistory = [...handoverHistory];
+                
+                // 重新分组数据
+                filteredStaffData = groupClientsByResponsible();
+                renderTable();
+                updateStats();
+                closeModal('handoverModal');
+                
+                alert(`客户 ${client.name} 已成功交接给 ${newResponsible.name}`);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品制作统计 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📊</div>
+            <div class="logo-text">数据统计中心</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='data-statistics.html'">← 返回导航</button>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu-section">
+                <div class="menu-section-title">数据分析模块</div>
+                <a href="production-statistics.html" class="menu-item active" data-module="production">
+                    <span class="menu-icon">📋</span>
+                    产品制作统计
+                </a>
+              
+             
+            
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Content Header -->
+            <div class="content-header">
+                <h1 class="content-title" id="moduleTitle">产品制作统计</h1>
+                <p class="content-subtitle" id="moduleSubtitle">各类型产品制作进度与质量分析</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-item">
+                    <span class="filter-label">时间范围：</span>
+                    <select class="filter-select" id="timeRange">
+                        <option value="thisYear">今年</option>
+                        <option value="thisMonth">本月</option>
+                        <option value="lastMonth">上月</option>
+                        <option value="thisQuarter">本季度</option>
+                        <option value="lastQuarter">上季度</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">产品类型：</span>
+                    <select class="filter-select" id="productType">
+                        <option value="all">全部</option>
+                        <option value="material">资料制作</option>
+                        <option value="paper">论文</option>
+                        <option value="education">继续教育</option>
+                        <option value="patent">知识产权</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <span class="filter-label">区域分校：</span>
+                    <select class="filter-select" id="region">
+                        <option value="all">全部</option>
+                        <option value="first">一分校</option>
+                        <option value="second">二分校</option>
+                        <option value="third">三分校</option>
+                        <option value="changde">常德分校</option>
+                        <option value="other">其他分校</option>
+                    </select>
+                </div>
+                <button class="export-btn" onclick="exportCurrentData()">
+                    📊 导出数据
+                </button>
+            </div>
+
+            <!-- Tab Navigation -->
+            <nav class="tab-nav">
+                <ul class="tab-nav-list">
+                    <li class="tab-nav-item">
+                        <a href="#" class="tab-nav-link active" onclick="TabManager.switchTab(event, 'overview-tab')">📈 总体概况</a>
+                    </li>
+                    <li class="tab-nav-item">
+                        <a href="#" class="tab-nav-link" onclick="TabManager.switchTab(event, 'analysis-tab')">📊 数据分析</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- 总体概况 Tab -->
+                <div id="overview-tab" class="tab-pane active">
+                    <div class="production-dashboard" id="overviewCards">
+                        <!-- 产品制作卡片内容将通过JavaScript动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 数据分析 Tab -->
+                <div id="analysis-tab" class="tab-pane">
+                    <!-- 统计图表区域 -->
+                    <div class="chart-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📊 数据图表分析</h3>
+                            <div class="section-actions">
+                                <button class="btn" onclick="downloadChart()">📥 下载图表</button>
+                                <button class="btn" onclick="refreshChart()">🔄 刷新数据</button>
+                            </div>
+                        </div>
+                        <div class="chart-grid" id="chartsContainer">
+                            <!-- 图表内容将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 数据表格区域 -->
+                    <div class="table-section">
+                        <div class="section-header">
+                            <h3 class="section-title">📋 详细数据表格</h3>
+                            <div class="section-actions">
+                                <button class="btn" onclick="downloadTable()">📥 下载表格</button>
+                                <button class="btn" onclick="printTable()">🖨️ 打印表格</button>
+                            </div>
+                        </div>
+                        <div id="tablesContainer">
+                            <!-- 表格内容将通过JavaScript动态生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/data-config.js"></script>
+    <script>
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadModuleContent('production');
+        });
+
+        // 加载模块内容
+        function loadModuleContent(module) {
+            const config = DataConfig[module];
+            
+            // 设置页面标题
+            Utils.setPageTitle(config.title, config.subtitle);
+            
+            // 加载产品制作卡片
+            loadProductionCards(config.cards);
+        }
+
+        // 加载产品制作专用卡片
+        function loadProductionCards(cards) {
+            const container = document.getElementById('overviewCards');
+            
+            // 按产品类型分组
+            let html = '';
+            
+            Object.keys(ProductGroups).forEach(category => {
+                const group = ProductGroups[category];
+                const categoryCards = cards.filter(card => card.category === category);
+                
+                if (categoryCards.length > 0) {
+                    html += `
+                        <div class="product-section">
+                            <div class="product-header">
+                                <div class="product-title">
+                                    <div class="product-icon" style="background-color: ${group.color}">
+                                        ${group.icon}
+                                    </div>
+                                    ${group.name}
+                                    <span class="product-total-count">总数: ${group.totalCount}</span>
+                                </div>
+                                <div class="product-summary">${group.summary}</div>
+                            </div>
+                            <div class="product-cards ${category}-cards">
+                                ${categoryCards.map(card => `
+                                    <div class="product-card ${(card.title === '资料收集完成率' || card.title === 'VIP数量占比' || card.title === '送审率' || card.title === '送审通过率' || card.title === '暂停率' || card.title === '审核退回率' || card.title === '论文选题率' || card.title === '论文撰写率' || card.title === '论文核稿率' || card.title === '论文发表率' || card.title === '论文到刊率' || card.title === '继续教育交付率' || card.title === '继续教育开课率' || card.title === '交付率' || card.title === '软著交付率' || card.title === '专利交付率') ? 'clickable' : ''}" 
+                                         ${(card.title === '资料收集完成率' || card.title === 'VIP数量占比' || card.title === '送审率' || card.title === '送审通过率' || card.title === '暂停率' || card.title === '审核退回率' || card.title === '论文选题率' || card.title === '论文撰写率' || card.title === '论文核稿率' || card.title === '论文发表率' || card.title === '论文到刊率' || card.title === '继续教育交付率' || card.title === '继续教育开课率' || card.title === '交付率' || card.title === '软著交付率' || card.title === '专利交付率') ? 'onclick="openDetailPage(\'' + card.title + '\')"' : ''}>
+                                        <div class="product-card-icon">${card.icon}</div>
+                                        <div class="product-card-title">${card.title}</div>
+                                        <div class="product-card-value">${card.value}</div>
+                                        <div class="product-card-trend">${card.trend}</div>
+                                        ${(card.title === '资料收集完成率' || card.title === 'VIP数量占比' || card.title === '送审率' || card.title === '送审通过率' || card.title === '暂停率' || card.title === '审核退回率' || card.title === '论文选题率' || card.title === '论文撰写率' || card.title === '论文核稿率' || card.title === '论文发表率' || card.title === '论文到刊率' || card.title === '继续教育交付率' || card.title === '继续教育开课率' || card.title === '交付率' || card.title === '软著交付率' || card.title === '专利交付率') ? '<div class="click-hint">点击查看详情</div>' : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 监听标签切换事件
+        window.addEventListener('tabSwitch', function(e) {
+            if (e.detail.tabId === 'analysis-tab') {
+                setTimeout(() => {
+                    loadCharts();
+                    loadTables();
+                }, 100);
+            }
+        });
+
+        // 加载图表
+        function loadCharts() {
+            const container = document.getElementById('chartsContainer');
+            container.innerHTML = `
+                <div class="chart-card">
+                    <div class="chart-title">月度趋势分析</div>
+                    <div class="chart-container">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-title">产品类型分布</div>
+                    <div class="chart-container">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            `;
+            
+            // 延迟渲染图表
+            setTimeout(() => {
+                const trendCtx = document.getElementById('trendChart');
+                const pieCtx = document.getElementById('pieChart');
+                
+                if (trendCtx) {
+                    Utils.renderTrendChart(trendCtx.getContext('2d'));
+                }
+                
+                if (pieCtx) {
+                    const pieData = {
+                        labels: DataConfig.production.pieChartData.labels,
+                        datasets: [{
+                            data: DataConfig.production.pieChartData.data,
+                            backgroundColor: DataConfig.production.pieChartData.colors,
+                            borderWidth: 2,
+                            borderColor: '#fff'
+                        }]
+                    };
+                    Utils.renderPieChart(pieCtx.getContext('2d'), pieData);
+                }
+            }, 100);
+        }
+
+        // 加载表格
+        function loadTables() {
+            const container = document.getElementById('tablesContainer');
+            const tableData = DataConfig.production.tableData;
+            
+            container.innerHTML = `
+                <div class="table-card">
+                    <div class="table-header">
+                        <div class="table-title">${tableData.title}</div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                ${tableData.headers.map(header => `<th>${header}</th>`).join('')}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${tableData.rows.map(row => `
+                                <tr>
+                                    ${row.map(cell => `<td>${cell}</td>`).join('')}
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        // 导出当前数据
+        function exportCurrentData() {
+            Utils.exportToExcel(DataConfig.production.tableData, '产品制作统计数据');
+        }
+
+        // 下载图表
+        function downloadChart() {
+            Utils.downloadChart('trendChart', '产品制作_趋势图');
+            setTimeout(() => {
+                Utils.downloadChart('pieChart', '产品制作_分布图');
+            }, 500);
+            alert('图表下载完成！请查看下载文件夹。');
+        }
+
+        // 下载表格
+        function downloadTable() {
+            Utils.exportToExcel(DataConfig.production.tableData, '产品制作表格');
+        }
+
+        // 刷新图表
+        function refreshChart() {
+            loadCharts();
+            alert('图表数据已刷新！');
+        }
+
+        // 打印表格
+        function printTable() {
+            window.print();
+        }
+
+        // 打开详情页面
+        function openDetailPage(indicatorName) {
+            console.log('打开详情页面:', indicatorName);
+            if (indicatorName === '资料收集完成率') {
+                window.open('material-collection-detail.html', '_blank');
+            } else if (indicatorName === 'VIP数量占比') {
+                window.open('vip-proportion-detail.html', '_blank');
+            } else if (indicatorName === '送审率') {
+                window.open('submission-rate-detail.html', '_blank');
+            } else if (indicatorName === '送审通过率') {
+                window.open('submission-approval-rate-detail.html', '_blank');
+            } else if (indicatorName === '暂停率') {
+                window.open('pause-rate-detail.html', '_blank');
+            } else if (indicatorName === '审核退回率') {
+                window.open('audit-return-rate-detail-clean.html', '_blank');
+            } else if (indicatorName === '论文选题率') {
+                window.open('thesis-topic-rate-detail.html', '_blank');
+            } else if (indicatorName === '论文撰写率') {
+                window.open('thesis-writing-rate-detail.html', '_blank');
+            } else if (indicatorName === '论文核稿率') {
+                window.open('thesis-review-rate-detail.html', '_blank');
+            } else if (indicatorName === '论文发表率') {
+                window.open('thesis-publication-rate-detail.html', '_blank');
+            } else if (indicatorName === '论文到刊率') {
+                window.open('thesis-arrival-rate-detail.html', '_blank');
+            } else if (indicatorName === '继续教育交付率') {
+                window.open('continuing-education-delivery-rate-detail.html', '_blank');
+            } else if (indicatorName === '继续教育开课率') {
+                window.open('continuing-education-course-rate-detail.html', '_blank');
+            } else if (indicatorName === '交付率') {
+                window.open('delivery-rate-detail.html', '_blank');
+            } else if (indicatorName === '软著交付率') {
+                window.open('software-copyright-delivery-rate-detail.html', '_blank');
+            } else if (indicatorName === '专利交付率') {
+                window.open('patent-delivery-rate-detail.html', '_blank');
+            }
+            // 后续可以为其他指标添加相应的详情页面
+        }
+    </script>
+</body>
+</html> 

@@ -1,0 +1,1276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIP数量占比详情分析 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #722ed1;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #722ed1;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: #531dab;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding-top: 56px;
+            min-height: 100vh;
+        }
+        
+        .content-header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb a {
+            color: #722ed1;
+            text-decoration: none;
+        }
+        
+        /* Summary card */
+        .summary-card {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #722ed1;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        /* Tab navigation */
+        .tab-nav {
+            background: white;
+            margin: 0 20px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tab-nav-list {
+            display: flex;
+            list-style: none;
+        }
+        
+        .tab-nav-item {
+            flex: 1;
+        }
+        
+        .tab-nav-link {
+            display: block;
+            padding: 16px 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-right: 1px solid #f0f0f0;
+        }
+        
+        .tab-nav-item:last-child .tab-nav-link {
+            border-right: none;
+        }
+        
+        .tab-nav-link:hover {
+            color: #722ed1;
+            background: #f8f9fa;
+        }
+        
+        .tab-nav-link.active {
+            color: #722ed1;
+            border-bottom-color: #722ed1;
+            background: white;
+        }
+        
+        /* Tab content */
+        .tab-content {
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            border-top: none;
+        }
+        
+        .tab-pane {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* Chart and table layout */
+        .analysis-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            border-color: #722ed1;
+            color: #722ed1;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #722ed1, #531dab);
+            border-radius: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Table styles */
+        .table-container {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(114, 46, 209, 0.1);
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            position: relative;
+        }
+        
+        .table-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #722ed1, #531dab);
+            border-radius: 2px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 16px 12px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            background: white;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .data-table tr:hover td {
+            background: #f8f9ff;
+            transform: scale(1.01);
+        }
+
+        /* VIP类别样式 */
+        .vip-level {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .vip-level.vip1 {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+        }
+
+        .vip-level.vip2 {
+            background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+            color: white;
+        }
+
+        .vip-level.vip3 {
+            background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+            color: white;
+        }
+
+        .vip-level.normal {
+            background: linear-gradient(135deg, #d9d9d9 0%, #bfbfbf 100%);
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tab-nav-list {
+                flex-wrap: wrap;
+            }
+            
+            .tab-nav-item {
+                flex: 0 0 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">👑</div>
+            <div class="logo-text">VIP数量占比详情分析</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='data-statistics.html'">← 返回统计</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Content Header -->
+        <div class="content-header">
+            <div class="breadcrumb">
+                <a href="data-statistics.html">数据统计</a> > <a href="data-statistics.html">产品制作统计</a> > VIP数量占比详情
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-metrics">
+                <div class="metric-item">
+                    <div class="metric-value">32.5%</div>
+                    <div class="metric-label">VIP总占比</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">776</div>
+                    <div class="metric-label">VIP客户总数</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">2,387</div>
+                    <div class="metric-label">客户总数</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">285</div>
+                    <div class="metric-label">VIP1客户</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">332</div>
+                    <div class="metric-label">VIP2客户</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">159</div>
+                    <div class="metric-label">VIP3客户</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <ul class="tab-nav-list">
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link active" onclick="switchTab(event, 'product-type')">📋 产品目录</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'order-name')">📄 产品内容</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'campus')">🏫 校区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'region')">🌍 地区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'major')">🎓 专业</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- 产品目录维度 -->
+            <div id="product-type" class="tab-pane active">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品目录VIP分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('product-type')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('product-type')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品目录VIP占比对比</div>
+                            <div class="chart-container">
+                                <canvas id="productTypeChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">VIP等级分布占比</div>
+                            <div class="chart-container">
+                                <canvas id="productTypePieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 VIP分布统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('product-type')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('product-type')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="productTypeTable">
+                            <thead>
+                                <tr>
+                                    <th>产品目录</th>
+                                    <th>客户总数</th>
+                                    <th>VIP总数</th>
+                                    <th>VIP1</th>
+                                    <th>VIP2</th>
+                                    <th>VIP3</th>
+                                    <th>VIP占比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTypeTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品内容维度 -->
+            <div id="order-name" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品内容VIP分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('order-name')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('order-name')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品内容VIP占比对比</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">热门产品VIP分布</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameTopChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 VIP分布统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('order-name')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('order-name')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="orderNameTable">
+                            <thead>
+                                <tr>
+                                    <th>产品内容</th>
+                                    <th>客户总数</th>
+                                    <th>VIP总数</th>
+                                    <th>VIP1</th>
+                                    <th>VIP2</th>
+                                    <th>VIP3</th>
+                                    <th>VIP占比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderNameTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 校区维度 -->
+            <div id="campus" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 校区VIP分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('campus')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('campus')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">校区VIP占比对比</div>
+                            <div class="chart-container">
+                                <canvas id="campusChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">校区VIP等级分布</div>
+                            <div class="chart-container">
+                                <canvas id="campusPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 校区VIP详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('campus')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('campus')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">校区VIP客户分布统计表</div>
+                        </div>
+                        <table class="data-table" id="campusTable">
+                            <thead>
+                                <tr>
+                                    <th>校区名称</th>
+                                    <th>客户总数</th>
+                                    <th>VIP总数</th>
+                                    <th>VIP1</th>
+                                    <th>VIP2</th>
+                                    <th>VIP3</th>
+                                    <th>VIP占比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="campusTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地区维度 -->
+            <div id="region" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 地区VIP分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('region')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('region')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">地区VIP占比对比</div>
+                            <div class="chart-container">
+                                <canvas id="regionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">地区VIP等级分布</div>
+                            <div class="chart-container">
+                                <canvas id="regionPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 地区VIP详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('region')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('region')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">地区VIP客户分布统计表</div>
+                        </div>
+                        <table class="data-table" id="regionTable">
+                            <thead>
+                                <tr>
+                                    <th>地区名称</th>
+                                    <th>客户总数</th>
+                                    <th>VIP总数</th>
+                                    <th>VIP1</th>
+                                    <th>VIP2</th>
+                                    <th>VIP3</th>
+                                    <th>VIP占比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regionTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 专业维度 -->
+            <div id="major" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 专业VIP分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('major')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('major')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">专业VIP占比排名</div>
+                            <div class="chart-container">
+                                <canvas id="majorChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">专业类别VIP分布</div>
+                            <div class="chart-container">
+                                <canvas id="majorPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 专业VIP详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('major')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('major')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">专业VIP客户分布统计表</div>
+                        </div>
+                        <table class="data-table" id="majorTable">
+                            <thead>
+                                <tr>
+                                    <th>专业名称</th>
+                                    <th>专业类别</th>
+                                    <th>客户数量</th>
+                                    <th>VIP数量</th>
+                                    <th>VIP1</th>
+                                    <th>VIP2</th>
+                                    <th>VIP3</th>
+                                    <th>VIP占比</th>
+                                </tr>
+                            </thead>
+                            <tbody id="majorTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // VIP数据配置
+        const vipData = {
+            summary: {
+                totalVipRate: 32.5,
+                totalVipCount: 776,
+                totalCustomers: 2387,
+                vip1Count: 285,
+                vip2Count: 332,
+                vip3Count: 159
+            },
+            productType: {
+                chartData: {
+                    labels: ['研究生认定', '中工', '高工', '助理'],
+                    datasets: [{
+                        label: 'VIP占比(%)',
+                        data: [35.2, 28.9, 42.1, 25.6],
+                        backgroundColor: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1']
+                    }]
+                },
+                pieData: {
+                    labels: ['VIP1', 'VIP2', 'VIP3'],
+                    data: [285, 332, 159],
+                    colors: ['#722ed1', '#1677ff', '#52c41a']
+                },
+                tableData: [
+                    ['研究生认定', 893, 314, 125, 130, 59, '35.2%'],
+                    ['中工', 756, 218, 88, 95, 35, '28.9%'],
+                    ['高工', 423, 178, 52, 70, 56, '42.1%'],
+                    ['助理', 315, 81, 25, 35, 21, '25.7%']
+                ]
+            },
+            region: {
+                chartData: {
+                    labels: ['长沙市', '邵阳市', '衡阳市', '娄底市', '岳阳市', '益阳市'],
+                    datasets: [{
+                        label: 'VIP占比(%)',
+                        data: [34.8, 31.2, 36.5, 28.9, 33.1, 30.7],
+                        backgroundColor: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2', '#eb2f96']
+                    }]
+                },
+                pieData: {
+                    labels: ['VIP1', 'VIP2', 'VIP3'],
+                    data: [285, 332, 159],
+                    colors: ['#722ed1', '#1677ff', '#52c41a']
+                },
+                tableData: [
+                    ['长沙市', 826, 287, 112, 118, 57, '34.8%'],
+                    ['邵阳市', 578, 180, 70, 76, 34, '31.2%'],
+                    ['衡阳市', 445, 162, 63, 68, 31, '36.5%'],
+                    ['娄底市', 289, 84, 32, 35, 17, '28.9%'],
+                    ['岳阳市', 156, 52, 20, 22, 10, '33.1%'],
+                    ['益阳市', 93, 29, 11, 13, 5, '30.7%']
+                ]
+            }
+        };
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTabData('product-type');
+        });
+
+        // 页签切换函数
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            // 移除所有活动状态
+            document.querySelectorAll('.tab-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // 添加当前活动状态
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            // 加载对应数据
+            loadTabData(tabId);
+        }
+
+        // 加载页签数据
+        function loadTabData(tabId) {
+            switch(tabId) {
+                case 'product-type':
+                    loadProductTypeData();
+                    break;
+                case 'order-name':
+                    loadOrderNameData();
+                    break;
+                case 'campus':
+                    loadCampusData();
+                    break;
+                case 'region':
+                    loadRegionData();
+                    break;
+                case 'major':
+                    loadMajorData();
+                    break;
+            }
+        }
+
+        // 加载产品目录数据
+        function loadProductTypeData() {
+            // 加载图表
+            const chartCtx = document.getElementById('productTypeChart');
+            const pieCtx = document.getElementById('productTypePieChart');
+            
+            if (chartCtx) {
+                new Chart(chartCtx, {
+                    type: 'bar',
+                    data: vipData.productType.chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 50,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            if (pieCtx) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: vipData.productType.pieData.labels,
+                        datasets: [{
+                            data: vipData.productType.pieData.data,
+                            backgroundColor: vipData.productType.pieData.colors
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+            
+            // 加载表格
+            const tableBody = document.getElementById('productTypeTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = vipData.productType.tableData.map(row => 
+                    `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                        <td>${row[4]}</td>
+                        <td>${row[5]}</td>
+                        <td><span style="color: #722ed1; font-weight: 600;">${row[6]}</span></td>
+                    </tr>`
+                ).join('');
+            }
+        }
+
+        // 其他维度数据加载函数
+        function loadOrderNameData() {
+            // 产品内容数据
+            const orderNameData = {
+                chartData: {
+                    labels: ['资料A', '资料B', '论文A', '论文B', '项目C'],
+                    datasets: [{
+                        label: 'VIP占比(%)',
+                        data: [38.5, 32.1, 29.8, 26.4, 35.7],
+                        backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#13c2c2']
+                    }]
+                },
+                tableData: [
+                    ['资料A', 456, 176, 68, 72, 36, '38.5%'],
+                    ['资料B', 389, 125, 48, 52, 25, '32.1%'],
+                    ['论文A', 324, 97, 38, 41, 18, '29.8%'],
+                    ['论文B', 298, 79, 30, 33, 16, '26.4%'],
+                    ['项目C', 156, 56, 22, 24, 10, '35.7%']
+                ]
+            };
+            
+            // 加载柱状图
+            const chartCtx = document.getElementById('orderNameChart');
+            if (chartCtx) {
+                new Chart(chartCtx, {
+                    type: 'bar',
+                    data: orderNameData.chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 50,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 加载热门产品图表
+            const topCtx = document.getElementById('orderNameTopChart');
+            if (topCtx) {
+                new Chart(topCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: orderNameData.chartData.labels,
+                        datasets: [{
+                            data: orderNameData.tableData.map(row => row[1]), // 客户总数
+                            backgroundColor: orderNameData.chartData.datasets[0].backgroundColor
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+            
+            // 加载表格
+            const tableBody = document.getElementById('orderNameTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = orderNameData.tableData.map(row => 
+                    `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                        <td>${row[4]}</td>
+                        <td>${row[5]}</td>
+                        <td><span style="color: #722ed1; font-weight: 600;">${row[6]}</span></td>
+                    </tr>`
+                ).join('');
+            }
+        }
+
+        function loadCampusData() {
+            // 校区数据
+            const campusData = {
+                chartData: {
+                    labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                    datasets: [{
+                        label: 'VIP占比(%)',
+                        data: [34.8, 31.2, 36.5, 28.9, 33.1],
+                        backgroundColor: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2']
+                    }]
+                },
+                tableData: [
+                    ['一分校', 687, 239, 94, 98, 47, '34.8%'],
+                    ['二分校', 592, 185, 72, 78, 35, '31.2%'],
+                    ['三分校', 456, 166, 65, 70, 31, '36.5%'],
+                    ['常德分校', 378, 109, 42, 46, 21, '28.9%'],
+                    ['其他分校', 274, 91, 35, 38, 18, '33.1%']
+                ]
+            };
+            
+            // 加载柱状图
+            const chartCtx = document.getElementById('campusChart');
+            if (chartCtx) {
+                new Chart(chartCtx, {
+                    type: 'bar',
+                    data: campusData.chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 50,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 加载饼图
+            const pieCtx = document.getElementById('campusPieChart');
+            if (pieCtx) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['VIP1', 'VIP2', 'VIP3'],
+                        datasets: [{
+                            data: [285, 332, 159],
+                            backgroundColor: ['#722ed1', '#1677ff', '#52c41a']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+            
+            // 加载表格
+            const tableBody = document.getElementById('campusTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = campusData.tableData.map(row => 
+                    `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                        <td>${row[4]}</td>
+                        <td>${row[5]}</td>
+                        <td><span style="color: #722ed1; font-weight: 600;">${row[6]}</span></td>
+                    </tr>`
+                ).join('');
+            }
+        }
+
+        function loadRegionData() {
+            // 地区数据
+            const regionData = vipData.region;
+            
+            // 加载柱状图
+            const chartCtx = document.getElementById('regionChart');
+            if (chartCtx) {
+                new Chart(chartCtx, {
+                    type: 'bar',
+                    data: regionData.chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 50,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 加载饼图
+            const pieCtx = document.getElementById('regionPieChart');
+            if (pieCtx) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: regionData.pieData.labels,
+                        datasets: [{
+                            data: regionData.pieData.data,
+                            backgroundColor: regionData.pieData.colors
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+            
+            // 加载表格
+            const tableBody = document.getElementById('regionTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = regionData.tableData.map(row => 
+                    `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                        <td>${row[4]}</td>
+                        <td>${row[5]}</td>
+                        <td><span style="color: #722ed1; font-weight: 600;">${row[6]}</span></td>
+                    </tr>`
+                ).join('');
+            }
+        }
+
+        function loadMajorData() {
+            // 专业数据
+            const majorData = {
+                chartData: {
+                    labels: ['建筑工程', '信息技术', '水利工程', '交通运输', '综合专业'],
+                    datasets: [{
+                        label: 'VIP占比(%)',
+                        data: [37.2, 33.8, 31.5, 29.7, 35.4],
+                        backgroundColor: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2']
+                    }]
+                },
+                tableData: [
+                    ['建筑工程', '工程类', 698, 260, 102, 108, 50, '37.2%'],
+                    ['信息技术', '技术类', 567, 192, 75, 81, 36, '33.8%'],
+                    ['水利工程', '工程类', 445, 140, 55, 59, 26, '31.5%'],
+                    ['交通运输', '工程类', 389, 116, 45, 49, 22, '29.7%'],
+                    ['综合专业', '综合类', 288, 102, 40, 43, 19, '35.4%']
+                ]
+            };
+            
+            // 加载柱状图
+            const chartCtx = document.getElementById('majorChart');
+            if (chartCtx) {
+                new Chart(chartCtx, {
+                    type: 'bar',
+                    data: majorData.chartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 50,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 加载饼图
+            const pieCtx = document.getElementById('majorPieChart');
+            if (pieCtx) {
+                new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['工程类', '技术类', '综合类'],
+                        datasets: [{
+                            data: [1532, 567, 288], // 工程类、技术类、综合类的总数
+                            backgroundColor: ['#1677ff', '#52c41a', '#fa8c16']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+            }
+            
+            // 加载表格
+            const tableBody = document.getElementById('majorTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = majorData.tableData.map(row => 
+                    `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                        <td>${row[4]}</td>
+                        <td>${row[5]}</td>
+                        <td>${row[6]}</td>
+                        <td><span style="color: #722ed1; font-weight: 600;">${row[7]}</span></td>
+                    </tr>`
+                ).join('');
+            }
+        }
+
+        // 导出功能
+        function exportTable(type) {
+            alert('导出' + type + '表格数据');
+        }
+
+        function downloadChart(type) {
+            alert('下载' + type + '图表');
+        }
+
+        function refreshData(type) {
+            alert('刷新' + type + '数据');
+            loadTabData(type);
+        }
+
+        function printTable(type) {
+            window.print();
+        }
+    </script>
+</body>
+</html> 

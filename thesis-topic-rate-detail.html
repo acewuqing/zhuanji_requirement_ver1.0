@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>论文选题率详情分析 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1677ff;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #1677ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: #0958d9;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding-top: 56px;
+            min-height: 100vh;
+        }
+        
+        .content-header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        /* Summary card */
+        .summary-card {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1677ff;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        /* Analysis section */
+        .main-analysis-content {
+            margin: 0 20px;
+        }
+        
+        .analysis-section {
+            background: white;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .section-title {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            background: #fff;
+            border: 1px solid #d9d9d9;
+            color: #595959;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+        
+        .btn:hover {
+            border-color: #1677ff;
+            color: #1677ff;
+        }
+        
+        /* Chart grid */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .chart-card {
+            background: #fafafa;
+            border-radius: 6px;
+            padding: 16px;
+            border: 1px solid #f0f0f0;
+        }
+        
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        
+        .chart-container {
+            height: 320px;
+            position: relative;
+        }
+        
+        /* Table styles */
+        .table-container {
+            padding: 20px;
+        }
+        
+        .table-header {
+            margin-bottom: 16px;
+        }
+        
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #262626;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .data-table th {
+            background: #fafafa;
+            font-weight: 600;
+            color: #262626;
+            font-size: 14px;
+        }
+        
+        .data-table td {
+            font-size: 13px;
+            color: #595959;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .clickable-cell {
+            cursor: pointer;
+            color: #1677ff;
+            font-weight: 500;
+        }
+        
+        .clickable-cell:hover {
+            background: #f0f5ff;
+            text-decoration: underline;
+        }
+        
+        .highlighted {
+            background: #f0f5ff !important;
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-container {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #8c8c8c;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+        }
+        
+        .close-btn:hover {
+            background: #f5f5f5;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .detail-info {
+            margin-bottom: 16px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .detail-table th,
+        .detail-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid #f0f0f0;
+            font-size: 13px;
+        }
+        
+        .detail-table th {
+            background: #fafafa;
+            font-weight: 600;
+        }
+        
+        .vip-level {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .vip1 {
+            background: #fffbe6;
+            color: #d48806;
+        }
+        
+        .vip2 {
+            background: #f6ffed;
+            color: #389e0d;
+        }
+        
+        .vip3 {
+            background: #f0f5ff;
+            color: #1d39c4;
+        }
+        
+        .normal {
+            background: #f5f5f5;
+            color: #595959;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📝</div>
+            <div class="logo-text">资料管理系统</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="history.back()">← 返回列表</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Content Header -->
+        <div class="content-header">
+            <div class="breadcrumb">
+                <a href="production-statistics.html">生产统计</a> / 论文选题率详情
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-metrics">
+                <div class="metric-item">
+                    <div class="metric-value">87.6%</div>
+                    <div class="metric-label">总体选题率</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">2,168</div>
+                    <div class="metric-label">论文总数</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">1,899</div>
+                    <div class="metric-label">已选题</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">269</div>
+                    <div class="metric-label">待选题</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">156</div>
+                    <div class="metric-label">无须选题</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">3.2天</div>
+                    <div class="metric-label">平均选题时间</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 校区分析内容 -->
+        <div class="main-analysis-content">
+            <div class="analysis-section">
+                <div class="section-title">
+                    📊 校区论文选题率分析图表
+                    <div class="section-actions">
+                        <button class="btn" onclick="downloadChart()">📥 下载图表</button>
+                        <button class="btn" onclick="refreshData()">🔄 刷新数据</button>
+                    </div>
+                </div>
+                <div class="chart-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">各校区选题率对比</div>
+                        <div class="chart-container">
+                            <canvas id="campusChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-title">校区论文数量分布</div>
+                        <div class="chart-container">
+                            <canvas id="campusPieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="analysis-section">
+                <div class="section-title">
+                    📋 校区详细数据表
+                    <div class="section-actions">
+                        <button class="btn" onclick="exportTable()">📥 导出表格</button>
+                        <button class="btn" onclick="printTable()">🖨️ 打印表格</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">校区论文选题情况统计表</div>
+                    </div>
+                    <table class="data-table" id="campusTable">
+                        <thead>
+                            <tr>
+                                <th>校区名称</th>
+                                <th>论文总数</th>
+                                <th>已选题</th>
+                                <th>待选题</th>
+                                <th>无须选题</th>
+                                <th>选题率</th>
+                            </tr>
+                        </thead>
+                        <tbody id="campusTableBody">
+                            <!-- 数据将通过JavaScript填充 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 客户明细弹窗 -->
+    <div id="customerDetailModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">客户明细数据</h3>
+                <div class="modal-actions">
+                    <button class="btn" id="downloadDetailBtn" onclick="downloadCustomerDetail()">📥 下载明细</button>
+                    <button class="close-btn" onclick="closeCustomerDetailModal()">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="detail-info">
+                    <span id="detailSummary">共 <strong id="totalCount">0</strong> 条记录</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="detail-table" id="customerDetailTable">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>产品目录</th>
+                                <th>校区</th>
+                                <th>参评专业</th>
+                                <th>委托方式</th>
+                                <th>客户版面</th>
+                                <th>发刊平台</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerDetailTableBody">
+                            <!-- 数据将通过JavaScript填充 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面数据配置
+        const pageData = {
+            'campus': {
+                chartData: {
+                    bar: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [91.2, 88.5, 86.7, 84.3, 89.1],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2']
+                    },
+                    pie: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [687, 542, 456, 328, 155],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2']
+                    }
+                },
+                tableData: [
+                    ['一分校', '687', '626', '61', '35', '91.2%'],
+                    ['二分校', '542', '480', '62', '28', '88.5%'],
+                    ['三分校', '456', '395', '61', '32', '86.7%'],
+                    ['常德分校', '328', '276', '52', '41', '84.3%'],
+                    ['其他分校', '155', '138', '17', '20', '89.1%']
+                ]
+            }
+        };
+
+        // 当前活跃的图表实例
+        let activeCharts = {};
+
+        // 注册数据标签插件
+        Chart.register(ChartDataLabels);
+
+        // 客户明细模拟数据
+        const customerDetailData = {
+            generateData: function(category, type, count, campusType) {
+                const names = ['张伟', '王芳', '李强', '刘敏', '陈杰', '杨丽', '赵刚', '孙娜', '周涛', '吴红', 
+                             '郑明', '王磊', '李娜', '张丽', '刘伟', '陈静', '杨强', '赵敏', '孙涛', '周红'];
+                const productCatalogs = ['中工', '高工', '助理', '研究生认定'];
+                const majors = ['建筑工程', '信息技术', '水利工程', '交通运输', '电气工程', '机械工程', '环境工程', '土木工程'];
+                const commissionTypes = ['编写', '编订', '编著'];
+                const customerPages = ['1', '2', '3'];
+                const publishPlatforms = ['龙源', '三网', '龙源+三网'];
+                
+                const data = [];
+                for (let i = 0; i < count; i++) {
+                    data.push([
+                        names[Math.floor(Math.random() * names.length)],
+                        productCatalogs[Math.floor(Math.random() * productCatalogs.length)],
+                        campusType,
+                        majors[Math.floor(Math.random() * majors.length)],
+                        commissionTypes[Math.floor(Math.random() * commissionTypes.length)],
+                        customerPages[Math.floor(Math.random() * customerPages.length)],
+                        publishPlatforms[Math.floor(Math.random() * publishPlatforms.length)]
+                    ]);
+                }
+                return data;
+            }
+        };
+
+        // 当前弹窗数据
+        let currentDetailData = [];
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                initCampusData();
+            }, 100);
+        });
+
+        // 初始化校区数据
+        function initCampusData() {
+            setTimeout(() => {
+                loadCampusChart();
+                loadCampusTable();
+            }, 100);
+        }
+
+        // 加载校区图表
+        function loadCampusChart() {
+            const data = pageData['campus'];
+            if (!data) return;
+
+            // 销毁现有图表
+            Object.values(activeCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            activeCharts = {};
+
+            // 校区选题率柱状图
+            const barCtx = document.getElementById('campusChart');
+            if (barCtx) {
+                activeCharts.campusChart = new Chart(barCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.chartData.bar.labels,
+                        datasets: [{
+                            label: '选题率(%)',
+                            data: data.chartData.bar.data,
+                            backgroundColor: data.chartData.bar.colors.map(color => color + '80'),
+                            borderColor: data.chartData.bar.colors,
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            hoverBackgroundColor: data.chartData.bar.colors,
+                            hoverBorderWidth: 3,
+                            maxBarThickness: 60,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            datalabels: {
+                                display: true,
+                                color: '#262626',
+                                font: { weight: 'bold', size: 12 },
+                                anchor: 'end',
+                                align: 'top',
+                                formatter: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                titleColor: '#fff',
+                                bodyColor: '#fff',
+                                borderColor: '#1677ff',
+                                borderWidth: 2,
+                                cornerRadius: 8,
+                                displayColors: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return `选题率: ${context.parsed.y}%`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                grid: { display: false },
+                                ticks: { font: { weight: 'bold' } }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: { color: 'rgba(22, 119, 255, 0.1)' },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    },
+                                    font: { weight: 'bold' }
+                                }
+                            }
+                        },
+                        onHover: (event, activeElements) => {
+                            event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                        },
+                        onClick: (event, activeElements) => {
+                            if (activeElements.length > 0) {
+                                const index = activeElements[0].index;
+                                highlightTableRow(index);
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 校区论文数量分布饼图
+            const pieCtx = document.getElementById('campusPieChart');
+            if (pieCtx) {
+                activeCharts.campusPieChart = new Chart(pieCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.chartData.pie.labels,
+                        datasets: [{
+                            data: data.chartData.pie.data,
+                            backgroundColor: data.chartData.pie.colors.map(color => color + 'CC'),
+                            borderColor: data.chartData.pie.colors,
+                            borderWidth: 3,
+                            hoverBackgroundColor: data.chartData.pie.colors,
+                            hoverBorderWidth: 4,
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                align: 'start',
+                                labels: {
+                                    padding: 15,
+                                    font: { size: 13, weight: '600' },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 12,
+                                    boxHeight: 12,
+                                    generateLabels: function(chart) {
+                                        const data = chart.data;
+                                        if (data.labels.length && data.datasets.length) {
+                                            const dataset = data.datasets[0];
+                                            const total = dataset.data.reduce((a, b) => a + b, 0);
+                                            return data.labels.map((label, i) => {
+                                                const value = dataset.data[i];
+                                                const percentage = ((value / total) * 100).toFixed(1);
+                                                return {
+                                                    text: `${label}: ${value} (${percentage}%)`,
+                                                    fillStyle: dataset.backgroundColor[i],
+                                                    strokeStyle: dataset.borderColor[i],
+                                                    lineWidth: dataset.borderWidth,
+                                                    hidden: false,
+                                                    index: i
+                                                };
+                                            });
+                                        }
+                                        return [];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 加载校区表格数据
+        function loadCampusTable() {
+            const data = pageData['campus'];
+            if (!data) return;
+            
+            const tableBody = document.getElementById('campusTableBody');
+            
+            if (tableBody && data.tableData) {
+                tableBody.innerHTML = data.tableData.map((row, rowIndex) => {
+                    const cells = row.map((cell, cellIndex) => {
+                        const isClickable = cellIndex >= 1 && cellIndex <= 4;
+                        const cellClass = isClickable ? 'clickable-cell' : '';
+                        const cellClick = isClickable ? `onclick="openCustomerDetail(${rowIndex}, ${cellIndex}, '${cell}')"` : '';
+                        
+                        return `<td class="${cellClass}" ${cellClick}>${cell}</td>`;
+                    }).join('');
+                    
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+            }
+        }
+
+        // 下载图表
+        function downloadChart() {
+            alert('校区论文选题率图表下载功能');
+        }
+
+        // 刷新数据
+        function refreshData() {
+            initCampusData();
+            alert('校区数据已刷新');
+        }
+
+        // 导出表格
+        function exportTable() {
+            const data = pageData['campus'];
+            if (!data) return;
+
+            const headers = ['校区名称', '论文总数', '已选题', '待选题', '无须选题', '选题率'];
+            const ws_data = [headers, ...data.tableData.map(row => 
+                row.map(cell => cell.replace(/<[^>]*>/g, ''))
+            )];
+            
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '校区论文选题率详情');
+            
+            const fileName = `校区论文选题率_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // 打印表格
+        function printTable() {
+            window.print();
+        }
+
+        // 高亮表格行
+        function highlightTableRow(index) {
+            const tableBody = document.getElementById('campusTableBody');
+            if (tableBody) {
+                tableBody.querySelectorAll('tr').forEach(row => {
+                    row.classList.remove('highlighted');
+                });
+                
+                const targetRow = tableBody.children[index];
+                if (targetRow) {
+                    targetRow.classList.add('highlighted');
+                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    setTimeout(() => {
+                        targetRow.classList.remove('highlighted');
+                    }, 3000);
+                }
+            }
+        }
+
+        // 打开客户明细弹窗
+        function openCustomerDetail(rowIndex, cellIndex, value) {
+            const data = pageData['campus'];
+            if (!data || !data.tableData[rowIndex]) return;
+            
+            const row = data.tableData[rowIndex];
+            const campus = row[0];
+            
+            let dataType, count;
+            const headers = ['校区名称', '论文总数', '已选题', '待选题', '无须选题', '选题率'];
+            const columnName = headers[cellIndex];
+            
+            const numericValue = parseInt(value.replace(/<[^>]*>/g, '').replace(/[^\d]/g, '')) || 0;
+            count = numericValue;
+            dataType = columnName;
+            
+            currentDetailData = customerDetailData.generateData(campus, dataType, count, campus);
+            
+            document.getElementById('modalTitle').textContent = `${campus} - ${dataType} 客户明细`;
+            document.getElementById('totalCount').textContent = count;
+            
+            const tableBody = document.getElementById('customerDetailTableBody');
+            tableBody.innerHTML = currentDetailData.map(row => 
+                `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+            ).join('');
+            
+            document.getElementById('customerDetailModal').style.display = 'flex';
+        }
+
+        // 关闭客户明细弹窗
+        function closeCustomerDetailModal() {
+            document.getElementById('customerDetailModal').style.display = 'none';
+        }
+
+        // 下载客户明细数据
+        function downloadCustomerDetail() {
+            if (currentDetailData.length === 0) {
+                alert('没有可下载的数据');
+                return;
+            }
+            
+            const headers = ['姓名', '产品目录', '校区', '参评专业', '委托方式', '客户版面', '发刊平台'];
+            
+            const cleanData = currentDetailData.map(row => 
+                row.map(cell => typeof cell === 'string' ? cell.replace(/<[^>]*>/g, '') : cell)
+            );
+            
+            const ws_data = [headers, ...cleanData];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '客户明细');
+            
+            const fileName = `客户明细数据_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // 点击弹窗外部关闭
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('customerDetailModal');
+            if (event.target === modal) {
+                closeCustomerDetailModal();
+            }
+        });
+    </script>
+</body>
+</html> 

@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>继续教育交付率详情分析 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1677ff;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #1677ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: #0958d9;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding-top: 56px;
+            min-height: 100vh;
+        }
+        
+        .content-header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+
+        
+        .metric-trend {
+            font-size: 12px;
+            color: #52c41a;
+        }
+        
+        /* Summary card */
+        .summary-card {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #722ed1;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        /* Tab navigation */
+        .tab-nav {
+            background: white;
+            margin: 0 20px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tab-nav-list {
+            display: flex;
+            list-style: none;
+        }
+        
+        .tab-nav-item {
+            flex: 1;
+        }
+        
+        .tab-nav-link {
+            display: block;
+            padding: 16px 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-right: 1px solid #f0f0f0;
+        }
+        
+        .tab-nav-item:last-child .tab-nav-link {
+            border-right: none;
+        }
+        
+        .tab-nav-link:hover {
+            color: #722ed1;
+            background: #f8f9fa;
+        }
+        
+        .tab-nav-link.active {
+            color: #722ed1;
+            border-bottom-color: #722ed1;
+            background: white;
+        }
+        
+        /* Tab content */
+        .tab-content {
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            border-top: none;
+        }
+        
+        .tab-pane {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* Chart and table layout */
+        .analysis-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            border-color: #722ed1;
+            color: #722ed1;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-card:has(canvas[id*="Pie"]) {
+            min-width: 500px;
+        }
+        
+        .chart-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #722ed1, #52c41a);
+            border-radius: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Table styles */
+        .table-container {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(114, 46, 209, 0.1);
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            position: relative;
+        }
+        
+        .table-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #722ed1, #1677ff);
+            border-radius: 2px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 16px 12px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            transition: background-color 0.2s ease;
+        }
+
+        .data-table tr:nth-child(even) td {
+            background-color: rgba(114, 46, 209, 0.02);
+        }
+
+        .data-table tr:hover td {
+            background-color: rgba(114, 46, 209, 0.08);
+        }
+
+        /* Status indicators */
+        .status-high {
+            color: #52c41a;
+            font-weight: 600;
+        }
+        
+        .status-medium {
+            color: #fa8c16;
+            font-weight: 600;
+        }
+        
+        .status-low {
+            color: #f5222d;
+            font-weight: 600;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tab-nav-link {
+                padding: 12px 8px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🎓</div>
+            <div class="logo-text">继续教育交付率分析</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='production-statistics.html'">← 返回统计</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Content Header -->
+        <div class="content-header">
+            <div class="breadcrumb">
+                <a href="data-statistics.html">数据统计</a> > 
+                <a href="production-statistics.html">产品制作统计</a> > 
+                继续教育交付率详情
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-metrics">
+                <div class="metric-item">
+                    <div class="metric-value">87.5%</div>
+                    <div class="metric-label">总体交付率</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">1,245</div>
+                    <div class="metric-label">已交付订单</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">178</div>
+                    <div class="metric-label">未交付订单</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <ul class="tab-nav-list">
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link active" onclick="switchTab(event, 'product-catalog')">📋 产品目录</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'campus')">🏫 校区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'major')">🎓 专业</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'region')">🌍 地区</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- 产品目录 Tab -->
+            <div id="product-catalog" class="tab-pane active">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品目录交付分析
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('product-catalog')">📥 下载图表</button>
+                            <button class="btn" onclick="exportData('product-catalog')">📊 导出数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品类型交付率对比</div>
+                            <div class="chart-container">
+                                <canvas id="productCatalogBarChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">产品分布占比</div>
+                            <div class="chart-container">
+                                <canvas id="productCatalogPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">📋 产品目录详细数据</div>
+                        <div class="section-actions">
+                            <button class="btn" onclick="printTable()">🖨️ 打印</button>
+                            <button class="btn" onclick="refreshData()">🔄 刷新</button>
+                        </div>
+                    </div>
+                    <table class="data-table" id="productCatalogTable">
+                        <!-- 表格内容将通过JavaScript生成 -->
+                    </table>
+                </div>
+            </div>
+
+            <!-- 校区 Tab -->
+            <div id="campus" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        🏫 校区交付分析
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('campus')">📥 下载图表</button>
+                            <button class="btn" onclick="exportData('campus')">📊 导出数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">各校区交付率对比</div>
+                            <div class="chart-container">
+                                <canvas id="campusBarChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">校区订单量分布</div>
+                            <div class="chart-container">
+                                <canvas id="campusPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">🏫 校区详细数据</div>
+                        <div class="section-actions">
+                            <button class="btn" onclick="printTable()">🖨️ 打印</button>
+                            <button class="btn" onclick="refreshData()">🔄 刷新</button>
+                        </div>
+                    </div>
+                    <table class="data-table" id="campusTable">
+                        <!-- 表格内容将通过JavaScript生成 -->
+                    </table>
+                </div>
+            </div>
+
+            <!-- 专业 Tab -->
+            <div id="major" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        🎓 专业交付分析
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('major')">📥 下载图表</button>
+                            <button class="btn" onclick="exportData('major')">📊 导出数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">专业交付率排名</div>
+                            <div class="chart-container">
+                                <canvas id="majorBarChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">专业需求分布</div>
+                            <div class="chart-container">
+                                <canvas id="majorPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">🎓 专业详细数据</div>
+                        <div class="section-actions">
+                            <button class="btn" onclick="printTable()">🖨️ 打印</button>
+                            <button class="btn" onclick="refreshData()">🔄 刷新</button>
+                        </div>
+                    </div>
+                    <table class="data-table" id="majorTable">
+                        <!-- 表格内容将通过JavaScript生成 -->
+                    </table>
+                </div>
+            </div>
+
+            <!-- 地区 Tab -->
+            <div id="region" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        🌍 地区交付分析
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('region')">📥 下载图表</button>
+                            <button class="btn" onclick="exportData('region')">📊 导出数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">地区交付率对比</div>
+                            <div class="chart-container">
+                                <canvas id="regionBarChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">地区业务分布</div>
+                            <div class="chart-container">
+                                <canvas id="regionPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <div class="table-header">
+                        <div class="table-title">🌍 地区详细数据</div>
+                        <div class="section-actions">
+                            <button class="btn" onclick="printTable()">🖨️ 打印</button>
+                            <button class="btn" onclick="refreshData()">🔄 刷新</button>
+                        </div>
+                    </div>
+                    <table class="data-table" id="regionTable">
+                        <!-- 表格内容将通过JavaScript生成 -->
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 数据配置
+        const chartData = {
+            productCatalog: {
+                bar: {
+                    labels: ['专业技术人员继续教育', '公需科目培训', '专业科目培训', '高级研修班', '在线学习平台', '证书培训'],
+                    data: [92.5, 88.3, 85.7, 89.4, 91.2, 86.8],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#13c2c2']
+                },
+                pie: {
+                    labels: ['专业技术人员继续教育', '公需科目培训', '专业科目培训', '高级研修班', '在线学习平台', '证书培训'],
+                    data: [35, 22, 18, 12, 8, 5],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#13c2c2']
+                },
+                table: [
+                    ['产品类型', '总订单数', '已交付', '未交付', '交付率'],
+                    ['专业技术人员继续教育', '456', '422', '34', '92.5%'],
+                    ['公需科目培训', '289', '255', '34', '88.3%'],
+                    ['专业科目培训', '234', '201', '33', '85.7%'],
+                    ['高级研修班', '156', '139', '17', '89.4%'],
+                    ['在线学习平台', '102', '93', '9', '91.2%'],
+                    ['证书培训', '67', '58', '9', '86.8%']
+                ]
+            },
+            campus: {
+                bar: {
+                    labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                    data: [89.2, 85.7, 91.3, 88.9, 86.4],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96']
+                },
+                pie: {
+                    labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                    data: [28, 24, 22, 16, 10],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96']
+                },
+                table: [
+                    ['校区名称', '总订单数', '已交付', '未交付', '交付率'],
+                    ['一分校', '398', '355', '43', '89.2%'],
+                    ['二分校', '342', '293', '49', '85.7%'],
+                    ['三分校', '312', '285', '27', '91.3%'],
+                    ['常德分校', '228', '203', '25', '88.9%'],
+                    ['其他分校', '143', '126', '17', '86.4%']
+                ]
+            },
+            major: {
+                bar: {
+                    labels: ['工程技术', '医疗卫生', '教育培训', '经济管理', '法律服务', '农业科学'],
+                    data: [94.2, 91.8, 88.5, 86.3, 89.7, 87.1],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#13c2c2']
+                },
+                pie: {
+                    labels: ['工程技术', '医疗卫生', '教育培训', '经济管理', '法律服务', '农业科学'],
+                    data: [32, 26, 19, 15, 5, 3],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#13c2c2']
+                },
+                table: [
+                    ['专业类别', '总订单数', '已交付', '未交付', '交付率'],
+                    ['工程技术', '456', '430', '26', '94.2%'],
+                    ['医疗卫生', '371', '341', '30', '91.8%'],
+                    ['教育培训', '271', '240', '31', '88.5%'],
+                    ['经济管理', '214', '185', '29', '86.3%'],
+                    ['法律服务', '71', '64', '7', '89.7%'],
+                    ['农业科学', '40', '35', '5', '87.1%']
+                ]
+            },
+            region: {
+                bar: {
+                    labels: ['湖南省内', '华南地区', '华中地区', '华东地区', '西南地区', '其他地区'],
+                    data: [91.5, 87.2, 89.8, 85.4, 88.6, 84.3],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#13c2c2']
+                },
+                pie: {
+                    labels: ['湖南省内', '华南地区', '华中地区', '华东地区', '西南地区', '其他地区'],
+                    data: [45, 18, 15, 12, 7, 3],
+                    backgroundColor: ['#722ed1', '#1677ff', '#52c41a', '#fa8c16', '#eb2f96', '#13c2c2']
+                },
+                table: [
+                    ['地区名称', '总订单数', '已交付', '未交付', '交付率'],
+                    ['湖南省内', '641', '586', '55', '91.5%'],
+                    ['华南地区', '257', '224', '33', '87.2%'],
+                    ['华中地区', '214', '192', '22', '89.8%'],
+                    ['华东地区', '171', '146', '25', '85.4%'],
+                    ['西南地区', '100', '89', '11', '88.6%'],
+                    ['其他地区', '40', '34', '6', '84.3%']
+                ]
+            }
+        };
+
+        // Tab切换功能
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            // 移除所有活动状态
+            document.querySelectorAll('.tab-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // 添加活动状态
+            event.target.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+            
+            // 加载对应的图表和表格
+            loadTabContent(tabId);
+        }
+
+        // 加载标签页内容
+        function loadTabContent(tabId) {
+            const data = chartData[tabId.replace('-', '')];
+            if (!data) return;
+            
+            // 加载柱状图
+            const barCanvas = document.querySelector(`#${tabId.replace('-', '')}BarChart`);
+            if (barCanvas) {
+                renderBarChart(barCanvas, data.bar);
+            }
+            
+            // 加载饼图
+            const pieCanvas = document.querySelector(`#${tabId.replace('-', '')}PieChart`);
+            if (pieCanvas) {
+                renderPieChart(pieCanvas, data.pie);
+            }
+            
+            // 加载表格
+            const table = document.querySelector(`#${tabId.replace('-', '')}Table`);
+            if (table) {
+                renderTable(table, data.table);
+            }
+        }
+
+        // 渲染柱状图
+        function renderBarChart(canvas, data) {
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: '交付率(%)',
+                        data: data.data,
+                        backgroundColor: data.backgroundColor,
+                        borderColor: data.backgroundColor.map(color => color + '80'),
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    return `交付率: ${context.parsed.y}%`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.1)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 渲染饼图
+        function renderPieChart(canvas, data) {
+            const ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.backgroundColor,
+                        borderColor: '#fff',
+                        borderWidth: 3,
+                        hoverBorderWidth: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                usePointStyle: true,
+                                padding: 20,
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            cornerRadius: 8,
+                            callbacks: {
+                                label: function(context) {
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((context.parsed / total) * 100);
+                                    return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 渲染表格
+        function renderTable(table, data) {
+            let html = '<thead><tr>';
+            data[0].forEach(header => {
+                html += `<th>${header}</th>`;
+            });
+            html += '</tr></thead><tbody>';
+            
+            for (let i = 1; i < data.length; i++) {
+                html += '<tr>';
+                data[i].forEach((cell, index) => {
+                    let cellClass = '';
+                    if (index === 4) { // 交付率列
+                        const rate = parseFloat(cell);
+                        if (rate >= 90) cellClass = 'status-high';
+                        else if (rate >= 85) cellClass = 'status-medium';
+                        else cellClass = 'status-low';
+                    }
+                    html += `<td class="${cellClass}">${cell}</td>`;
+                });
+                html += '</tr>';
+            }
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        // 下载图表
+        function downloadChart(tabType) {
+            const barCanvas = document.querySelector(`#${tabType}BarChart`);
+            const pieCanvas = document.querySelector(`#${tabType}PieChart`);
+            
+            if (barCanvas) {
+                const link = document.createElement('a');
+                link.download = `继续教育交付率_${tabType}_柱状图.png`;
+                link.href = barCanvas.toDataURL();
+                link.click();
+            }
+            
+            setTimeout(() => {
+                if (pieCanvas) {
+                    const link = document.createElement('a');
+                    link.download = `继续教育交付率_${tabType}_饼图.png`;
+                    link.href = pieCanvas.toDataURL();
+                    link.click();
+                }
+            }, 500);
+            
+            alert('图表下载完成！');
+        }
+
+        // 导出数据
+        function exportData(tabType) {
+            const data = chartData[tabType];
+            if (!data || !data.table) return;
+            
+            const ws = XLSX.utils.aoa_to_sheet(data.table);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '数据');
+            XLSX.writeFile(wb, `继续教育交付率_${tabType}_数据.xlsx`);
+        }
+
+        // 打印表格
+        function printTable() {
+            window.print();
+        }
+
+        // 刷新数据
+        function refreshData() {
+            // 重新加载当前活动标签页的内容
+            const activeTab = document.querySelector('.tab-pane.active');
+            if (activeTab) {
+                loadTabContent(activeTab.id);
+            }
+            alert('数据已刷新！');
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 加载默认标签页内容
+            loadTabContent('product-catalog');
+        });
+    </script>
+</body>
+</html> 

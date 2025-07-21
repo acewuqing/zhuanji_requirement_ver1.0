@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资料收集完成率详情分析 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #1677ff;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #1677ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: #0958d9;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding-top: 56px;
+            min-height: 100vh;
+        }
+        
+        .content-header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb a {
+            color: #1677ff;
+            text-decoration: none;
+        }
+        
+        .content-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .title-icon {
+            margin-right: 12px;
+            padding: 8px;
+            background: #1677ff;
+            color: white;
+            border-radius: 8px;
+            font-size: 20px;
+        }
+        
+        .content-subtitle {
+            font-size: 14px;
+            color: #8c8c8c;
+        }
+        
+        /* Summary card */
+        .summary-card {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1677ff;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        .metric-trend {
+            font-size: 12px;
+            color: #52c41a;
+        }
+        
+        /* Tab navigation */
+        .tab-nav {
+            background: white;
+            margin: 0 20px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tab-nav-list {
+            display: flex;
+            list-style: none;
+        }
+        
+        .tab-nav-item {
+            flex: 1;
+        }
+        
+        .tab-nav-link {
+            display: block;
+            padding: 16px 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-right: 1px solid #f0f0f0;
+        }
+        
+        .tab-nav-item:last-child .tab-nav-link {
+            border-right: none;
+        }
+        
+        .tab-nav-link:hover {
+            color: #1677ff;
+            background: #f8f9fa;
+        }
+        
+        .tab-nav-link.active {
+            color: #1677ff;
+            border-bottom-color: #1677ff;
+            background: white;
+        }
+        
+        /* Tab content */
+        .tab-content {
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            border-top: none;
+        }
+        
+        .tab-pane {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* Chart and table layout */
+        .analysis-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            border-color: #1677ff;
+            color: #1677ff;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        /* 为饼图卡片添加额外宽度以容纳侧边图例 */
+        .chart-card:has(canvas[id*="Pie"]) {
+            min-width: 500px;
+        }
+        
+        .chart-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        
+        
+        .chart-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #1677ff, #52c41a);
+            border-radius: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Table styles */
+        .table-container {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbff 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+       
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(22, 119, 255, 0.1);
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            position: relative;
+        }
+        
+        .table-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #722ed1, #1677ff);
+            border-radius: 2px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 16px 12px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+            font-size: 14px;
+            border-bottom: 1px solid rgba(240, 240, 240, 0.8);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .data-table tbody tr {
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .data-table tbody tr:nth-child(even) {
+            background: rgba(248, 250, 252, 0.5);
+        }
+
+        .data-table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(22, 119, 255, 0.05) 0%, rgba(82, 196, 26, 0.05) 100%);
+            transform: scale(1.01);
+            box-shadow: 0 4px 16px rgba(22, 119, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        .data-table tbody tr.highlighted {
+            background: linear-gradient(90deg, rgba(22, 119, 255, 0.15) 0%, rgba(82, 196, 26, 0.15) 100%);
+            transform: scale(1.02);
+            box-shadow: 0 6px 24px rgba(22, 119, 255, 0.2);
+            border-left: 4px solid #1677ff;
+            animation: highlightPulse 1s ease-in-out;
+        }
+        
+        .data-table tbody tr.highlighted td {
+            font-weight: 600;
+            color: #1677ff;
+        }
+        
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 6px 24px rgba(22, 119, 255, 0.2); }
+            50% { box-shadow: 0 8px 32px rgba(22, 119, 255, 0.4); }
+            100% { box-shadow: 0 6px 24px rgba(22, 119, 255, 0.2); }
+        }
+        
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            overflow: hidden;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-fill.excellent { background-color: #52c41a; }
+        .progress-fill.good { background-color: #1677ff; }
+        .progress-fill.average { background-color: #fa8c16; }
+        .progress-fill.poor { background-color: #ff4d4f; }
+        
+        /* Status badges */
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .status-badge.success {
+            background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+            color: white;
+            border: none;
+        }
+        
+        .status-badge.warning {
+            background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%);
+            color: white;
+            border: none;
+        }
+        
+        .status-badge.danger {
+            background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%);
+            color: white;
+            border: none;
+        }
+        
+        /* 弹窗样式 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.15);
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 1200px;
+            display: flex;
+            flex-direction: column;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: 24px 32px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #f8f9ff 0%, #fff 100%);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: #262626;
+        }
+
+        .modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .close-btn {
+            background: #f5f5f5;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 18px;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .close-btn:hover {
+            background: #ff4d4f;
+            border-color: #ff4d4f;
+            color: white;
+        }
+
+        .modal-body {
+            padding: 24px 32px 32px;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-info {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+            border: 1px solid #bae7ff;
+            border-radius: 8px;
+            color: #1677ff;
+            font-size: 14px;
+        }
+
+        .table-wrapper {
+            flex: 1;
+            overflow: auto;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .detail-table th {
+            background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+            color: white;
+            font-weight: 600;
+            padding: 14px 12px;
+            text-align: left;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .detail-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f5f5f5;
+            color: #262626;
+        }
+
+        .detail-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .detail-table tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .detail-table tbody tr:nth-child(even):hover {
+            background: #f0f0f0;
+        }
+
+        /* 可点击的表格单元格样式 */
+        .clickable-cell {
+            cursor: pointer;
+            color: #1677ff;
+            font-weight: 600;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .clickable-cell:hover {
+            color: #0958d9;
+            background: linear-gradient(135deg, rgba(22, 119, 255, 0.05) 0%, rgba(22, 119, 255, 0.1) 100%);
+            transform: scale(1.02);
+        }
+
+        .clickable-cell:active {
+            transform: scale(0.98);
+        }
+
+        /* VIP类别样式 */
+        .vip-level {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .vip-level.vip1 {
+            background: linear-gradient(135deg, #722ed1 0%, #531dab 100%);
+            color: white;
+        }
+
+        .vip-level.vip2 {
+            background: linear-gradient(135deg, #1677ff 0%, #0958d9 100%);
+            color: white;
+        }
+
+        .vip-level.vip3 {
+            background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+            color: white;
+        }
+
+        .vip-level.normal {
+            background: linear-gradient(135deg, #d9d9d9 0%, #bfbfbf 100%);
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tab-nav-list {
+                flex-wrap: wrap;
+            }
+            
+            .tab-nav-item {
+                flex: 0 0 50%;
+            }
+            
+            .chart-card, .table-container {
+                padding: 16px;
+                border-radius: 12px;
+            }
+            
+            .chart-container {
+                height: 250px;
+            }
+            
+            .metric-item {
+                padding: 16px;
+            }
+            
+            .metric-value {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📁</div>
+            <div class="logo-text">资料收集完成率详情分析</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='data-statistics.html'">← 返回统计</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Content Header -->
+        <div class="content-header">
+            <div class="breadcrumb">
+                <a href="data-statistics.html">数据统计</a> > <a href="data-statistics.html">产品制作统计</a> > 资料收集完成率详情
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-metrics">
+                <div class="metric-item">
+                    <div class="metric-value">96.8%</div>
+                    <div class="metric-label">总体完成率</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">2,387</div>
+                    <div class="metric-label">总订单数量</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">2,311</div>
+                    <div class="metric-label">已完成数量</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">76</div>
+                    <div class="metric-label">待完成数量</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">6.2天</div>
+                    <div class="metric-label">平均收集耗时</div>
+                </div>
+            
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <ul class="tab-nav-list">
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link active" onclick="switchTab(event, 'product-type')">📋 产品目录</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'order-name')">📄 产品内容</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'campus')">🏫 校区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'region')">🌍 地区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'major')">🎓 专业</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- 产品目录维度 -->
+            <div id="product-type" class="tab-pane active">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品目录分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('product-type')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('product-type')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品目录完成率对比</div>
+                            <div class="chart-container">
+                                <canvas id="productTypeChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">产品目录分布占比</div>
+                            <div class="chart-container">
+                                <canvas id="productTypePieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 完成情况统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('product-type')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('product-type')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="productTypeTable">
+                            <thead>
+                                <tr>
+                                    <th>产品目录</th>
+                                    <th>订单总数</th>
+                                    <th>已完成</th>
+                                    <th>进行中</th>
+                                    <th>已暂停</th>
+                                    <th>完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTypeTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品内容维度 -->
+            <div id="order-name" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品内容分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('order-name')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('order-name')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品内容完成率对比</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">产品内容分布占比</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameTopChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 完成情况统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('order-name')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('order-name')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="orderNameTable">
+                            <thead>
+                                <tr>
+                                    <th>产品内容</th>
+                                    <th>订单总数</th>
+                                    <th>已完成</th>
+                                    <th>进行中</th>
+                                    <th>已暂停</th>
+                                    <th>完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderNameTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 校区维度 -->
+            <div id="campus" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 校区分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('campus')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('campus')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">校区完成率对比</div>
+                            <div class="chart-container">
+                                <canvas id="campusChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">校区业务量分布</div>
+                            <div class="chart-container">
+                                <canvas id="campusPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 校区详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('campus')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('campus')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">校区资料收集完成情况统计表</div>
+                        </div>
+                        <table class="data-table" id="campusTable">
+                            <thead>
+                                <tr>
+                                    <th>校区名称</th>
+                                    <th>订单总数</th>
+                                    <th>已完成</th>
+                                    <th>进行中</th>
+                                    <th>已暂停</th>
+                                    <th>完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="campusTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地区维度 -->
+            <div id="region" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 地区分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('region')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('region')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">地区完成率对比</div>
+                            <div class="chart-container">
+                                <canvas id="regionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">地区业务量分布</div>
+                            <div class="chart-container">
+                                <canvas id="regionPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 地区详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('region')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('region')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">地区资料收集完成情况统计表</div>
+                        </div>
+                        <table class="data-table" id="regionTable">
+                            <thead>
+                                <tr>
+                                    <th>地区名称</th>
+                                    <th>订单总数</th>
+                                    <th>已完成</th>
+                                    <th>进行中</th>
+                                    <th>已暂停</th>
+                                    <th>完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regionTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 专业维度 -->
+            <div id="major" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 专业分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('major')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('major')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">专业完成率排名</div>
+                            <div class="chart-container">
+                                <canvas id="majorChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">专业类别分布</div>
+                            <div class="chart-container">
+                                <canvas id="majorPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 专业详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('major')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('major')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">专业资料收集完成情况统计表</div>
+                        </div>
+                        <table class="data-table" id="majorTable">
+                            <thead>
+                                <tr>
+                                    <th>专业名称</th>
+                                    <th>专业类别</th>
+                                    <th>订单数量</th>
+                                    <th>完成数量</th>
+                                    <th>已暂停</th>
+                                    <th>完成率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="majorTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 客户明细弹窗 -->
+    <div id="customerDetailModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 id="modalTitle">客户明细数据</h3>
+                <div class="modal-actions">
+                    <button class="btn" id="downloadDetailBtn" onclick="downloadCustomerDetail()">📥 下载明细</button>
+                    <button class="close-btn" onclick="closeCustomerDetailModal()">&times;</button>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="detail-info">
+                    <span id="detailSummary">共 <strong id="totalCount">0</strong> 条记录</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="detail-table" id="customerDetailTable">
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>产品目录</th>
+                                <th>校区</th>
+                                <th>产品内容</th>
+                                <th>订单名称</th>
+                                <th>参评专业</th>
+                                <th>参评内容</th>
+                                <th>VIP类</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerDetailTableBody">
+                            <!-- 数据将通过JavaScript填充 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面数据配置
+        const pageData = {
+            'product-type': {
+                chartData: {
+                    bar: {
+                        labels: ['研究生认定', '中工', '高工', '助理'],
+                        data: [98.1, 97.2, 95.8, 94.3],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1']
+                    },
+                    pie: {
+                        labels: ['研究生认定', '中工', '高工', '助理'],
+                        data: [893, 756, 423, 315],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1']
+                    }
+                },
+                tableData: [
+                    ['研究生认定', '893', '876', '17', '5', '98.1%'],
+                    ['中工', '756', '735', '21', '8', '97.2%'],
+                    ['高工', '423', '405', '18', '3', '95.8%'],
+                    ['助理', '315', '297', '18', '2', '94.3%']
+                ]
+            },
+            'order-name': {
+                chartData: {
+                    bar: {
+                        labels: ['资料A', '资料B', '论文A', '论文B'],
+                        data: [98.5, 97.2, 95.8, 94.1],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1']
+                    },
+                    pie: {
+                        labels: ['资料A', '资料B', '论文A', '论文B'],
+                        data: [893, 756, 423, 315],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1']
+                    }
+                },
+                tableData: [
+                    ['资料A', '893', '880', '13', '0', '98.5%'],
+                    ['资料B', '756', '735', '21', '0', '97.2%'],
+                    ['论文A', '423', '405', '18', '0', '95.8%'],
+                    ['论文B', '315', '296', '19', '0', '94.1%']
+                ]
+            },
+            'campus': {
+                chartData: {
+                    bar: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [98.2, 96.1, 95.8, 94.5, 97.1],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2']
+                    },
+                    pie: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [687, 592, 456, 378, 274],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2']
+                    }
+                },
+                tableData: [
+                    ['一分校', '687', '675', '12', '4', '98.2%'],
+                    ['二分校', '592', '569', '23', '6', '96.1%'],
+                    ['三分校', '456', '437', '19', '3', '95.8%'],
+                    ['常德分校', '378', '357', '21', '8', '94.5%'],
+                    ['其他分校', '274', '266', '8', '2', '97.1%']
+                ]
+            },
+            'region': {
+                chartData: {
+                    bar: {
+                        labels: ['长沙市', '邵阳市', '衡阳市', '娄底市', '岳阳市', '益阳市'],
+                        data: [98.5, 96.8, 95.2, 94.1, 97.3, 95.9],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2', '#eb2f96']
+                    },
+                    pie: {
+                        labels: ['长沙市', '邵阳市', '衡阳市', '娄底市', '岳阳市', '益阳市'],
+                        data: [826, 578, 445, 289, 156, 93],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2', '#eb2f96']
+                    }
+                },
+                tableData: [
+                    ['长沙市', '826', '814', '12', '5', '98.5%'],
+                    ['邵阳市', '578', '559', '19', '8', '96.8%'],
+                    ['衡阳市', '445', '424', '21', '3', '95.2%'],
+                    ['娄底市', '289', '272', '17', '6', '94.1%'],
+                    ['岳阳市', '156', '152', '4', '2', '97.3%'],
+                    ['益阳市', '93', '89', '4', '1', '95.9%']
+                ]
+            },
+            'major': {
+                chartData: {
+                    bar: {
+                        labels: ['土建类', '工信类', '水利类', '交通类', '其他类'],
+                        data: [97.8, 96.2, 95.5, 94.8, 93.9]
+                    },
+                    pie: {
+                        labels: ['土建类', '工信类', '水利类', '交通类', '其他类'],
+                        data: [698, 567, 445, 389, 288],
+                        colors: ['#1677ff', '#52c41a', '#fa8c16', '#722ed1', '#13c2c2']
+                    }
+                },
+                tableData: [
+                    ['土建类', '建筑工程', '698', '682', '6', '97.8%'],
+                    ['工信类', '信息技术', '567', '545', '4', '96.2%'],
+                    ['水利类', '水利工程', '445', '425', '3', '95.5%'],
+                    ['交通类', '交通运输', '389', '369', '5', '94.8%'],
+                    ['其他类', '综合专业', '288', '270', '2', '93.9%']
+                ]
+            }
+        };
+
+        // 当前活跃的图表实例
+        let activeCharts = {};
+
+        // 注册数据标签插件
+        Chart.register(ChartDataLabels);
+
+        // 客户明细模拟数据
+        const customerDetailData = {
+            generateData: function(category, type, count, productType) {
+                const names = ['张伟', '王芳', '李强', '刘敏', '陈杰', '杨丽', '赵刚', '孙娜', '周涛', '吴红', 
+                             '郑明', '王磊', '李娜', '张丽', '刘伟', '陈静', '杨强', '赵敏', '孙涛', '周红'];
+                const campuses = ['一分校', '二分校', '三分校', '常德分校', '其他分校'];
+                const orders = ['资料A', '资料B', '论文A', '论文B', '项目C'];
+                const orderNames = [
+                    '继续教育A', '继续教育B', '继续教育C',
+                    '论文A', '论文B', '论文C', 
+                    '全套资料+论文A', '全套资料+论文B', '全套资料+论文C',
+                    '专利申请A', '专利申请B',
+                    '职称评审资料包A', '职称评审资料包B',
+                    '学历提升套餐A', '学历提升套餐B',
+                    '综合评审包A', '综合评审包B'
+                ];
+                const majors = ['建筑工程', '信息技术', '水利工程', '交通运输', '综合专业'];
+                const contents = ['职称评审资料', '学术论文发表', '继续教育学分', '专利申请', '项目实施'];
+                const vipLevels = ['VIP1', 'VIP2', 'VIP3', '普通'];
+                
+                const data = [];
+                for (let i = 0; i < count; i++) {
+                    const vipLevel = vipLevels[Math.floor(Math.random() * vipLevels.length)];
+                    const vipClass = vipLevel === 'VIP1' ? 'vip1' : 
+                                   vipLevel === 'VIP2' ? 'vip2' : 
+                                   vipLevel === 'VIP3' ? 'vip3' : 'normal';
+                    
+                    data.push([
+                        names[Math.floor(Math.random() * names.length)],
+                        productType, // 使用指定的产品类型，确保一致性
+                        campuses[Math.floor(Math.random() * campuses.length)],
+                        orders[Math.floor(Math.random() * orders.length)],
+                        orderNames[Math.floor(Math.random() * orderNames.length)],
+                        majors[Math.floor(Math.random() * majors.length)],
+                        contents[Math.floor(Math.random() * contents.length)],
+                        `<span class="vip-level ${vipClass}">${vipLevel}</span>`
+                    ]);
+                }
+                return data;
+            }
+        };
+
+        // 当前弹窗数据
+        let currentDetailData = [];
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.5s ease-in-out';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+                loadTabContent('product-type');
+            }, 100);
+        });
+
+        // 切换标签
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            // 更新标签导航状态
+            document.querySelectorAll('.tab-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新标签内容
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            
+            // 加载当前标签内容
+            loadTabContent(tabId);
+        }
+
+        // 加载标签内容
+        function loadTabContent(tabId) {
+            setTimeout(() => {
+                loadChart(tabId);
+                loadTable(tabId);
+            }, 100);
+        }
+
+        // 加载图表
+        function loadChart(tabId) {
+            const data = pageData[tabId];
+            if (!data) return;
+
+            // 销毁现有图表
+            Object.values(activeCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            activeCharts = {};
+
+            if (tabId === 'product-type') {
+                // 柱状图
+                const barCtx = document.getElementById('productTypeChart');
+                if (barCtx) {
+                    activeCharts.productTypeChart = new Chart(barCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.chartData.bar.labels,
+                            datasets: [{
+                                label: '完成率(%)',
+                                data: data.chartData.bar.data,
+                                backgroundColor: data.chartData.bar.colors.map(color => 
+                                    color + '80' // 添加透明度
+                                ),
+                                borderColor: data.chartData.bar.colors,
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                borderSkipped: false,
+                                hoverBackgroundColor: data.chartData.bar.colors,
+                                hoverBorderWidth: 3,
+                                hoverBorderRadius: 12,
+                                maxBarThickness: 60,
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                datalabels: {
+                                    display: true,
+                                    color: '#262626',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 12
+                                    },
+                                    anchor: 'end',
+                                    align: 'top',
+                                    formatter: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#1677ff',
+                                    borderWidth: 2,
+                                    cornerRadius: 8,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `完成率: ${context.parsed.y}%`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    grid: {
+                                        color: 'rgba(22, 119, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%';
+                                        },
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                }
+                            },
+                            onHover: (event, activeElements) => {
+                                event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                            },
+                            onClick: (event, activeElements) => {
+                                if (activeElements.length > 0) {
+                                    const index = activeElements[0].index;
+                                    highlightTableRow('product-type', index);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 饼图
+                const pieCtx = document.getElementById('productTypePieChart');
+                if (pieCtx) {
+                    activeCharts.productTypePieChart = new Chart(pieCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.chartData.pie.labels,
+                            datasets: [{
+                                data: data.chartData.pie.data,
+                                backgroundColor: data.chartData.pie.colors.map(color => color + 'CC'),
+                                borderColor: data.chartData.pie.colors,
+                                borderWidth: 3,
+                                hoverBackgroundColor: data.chartData.pie.colors,
+                                hoverBorderWidth: 4,
+                                hoverOffset: 15
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%',
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    align: 'start',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 13,
+                                            weight: '600'
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        boxWidth: 12,
+                                        boxHeight: 12,
+                                        generateLabels: function(chart) {
+                                            const data = chart.data;
+                                            if (data.labels.length && data.datasets.length) {
+                                                const dataset = data.datasets[0];
+                                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                                return data.labels.map((label, i) => {
+                                                    const value = dataset.data[i];
+                                                    const percentage = ((value / total) * 100).toFixed(1);
+                                                    return {
+                                                        text: `${label}: ${value} (${percentage}%)`,
+                                                        fillStyle: dataset.backgroundColor[i],
+                                                        strokeStyle: dataset.borderColor[i],
+                                                        lineWidth: dataset.borderWidth,
+                                                        hidden: false,
+                                                        index: i
+                                                    };
+                                                });
+                                            }
+                                            return [];
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#1677ff',
+                                    borderWidth: 2,
+                                    cornerRadius: 8,
+                                    displayColors: true,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                            return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            onHover: (event, activeElements) => {
+                                event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                            },
+                            onClick: (event, activeElements) => {
+                                if (activeElements.length > 0) {
+                                    const index = activeElements[0].index;
+                                    highlightTableRow('product-type', index);
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (tabId === 'order-name') {
+                // 柱状图
+                const barCtx = document.getElementById('orderNameChart');
+                if (barCtx) {
+                    activeCharts.orderNameChart = new Chart(barCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.chartData.bar.labels,
+                            datasets: [{
+                                label: '完成率(%)',
+                                data: data.chartData.bar.data,
+                                backgroundColor: data.chartData.bar.colors.map(color => 
+                                    color + '80' // 添加透明度
+                                ),
+                                borderColor: data.chartData.bar.colors,
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                borderSkipped: false,
+                                hoverBackgroundColor: data.chartData.bar.colors,
+                                hoverBorderWidth: 3,
+                                hoverBorderRadius: 12,
+                                maxBarThickness: 60,
+                                barPercentage: 0.6,
+                                categoryPercentage: 0.8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                datalabels: {
+                                    display: true,
+                                    color: '#262626',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 12
+                                    },
+                                    anchor: 'end',
+                                    align: 'top',
+                                    formatter: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#1677ff',
+                                    borderWidth: 2,
+                                    cornerRadius: 8,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `完成率: ${context.parsed.y}%`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    grid: {
+                                        color: 'rgba(22, 119, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%';
+                                        },
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                }
+                            },
+                            onHover: (event, activeElements) => {
+                                event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                            },
+                            onClick: (event, activeElements) => {
+                                if (activeElements.length > 0) {
+                                    const index = activeElements[0].index;
+                                    highlightTableRow('order-name', index);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 饼图
+                const pieCtx = document.getElementById('orderNameTopChart');
+                if (pieCtx) {
+                    activeCharts.orderNameTopChart = new Chart(pieCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.chartData.pie.labels,
+                            datasets: [{
+                                data: data.chartData.pie.data,
+                                backgroundColor: data.chartData.pie.colors.map(color => color + 'CC'),
+                                borderColor: data.chartData.pie.colors,
+                                borderWidth: 3,
+                                hoverBackgroundColor: data.chartData.pie.colors,
+                                hoverBorderWidth: 4,
+                                hoverOffset: 15
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%',
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    align: 'start',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 13,
+                                            weight: '600'
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        boxWidth: 12,
+                                        boxHeight: 12,
+                                        generateLabels: function(chart) {
+                                            const data = chart.data;
+                                            if (data.labels.length && data.datasets.length) {
+                                                const dataset = data.datasets[0];
+                                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                                return data.labels.map((label, i) => {
+                                                    const value = dataset.data[i];
+                                                    const percentage = ((value / total) * 100).toFixed(1);
+                                                    return {
+                                                        text: `${label}: ${value} (${percentage}%)`,
+                                                        fillStyle: dataset.backgroundColor[i],
+                                                        strokeStyle: dataset.borderColor[i],
+                                                        lineWidth: dataset.borderWidth,
+                                                        hidden: false,
+                                                        index: i
+                                                    };
+                                                });
+                                            }
+                                            return [];
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#1677ff',
+                                    borderWidth: 2,
+                                    cornerRadius: 8,
+                                    displayColors: true,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                            return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            onHover: (event, activeElements) => {
+                                event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                            },
+                            onClick: (event, activeElements) => {
+                                if (activeElements.length > 0) {
+                                    const index = activeElements[0].index;
+                                    highlightTableRow('order-name', index);
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (tabId === 'campus') {
+                // 柱状图
+                const barCtx = document.getElementById('campusChart');
+                if (barCtx) {
+                    activeCharts.campusChart = new Chart(barCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.chartData.bar.labels,
+                            datasets: [{
+                                label: '完成率(%)',
+                                data: data.chartData.bar.data,
+                                backgroundColor: data.chartData.bar.colors,
+                                borderRadius: 6,
+                                maxBarThickness: 50,
+                                barPercentage: 0.7,
+                                categoryPercentage: 0.8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                datalabels: {
+                                    display: true,
+                                    color: '#262626',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 12
+                                    },
+                                    anchor: 'end',
+                                    align: 'top',
+                                    formatter: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 饼图
+                const pieCtx = document.getElementById('campusPieChart');
+                if (pieCtx) {
+                    activeCharts.campusPieChart = new Chart(pieCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.chartData.pie.labels,
+                            datasets: [{
+                                data: data.chartData.pie.data,
+                                backgroundColor: data.chartData.pie.colors,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    align: 'start',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 13,
+                                            weight: '600'
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        boxWidth: 12,
+                                        boxHeight: 12,
+                                        generateLabels: function(chart) {
+                                            const data = chart.data;
+                                            if (data.labels.length && data.datasets.length) {
+                                                const dataset = data.datasets[0];
+                                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                                return data.labels.map((label, i) => {
+                                                    const value = dataset.data[i];
+                                                    const percentage = ((value / total) * 100).toFixed(1);
+                                                    return {
+                                                        text: `${label}: ${value} (${percentage}%)`,
+                                                        fillStyle: dataset.backgroundColor[i],
+                                                        strokeStyle: dataset.borderColor[i],
+                                                        lineWidth: dataset.borderWidth,
+                                                        hidden: false,
+                                                        index: i
+                                                    };
+                                                });
+                                            }
+                                            return [];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (tabId === 'region') {
+                // 柱状图
+                const barCtx = document.getElementById('regionChart');
+                if (barCtx) {
+                    activeCharts.regionChart = new Chart(barCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.chartData.bar.labels,
+                            datasets: [{
+                                label: '完成率(%)',
+                                data: data.chartData.bar.data,
+                                backgroundColor: data.chartData.bar.colors.map(color => 
+                                    color + '80' // 添加透明度
+                                ),
+                                borderColor: data.chartData.bar.colors,
+                                borderWidth: 2,
+                                borderRadius: 8,
+                                borderSkipped: false,
+                                hoverBackgroundColor: data.chartData.bar.colors,
+                                hoverBorderWidth: 3,
+                                hoverBorderRadius: 12,
+                                maxBarThickness: 50,
+                                barPercentage: 0.7,
+                                categoryPercentage: 0.8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                intersect: false,
+                                mode: 'index'
+                            },
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                datalabels: {
+                                    display: true,
+                                    color: '#262626',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 12
+                                    },
+                                    anchor: 'end',
+                                    align: 'top',
+                                    formatter: function(value) {
+                                        return value + '%';
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#1677ff',
+                                    borderWidth: 2,
+                                    cornerRadius: 8,
+                                    displayColors: false,
+                                    callbacks: {
+                                        label: function(context) {
+                                            return `完成率: ${context.parsed.y}%`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: false
+                                    },
+                                    ticks: {
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                },
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100,
+                                    grid: {
+                                        color: 'rgba(22, 119, 255, 0.1)'
+                                    },
+                                    ticks: {
+                                        callback: function(value) {
+                                            return value + '%';
+                                        },
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                }
+                            },
+                            onHover: (event, activeElements) => {
+                                event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                            },
+                            onClick: (event, activeElements) => {
+                                if (activeElements.length > 0) {
+                                    const index = activeElements[0].index;
+                                    highlightTableRow('region', index);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 饼图
+                const pieCtx = document.getElementById('regionPieChart');
+                if (pieCtx) {
+                    activeCharts.regionPieChart = new Chart(pieCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.chartData.pie.labels,
+                            datasets: [{
+                                data: data.chartData.pie.data,
+                                backgroundColor: data.chartData.pie.colors.map(color => color + 'CC'),
+                                borderColor: data.chartData.pie.colors,
+                                borderWidth: 3,
+                                hoverBackgroundColor: data.chartData.pie.colors,
+                                hoverBorderWidth: 4,
+                                hoverOffset: 15
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            cutout: '60%',
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    align: 'start',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 13,
+                                            weight: '600'
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        boxWidth: 12,
+                                        boxHeight: 12,
+                                        generateLabels: function(chart) {
+                                            const data = chart.data;
+                                            if (data.labels.length && data.datasets.length) {
+                                                const dataset = data.datasets[0];
+                                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                                return data.labels.map((label, i) => {
+                                                    const value = dataset.data[i];
+                                                    const percentage = ((value / total) * 100).toFixed(1);
+                                                    return {
+                                                        text: `${label}: ${value} (${percentage}%)`,
+                                                        fillStyle: dataset.backgroundColor[i],
+                                                        strokeStyle: dataset.borderColor[i],
+                                                        lineWidth: dataset.borderWidth,
+                                                        hidden: false,
+                                                        index: i
+                                                    };
+                                                });
+                                            }
+                                            return [];
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    borderColor: '#1677ff',
+                                    borderWidth: 2,
+                                    cornerRadius: 8,
+                                    displayColors: true,
+                                    callbacks: {
+                                        label: function(context) {
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((context.parsed / total) * 100).toFixed(1);
+                                            return `${context.label}: ${context.parsed} (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            },
+                            onHover: (event, activeElements) => {
+                                event.native.target.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+                            },
+                            onClick: (event, activeElements) => {
+                                if (activeElements.length > 0) {
+                                    const index = activeElements[0].index;
+                                    highlightTableRow('region', index);
+                                }
+                            }
+                        }
+                    });
+                }
+            } else if (tabId === 'major') {
+                // 柱状图
+                const barCtx = document.getElementById('majorChart');
+                if (barCtx) {
+                    activeCharts.majorChart = new Chart(barCtx.getContext('2d'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.chartData.bar.labels,
+                            datasets: [{
+                                label: '完成率(%)',
+                                data: data.chartData.bar.data,
+                                backgroundColor: '#fa8c16',
+                                borderRadius: 6,
+                                maxBarThickness: 50,
+                                barPercentage: 0.7,
+                                categoryPercentage: 0.8
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                                datalabels: {
+                                    display: true,
+                                    color: '#262626',
+                                    font: {
+                                        weight: 'bold',
+                                        size: 12
+                                    },
+                                    anchor: 'end',
+                                    align: 'top',
+                                    formatter: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // 饼图
+                const pieCtx = document.getElementById('majorPieChart');
+                if (pieCtx) {
+                    activeCharts.majorPieChart = new Chart(pieCtx.getContext('2d'), {
+                        type: 'doughnut',
+                        data: {
+                            labels: data.chartData.pie.labels,
+                            datasets: [{
+                                data: data.chartData.pie.data,
+                                backgroundColor: data.chartData.pie.colors,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'right',
+                                    align: 'start',
+                                    labels: {
+                                        padding: 15,
+                                        font: {
+                                            size: 13,
+                                            weight: '600'
+                                        },
+                                        usePointStyle: true,
+                                        pointStyle: 'circle',
+                                        boxWidth: 12,
+                                        boxHeight: 12,
+                                        generateLabels: function(chart) {
+                                            const data = chart.data;
+                                            if (data.labels.length && data.datasets.length) {
+                                                const dataset = data.datasets[0];
+                                                const total = dataset.data.reduce((a, b) => a + b, 0);
+                                                return data.labels.map((label, i) => {
+                                                    const value = dataset.data[i];
+                                                    const percentage = ((value / total) * 100).toFixed(1);
+                                                    return {
+                                                        text: `${label}: ${value} (${percentage}%)`,
+                                                        fillStyle: dataset.backgroundColor[i],
+                                                        strokeStyle: dataset.borderColor[i],
+                                                        lineWidth: dataset.borderWidth,
+                                                        hidden: false,
+                                                        index: i
+                                                    };
+                                                });
+                                            }
+                                            return [];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        // 加载表格数据
+        function loadTable(tabId) {
+            const data = pageData[tabId];
+            if (!data) return;
+
+            // 根据tabId确定正确的表格body ID
+            let tableBodyId;
+            if (tabId === 'product-type') {
+                tableBodyId = 'productTypeTableBody';
+            } else if (tabId === 'order-name') {
+                tableBodyId = 'orderNameTableBody';
+            } else if (tabId === 'campus') {
+                tableBodyId = 'campusTableBody';
+            } else if (tabId === 'region') {
+                tableBodyId = 'regionTableBody';
+            } else if (tabId === 'major') {
+                tableBodyId = 'majorTableBody';
+            }
+            
+            const tableBody = document.getElementById(tableBodyId);
+            
+            if (tableBody && data.tableData) {
+                tableBody.innerHTML = data.tableData.map((row, rowIndex) => {
+                    const cells = row.map((cell, cellIndex) => {
+                        // 判断是否为可点击的单元格（排除完成率列）
+                        const isClickable = shouldMakeCellClickable(tabId, cellIndex);
+                        const cellClass = isClickable ? 'clickable-cell' : '';
+                        const cellClick = isClickable ? `onclick="openCustomerDetail('${tabId}', ${rowIndex}, ${cellIndex}, '${cell}')"` : '';
+                        
+                        return `<td class="${cellClass}" ${cellClick}>${cell}</td>`;
+                    }).join('');
+                    
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+            }
+        }
+
+        // 判断单元格是否应该可点击
+        function shouldMakeCellClickable(tabId, cellIndex) {
+            const clickableColumns = {
+                'product-type': [1, 2, 3, 4], // 订单总数、已完成、进行中、已暂停
+                'order-name': [1, 2, 3, 4], // 订单总数、已完成、进行中、已暂停
+                'campus': [1, 2, 3, 4], // 订单总数、已完成、进行中、已暂停
+                'region': [1, 2, 3, 4], // 订单总数、已完成、进行中、已暂停
+                'major': [2, 3, 4] // 订单数量、完成数量、已暂停
+            };
+            
+            return clickableColumns[tabId] && clickableColumns[tabId].includes(cellIndex);
+        }
+
+        // 下载图表
+        function downloadChart(tabId) {
+            // 实现图表下载功能
+            alert('图表下载功能：' + tabId);
+        }
+
+        // 刷新数据
+        function refreshData(tabId) {
+            loadTabContent(tabId);
+            alert('数据已刷新：' + tabId);
+        }
+
+        // 导出表格
+        function exportTable(tabId) {
+            const data = pageData[tabId];
+            if (!data) return;
+
+            // 使用XLSX导出
+            const headers = getTableHeaders(tabId);
+            const ws_data = [headers, ...data.tableData.map(row => 
+                row.map(cell => cell.replace(/<[^>]*>/g, ''))
+            )];
+            
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '资料收集完成率详情');
+            
+            const fileName = `资料收集完成率_${tabId}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // 打印表格
+        function printTable(tabId) {
+            window.print();
+        }
+
+        // 获取表格头部
+        function getTableHeaders(tabId) {
+            const headers = {
+                'product-type': ['产品目录', '订单总数', '已完成', '进行中', '已暂停', '完成率'],
+                'order-name': ['产品内容', '订单总数', '已完成', '进行中', '已暂停', '完成率'],
+                'campus': ['校区名称', '订单总数', '已完成', '进行中', '已暂停', '完成率'],
+                'region': ['地区名称', '订单总数', '已完成', '进行中', '已暂停', '完成率'],
+                'major': ['专业名称', '专业类别', '订单数量', '完成数量', '已暂停', '完成率']
+            };
+            return headers[tabId] || [];
+        }
+
+        // 高亮表格行
+        function highlightTableRow(tabId, index) {
+            // 根据tabId确定表格body ID
+            let tableBodyId;
+            if (tabId === 'product-type') {
+                tableBodyId = 'productTypeTableBody';
+            } else if (tabId === 'order-name') {
+                tableBodyId = 'orderNameTableBody';
+            } else if (tabId === 'campus') {
+                tableBodyId = 'campusTableBody';
+            } else if (tabId === 'region') {
+                tableBodyId = 'regionTableBody';
+            } else if (tabId === 'major') {
+                tableBodyId = 'majorTableBody';
+            }
+            
+            const tableBody = document.getElementById(tableBodyId);
+            if (tableBody) {
+                // 清除之前的高亮
+                tableBody.querySelectorAll('tr').forEach(row => {
+                    row.classList.remove('highlighted');
+                });
+                
+                // 高亮指定行
+                const targetRow = tableBody.children[index];
+                if (targetRow) {
+                    targetRow.classList.add('highlighted');
+                    // 滚动到该行
+                    targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // 3秒后移除高亮
+                    setTimeout(() => {
+                        targetRow.classList.remove('highlighted');
+                    }, 3000);
+                }
+            }
+        }
+
+        // 添加表格行点击事件
+        function addTableRowClickEvents() {
+            document.querySelectorAll('.data-table tbody tr').forEach((row, index) => {
+                row.addEventListener('click', function() {
+                    // 高亮当前行
+                    this.parentNode.querySelectorAll('tr').forEach(r => r.classList.remove('highlighted'));
+                    this.classList.add('highlighted');
+                    
+                    // 可以在这里触发图表高亮相应的柱子
+                    // 但Chart.js的高亮需要通过其他方式实现
+                });
+            });
+        }
+
+        // 打开客户明细弹窗
+        function openCustomerDetail(tabId, rowIndex, cellIndex, value) {
+            const data = pageData[tabId];
+            if (!data || !data.tableData[rowIndex]) return;
+            
+            const row = data.tableData[rowIndex];
+            const category = row[0]; // 第一列作为分类
+            
+            // 根据点击的列确定数据类型和数量
+            let dataType, count;
+            const headers = getTableHeaders(tabId);
+            const columnName = headers[cellIndex];
+            
+            // 解析数值（去掉可能的HTML标签和非数字字符）
+            const numericValue = parseInt(value.replace(/<[^>]*>/g, '').replace(/[^\d]/g, '')) || 0;
+            count = numericValue;
+            dataType = columnName;
+            
+            // 确定产品类型 - 使用第一列的值作为产品类型
+            const productType = category;
+            
+            // 生成模拟数据，传递产品类型确保一致性
+            currentDetailData = customerDetailData.generateData(category, dataType, count, productType);
+            
+            // 更新弹窗标题和内容
+            document.getElementById('modalTitle').textContent = `${category} - ${dataType} 客户明细`;
+            document.getElementById('totalCount').textContent = count;
+            
+            // 填充表格数据
+            const tableBody = document.getElementById('customerDetailTableBody');
+            tableBody.innerHTML = currentDetailData.map(row => 
+                `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`
+            ).join('');
+            
+            // 显示弹窗
+            document.getElementById('customerDetailModal').style.display = 'flex';
+        }
+
+        // 关闭客户明细弹窗
+        function closeCustomerDetailModal() {
+            document.getElementById('customerDetailModal').style.display = 'none';
+        }
+
+        // 下载客户明细数据
+        function downloadCustomerDetail() {
+            if (currentDetailData.length === 0) {
+                alert('没有可下载的数据');
+                return;
+            }
+            
+            const headers = ['姓名', '产品目录', '校区', '产品内容', '订单名称', '参评专业', '参评内容', 'VIP类'];
+            
+            // 清理数据中的HTML标签
+            const cleanData = currentDetailData.map(row => 
+                row.map(cell => typeof cell === 'string' ? cell.replace(/<[^>]*>/g, '') : cell)
+            );
+            
+            const ws_data = [headers, ...cleanData];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '客户明细');
+            
+            const fileName = `客户明细数据_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        // 点击弹窗外部关闭
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('customerDetailModal');
+            if (event.target === modal) {
+                closeCustomerDetailModal();
+            }
+        });
+    </script>
+</body>
+</html> 

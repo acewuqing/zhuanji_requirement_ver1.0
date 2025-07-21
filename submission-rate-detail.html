@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>送审率详情分析 - 资料管理系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background-color: #52c41a;
+            border-radius: 8px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .logo-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            background: #52c41a;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover {
+            background: #389e0d;
+        }
+        
+        /* Main content */
+        .main-content {
+            padding-top: 56px;
+            min-height: 100vh;
+        }
+        
+        .content-header {
+            background: white;
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .breadcrumb {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin-bottom: 0;
+        }
+        
+        .breadcrumb a {
+            color: #52c41a;
+            text-decoration: none;
+        }
+        
+        /* Summary card */
+        .summary-card {
+            background: white;
+            margin: 20px;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+        }
+        
+        .summary-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+        }
+        
+        .metric-item {
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 32px;
+            font-weight: 600;
+            color: #52c41a;
+            margin-bottom: 4px;
+        }
+        
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        
+        /* Tab navigation */
+        .tab-nav {
+            background: white;
+            margin: 0 20px;
+            border-radius: 8px 8px 0 0;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+        
+        .tab-nav-list {
+            display: flex;
+            list-style: none;
+        }
+        
+        .tab-nav-item {
+            flex: 1;
+        }
+        
+        .tab-nav-link {
+            display: block;
+            padding: 16px 20px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            text-align: center;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            border-right: 1px solid #f0f0f0;
+        }
+        
+        .tab-nav-item:last-child .tab-nav-link {
+            border-right: none;
+        }
+        
+        .tab-nav-link:hover {
+            color: #52c41a;
+            background: #f8f9fa;
+        }
+        
+        .tab-nav-link.active {
+            color: #52c41a;
+            border-bottom-color: #52c41a;
+            background: white;
+        }
+        
+        /* Tab content */
+        .tab-content {
+            background: white;
+            margin: 0 20px 20px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            border: 1px solid #f0f0f0;
+            border-top: none;
+        }
+        
+        .tab-pane {
+            display: none;
+            padding: 20px;
+        }
+        
+        .tab-pane.active {
+            display: block;
+        }
+        
+        /* Chart and table layout */
+        .analysis-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .section-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 6px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: white;
+            color: #666;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn:hover {
+            border-color: #52c41a;
+            color: #52c41a;
+        }
+        
+        .chart-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .chart-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f6ffed 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        
+        .chart-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #52c41a, #389e0d);
+            border-radius: 2px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 320px;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Table styles */
+        .table-container {
+            background: linear-gradient(135deg, #ffffff 0%, #f6ffed 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .table-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(82, 196, 26, 0.1);
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #262626;
+            position: relative;
+        }
+        
+        .table-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, #52c41a, #389e0d);
+            border-radius: 2px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .data-table th {
+            background: linear-gradient(135deg, #52c41a 0%, #389e0d 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 16px 12px;
+            text-align: left;
+            position: relative;
+        }
+        
+        .data-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+        }
+
+        .data-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f0f0f0;
+            background: white;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .data-table tr:hover td {
+            background: #f6ffed;
+            transform: scale(1.01);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .summary-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .tab-nav-list {
+                flex-wrap: wrap;
+            }
+            
+            .tab-nav-item {
+                flex: 0 0 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">📝</div>
+            <div class="logo-text">送审率详情分析</div>
+        </div>
+        <div class="header-actions">
+            <button class="back-btn" onclick="window.location.href='data-statistics.html'">← 返回统计</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Content Header -->
+        <div class="content-header">
+            <div class="breadcrumb">
+                <a href="data-statistics.html">数据统计</a> > <a href="data-statistics.html">产品制作统计</a> > 送审率详情
+            </div>
+        </div>
+
+        <!-- Summary Card -->
+        <div class="summary-card">
+            <div class="summary-metrics">
+                <div class="metric-item">
+                    <div class="metric-value">94.3%</div>
+                    <div class="metric-label">总送审率</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">2,251</div>
+                    <div class="metric-label">已送审数量</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">2,387</div>
+                    <div class="metric-label">订单总数</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">136</div>
+                    <div class="metric-label">待送审数量</div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value">1,909</div>
+                    <div class="metric-label">审核通过数量</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <ul class="tab-nav-list">
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link active" onclick="switchTab(event, 'product-type')">📋 产品目录</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'order-name')">📄 产品内容</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'campus')">🏫 校区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'region')">🌍 地区</a>
+                </li>
+                <li class="tab-nav-item">
+                    <a href="#" class="tab-nav-link" onclick="switchTab(event, 'major')">🎓 专业</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <!-- 产品目录维度 -->
+            <div id="product-type" class="tab-pane active">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品目录送审分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('product-type')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('product-type')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品目录送审率对比</div>
+                            <div class="chart-container">
+                                <canvas id="productTypeChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">产品目录分布占比</div>
+                            <div class="chart-container">
+                                <canvas id="productTypePieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 送审情况统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('product-type')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('product-type')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="productTypeTable">
+                            <thead>
+                                <tr>
+                                    <th>产品目录</th>
+                                    <th>订单总数</th>
+                                    <th>已送审</th>
+                                    <th>待送审</th>
+                                    <th>送审率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTypeTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品内容维度 -->
+            <div id="order-name" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 产品内容送审分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('order-name')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('order-name')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">产品内容送审率对比</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">热门产品送审分布</div>
+                            <div class="chart-container">
+                                <canvas id="orderNameTopChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 送审情况统计表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('order-name')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('order-name')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table" id="orderNameTable">
+                            <thead>
+                                <tr>
+                                    <th>产品内容</th>
+                                    <th>订单总数</th>
+                                    <th>已送审</th>
+                                    <th>待送审</th>
+                                    <th>送审率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderNameTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 校区维度 -->
+            <div id="campus" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 校区送审分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('campus')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('campus')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">校区送审率对比</div>
+                            <div class="chart-container">
+                                <canvas id="campusChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">校区业务量分布</div>
+                            <div class="chart-container">
+                                <canvas id="campusPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 校区送审详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('campus')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('campus')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">校区送审情况统计表</div>
+                        </div>
+                        <table class="data-table" id="campusTable">
+                            <thead>
+                                <tr>
+                                    <th>校区名称</th>
+                                    <th>订单总数</th>
+                                    <th>已送审</th>
+                                    <th>待送审</th>
+                                    <th>送审率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="campusTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 地区维度 -->
+            <div id="region" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 地区送审分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('region')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('region')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">地区送审率对比</div>
+                            <div class="chart-container">
+                                <canvas id="regionChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">地区业务量分布</div>
+                            <div class="chart-container">
+                                <canvas id="regionPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 地区送审详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('region')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('region')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">地区送审情况统计表</div>
+                        </div>
+                        <table class="data-table" id="regionTable">
+                            <thead>
+                                <tr>
+                                    <th>地区名称</th>
+                                    <th>订单总数</th>
+                                    <th>已送审</th>
+                                    <th>待送审</th>
+                                    <th>送审率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="regionTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 专业维度 -->
+            <div id="major" class="tab-pane">
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📊 专业送审分析图表
+                        <div class="section-actions">
+                            <button class="btn" onclick="downloadChart('major')">📥 下载图表</button>
+                            <button class="btn" onclick="refreshData('major')">🔄 刷新数据</button>
+                        </div>
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-card">
+                            <div class="chart-title">专业送审率排名</div>
+                            <div class="chart-container">
+                                <canvas id="majorChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-card">
+                            <div class="chart-title">专业类别送审分布</div>
+                            <div class="chart-container">
+                                <canvas id="majorPieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section">
+                    <div class="section-title">
+                        📋 专业送审详细数据表
+                        <div class="section-actions">
+                            <button class="btn" onclick="exportTable('major')">📥 导出表格</button>
+                            <button class="btn" onclick="printTable('major')">🖨️ 打印表格</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <div class="table-header">
+                            <div class="table-title">专业送审情况统计表</div>
+                        </div>
+                        <table class="data-table" id="majorTable">
+                            <thead>
+                                <tr>
+                                    <th>专业名称</th>
+                                    <th>专业类别</th>
+                                    <th>订单数量</th>
+                                    <th>已送审</th>
+                                    <th>待送审</th>
+                                    <th>送审率</th>
+                                </tr>
+                            </thead>
+                            <tbody id="majorTableBody">
+                                <!-- 数据将通过JavaScript填充 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // 送审数据配置
+        const pageData = {
+            'product-type': {
+                chartData: {
+                    bar: {
+                        labels: ['研究生认定', '中工', '高工', '助理'],
+                        data: [95.8, 94.2, 93.1, 92.5],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1']
+                    },
+                    pie: {
+                        labels: ['研究生认定', '中工', '高工', '助理'],
+                        data: [893, 756, 423, 315],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1']
+                    }
+                },
+                tableData: [
+                    ['研究生认定', '893', '856', '37', '95.8%'],
+                    ['中工', '756', '712', '44', '94.2%'],
+                    ['高工', '423', '394', '29', '93.1%'],
+                    ['助理', '315', '289', '26', '92.5%']
+                ]
+            },
+            'order-name': {
+                chartData: {
+                    bar: {
+                        labels: ['资料A', '资料B', '论文A', '论文B'],
+                        data: [96.2, 94.8, 92.3, 91.1],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1']
+                    },
+                    pie: {
+                        labels: ['资料A', '资料B', '论文A', '论文B'],
+                        data: [893, 756, 423, 315],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1']
+                    }
+                },
+                tableData: [
+                    ['资料A', '893', '859', '34', '96.2%'],
+                    ['资料B', '756', '717', '39', '94.8%'],
+                    ['论文A', '423', '391', '32', '92.3%'],
+                    ['论文B', '315', '287', '28', '91.1%']
+                ]
+            },
+            'campus': {
+                chartData: {
+                    bar: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [95.2, 93.8, 94.5, 92.1, 94.9],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1', '#13c2c2']
+                    },
+                    pie: {
+                        labels: ['一分校', '二分校', '三分校', '常德分校', '其他分校'],
+                        data: [687, 592, 456, 378, 274],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1', '#13c2c2']
+                    }
+                },
+                tableData: [
+                    ['一分校', '687', '654', '33', '95.2%'],
+                    ['二分校', '592', '555', '37', '93.8%'],
+                    ['三分校', '456', '431', '25', '94.5%'],
+                    ['常德分校', '378', '348', '30', '92.1%'],
+                    ['其他分校', '274', '260', '14', '94.9%']
+                ]
+            },
+            'region': {
+                chartData: {
+                    bar: {
+                        labels: ['长沙市', '邵阳市', '衡阳市', '娄底市', '岳阳市', '益阳市'],
+                        data: [95.8, 94.2, 93.5, 92.1, 94.7, 93.8],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1', '#13c2c2', '#eb2f96']
+                    },
+                    pie: {
+                        labels: ['长沙市', '邵阳市', '衡阳市', '娄底市', '岳阳市', '益阳市'],
+                        data: [826, 578, 445, 289, 156, 93],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1', '#13c2c2', '#eb2f96']
+                    }
+                },
+                tableData: [
+                    ['长沙市', '826', '791', '35', '95.8%'],
+                    ['邵阳市', '578', '544', '34', '94.2%'],
+                    ['衡阳市', '445', '416', '29', '93.5%'],
+                    ['娄底市', '289', '266', '23', '92.1%'],
+                    ['岳阳市', '156', '148', '8', '94.7%'],
+                    ['益阳市', '93', '87', '6', '93.8%']
+                ]
+            },
+            'major': {
+                chartData: {
+                    bar: {
+                        labels: ['建筑工程', '信息技术', '水利工程', '交通运输', '综合专业'],
+                        data: [95.4, 94.1, 93.2, 92.8, 94.3],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16', '#722ed1', '#13c2c2']
+                    },
+                    pie: {
+                        labels: ['工程类', '技术类', '综合类'],
+                        data: [1532, 567, 288],
+                        colors: ['#52c41a', '#1677ff', '#fa8c16']
+                    }
+                },
+                tableData: [
+                    ['建筑工程', '工程类', '698', '666', '32', '95.4%'],
+                    ['信息技术', '技术类', '567', '534', '33', '94.1%'],
+                    ['水利工程', '工程类', '445', '415', '30', '93.2%'],
+                    ['交通运输', '工程类', '389', '361', '28', '92.8%'],
+                    ['综合专业', '综合类', '288', '271', '17', '94.3%']
+                ]
+            }
+        };
+
+        // 当前活跃的图表实例
+        let activeCharts = {};
+
+        // 注册数据标签插件
+        Chart.register(ChartDataLabels);
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTabContent('product-type');
+        });
+
+        // 切换标签
+        function switchTab(event, tabId) {
+            event.preventDefault();
+            
+            // 更新标签导航状态
+            document.querySelectorAll('.tab-nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 更新标签内容
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            
+            // 加载当前标签内容
+            loadTabContent(tabId);
+        }
+
+        // 加载标签内容
+        function loadTabContent(tabId) {
+            setTimeout(() => {
+                loadChart(tabId);
+                loadTable(tabId);
+            }, 100);
+        }
+
+        // 加载图表
+        function loadChart(tabId) {
+            const data = pageData[tabId];
+            if (!data) return;
+
+            // 销毁现有图表
+            Object.values(activeCharts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            activeCharts = {};
+
+            // 柱状图
+            const barCtx = document.getElementById(tabId === 'product-type' ? 'productTypeChart' : 
+                                                 tabId === 'order-name' ? 'orderNameChart' :
+                                                 tabId === 'campus' ? 'campusChart' :
+                                                 tabId === 'region' ? 'regionChart' : 'majorChart');
+            if (barCtx) {
+                activeCharts[tabId + 'Chart'] = new Chart(barCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: data.chartData.bar.labels,
+                        datasets: [{
+                            label: '送审率(%)',
+                            data: data.chartData.bar.data,
+                            backgroundColor: data.chartData.bar.colors.map(color => color + '80'),
+                            borderColor: data.chartData.bar.colors,
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                            hoverBackgroundColor: data.chartData.bar.colors,
+                            hoverBorderWidth: 3,
+                            maxBarThickness: 60,
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            datalabels: {
+                                display: true,
+                                color: '#262626',
+                                font: {
+                                    weight: 'bold',
+                                    size: 12
+                                },
+                                anchor: 'end',
+                                align: 'top',
+                                formatter: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 饼图
+            const pieCtx = document.getElementById(tabId === 'product-type' ? 'productTypePieChart' : 
+                                                 tabId === 'order-name' ? 'orderNameTopChart' :
+                                                 tabId === 'campus' ? 'campusPieChart' :
+                                                 tabId === 'region' ? 'regionPieChart' : 'majorPieChart');
+            if (pieCtx) {
+                activeCharts[tabId + 'PieChart'] = new Chart(pieCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: data.chartData.pie.labels,
+                        datasets: [{
+                            data: data.chartData.pie.data,
+                            backgroundColor: data.chartData.pie.colors.map(color => color + 'CC'),
+                            borderColor: data.chartData.pie.colors,
+                            borderWidth: 3,
+                            hoverBackgroundColor: data.chartData.pie.colors,
+                            hoverBorderWidth: 4,
+                            hoverOffset: 15
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '60%',
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                align: 'start',
+                                labels: {
+                                    padding: 15,
+                                    font: {
+                                        size: 13,
+                                        weight: '600'
+                                    },
+                                    usePointStyle: true,
+                                    pointStyle: 'circle',
+                                    boxWidth: 12,
+                                    boxHeight: 12
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 加载表格
+        function loadTable(tabId) {
+            const data = pageData[tabId];
+            if (!data) return;
+
+            const tableBodyId = tabId === 'product-type' ? 'productTypeTableBody' : 
+                               tabId === 'order-name' ? 'orderNameTableBody' :
+                               tabId === 'campus' ? 'campusTableBody' :
+                               tabId === 'region' ? 'regionTableBody' : 'majorTableBody';
+            
+            const tableBody = document.getElementById(tableBodyId);
+            if (tableBody) {
+                tableBody.innerHTML = data.tableData.map(row => {
+                    const cells = row.map((cell, index) => {
+                        if (index === row.length - 1) {
+                            // 最后一列（送审率）特殊样式
+                            return `<td><span style="color: #52c41a; font-weight: 600;">${cell}</span></td>`;
+                        }
+                        return `<td>${cell}</td>`;
+                    }).join('');
+                    
+                    return `<tr>${cells}</tr>`;
+                }).join('');
+            }
+        }
+
+        // 导出功能
+        function exportTable(type) {
+            const data = pageData[type];
+            if (!data) return;
+
+            const headers = type === 'major' ? 
+                ['专业名称', '专业类别', '订单数量', '已送审', '待送审', '送审率'] :
+                ['名称', '订单总数', '已送审', '待送审', '送审率'];
+            
+            const ws_data = [headers, ...data.tableData];
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '送审率详情');
+            
+            const fileName = `送审率_${type}_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        }
+
+        function downloadChart(type) {
+            alert('下载' + type + '图表');
+        }
+
+        function refreshData(type) {
+            loadTabContent(type);
+            alert('数据已刷新');
+        }
+
+        function printTable(type) {
+            window.print();
+        }
+    </script>
+</body>
+</html> 

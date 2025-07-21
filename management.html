@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>资料管理系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* Header styles */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background-color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .logo-icon {
+            color: #1677ff;
+            margin-right: 8px;
+            font-size: 24px;
+        }
+        
+        .header-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .header-icon {
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background-color: #ccc;
+        }
+        
+        /* Sidebar styles */
+        .sidebar {
+            width: 210px;
+            background-color: #fff;
+            border-right: 1px solid #e8e8e8;
+            padding-top: 56px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        
+        .menu {
+            padding: 8px 0;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .menu-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .menu-item.active {
+            background-color: #f0f7ff;
+            color: #1677ff;
+            border-right: 3px solid #1677ff;
+        }
+        
+        .menu-icon {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .menu-arrow {
+            margin-left: auto;
+            font-size: 12px;
+        }
+        
+        /* Main content styles */
+        .main-content {
+            flex: 1;
+            margin-left: 210px;
+            padding-top: 56px;
+            padding-bottom: 20px;
+        }
+        
+        .page-header {
+            padding: 16px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #e8e8e8;
+            display: flex;
+            align-items: center;
+        }
+        
+        .page-title {
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .content-wrapper {
+            padding: 20px;
+        }
+        
+        .filter-bar {
+            background-color: #fff;
+            padding: 16px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        .search-input {
+            display: flex;
+            align-items: center;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            padding: 0 12px;
+            height: 36px;
+            width: 240px;
+        }
+        
+        .search-input input {
+            border: none;
+            outline: none;
+            flex: 1;
+            height: 100%;
+            font-size: 14px;
+        }
+        
+        .search-icon {
+            color: #999;
+            cursor: pointer;
+        }
+        
+        .select-wrapper {
+            position: relative;
+            height: 36px;
+            min-width: 180px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .select-text {
+            flex: 1;
+            font-size: 14px;
+        }
+        
+        .select-arrow {
+            color: #999;
+        }
+        
+        .filter-actions {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid #d9d9d9;
+            background-color: #fff;
+            color: #666;
+        }
+        
+        .btn-icon {
+            margin-right: 4px;
+        }
+        
+        /* Table styles */
+        .table-wrapper {
+            background-color: #fff;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        th {
+            background-color: #fafafa;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 2px;
+            cursor: pointer;
+        }
+        
+        .status-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: #e6f7ff;
+            color: #1677ff;
+        }
+        
+        .status-tag.green {
+            background-color: #f6ffed;
+            color: #52c41a;
+        }
+        
+        .status-tag.orange {
+            background-color: #fff7e6;
+            color: #fa8c16;
+        }
+        
+        .status-tag.purple {
+            background-color: #f9f0ff;
+            color: #722ed1;
+        }
+        
+        .status-tag.pink {
+            background-color: #fff0f6;
+            color: #eb2f96;
+        }
+        
+        .status-tag.blue {
+            background-color: #f0f7ff;
+            color: #1677ff;
+        }
+        
+        .status-tag.cyan {
+            background-color: #e6fffb;
+            color: #13c2c2;
+        }
+        
+        .status-tag.teal {
+            background-color: #f0fdff;
+            color: #08979c;
+        }
+        
+        .status-tag.brown {
+            background-color: #fdf6ec;
+            color: #d4380d;
+        }
+        
+        .action-btn {
+            color: #1677ff;
+            margin-right: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .action-btn.green {
+            color: #52c41a;
+        }
+        
+        .action-btn.purple {
+            color: #722ed1;
+        }
+        
+        .action-btn.pink {
+            color: #eb2f96;
+        }
+        
+        .action-btn.blue {
+            color: #1677ff;
+        }
+        
+        .action-btn.cyan {
+            color: #13c2c2;
+        }
+        
+        .action-btn.teal {
+            color: #08979c;
+        }
+        
+        .action-btn.brown {
+            color: #d4380d;
+        }
+        
+        /* Pagination styles */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .pagination-info {
+            color: #999;
+        }
+        
+        .pagination-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .page-btn {
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #fff;
+        }
+        
+        .page-btn.active {
+            background-color: #1677ff;
+            color: #fff;
+            border-color: #1677ff;
+        }
+        
+        .page-btn.disabled {
+            color: #d9d9d9;
+            cursor: not-allowed;
+        }
+        
+        .per-page {
+            display: flex;
+            align-items: center;
+            margin-left: 16px;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border-radius: 8px;
+            padding: 0;
+            min-width: 500px;
+            max-width: 600px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .modal-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-close:hover {
+            color: #333;
+        }
+        
+        .modal-body {
+            padding: 20px 24px;
+        }
+        
+        .customer-info-text {
+            margin-bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .customer-info-text span {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1677ff;
+            box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2);
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .btn-modal {
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            border: 1px solid;
+            transition: all 0.3s;
+        }
+        
+        .btn-modal.btn-secondary {
+            background-color: #fff;
+            border-color: #d9d9d9;
+            color: #666;
+        }
+        
+        .btn-modal.btn-secondary:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .btn-modal.btn-primary {
+            background-color: #1677ff;
+            border-color: #1677ff;
+            color: white;
+        }
+        
+        .btn-modal.btn-primary:hover {
+            background-color: #0958d9;
+            border-color: #0958d9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="logo">
+            <span class="logo-icon">⬢</span>
+            <span>资料管理系统</span>
+        </div>
+        <div class="header-right">
+            <span class="header-icon">🔔</span>
+            <span class="header-icon">🌓</span>
+            <span class="header-icon">⛶</span>
+            <span class="header-icon">⚙️</span>
+            <div class="avatar">U</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="menu">
+                <div class="menu-item">
+                    <span class="menu-icon">🏠</span>
+                    <span>首页</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📋</span>
+                    <span>订单管理</span>
+                    <span class="menu-arrow">▼</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">👤</span>
+                    <span>客户管理</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">👥</span>
+                    <span>客户群管理</span>
+                </div>
+                <div class="menu-item active">
+                    <span class="menu-icon">📁</span>
+                    <span>资料制作列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📝</span>
+                    <span>知识产权列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📚</span>
+                    <span>继续教育列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📄</span>
+                    <span>论文列表</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">🔄</span>
+                    <span>共享盘</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span>政策管理</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">🔑</span>
+                    <span>权限管理</span>
+                    <span class="menu-arrow">▼</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='work-handover.html'">
+                    <span class="menu-icon">🔄</span>
+                    <span>工作交接</span>
+                </div>
+                <div class="menu-item">
+                    <span class="menu-icon">⚙️</span>
+                    <span>设置</span>
+                    <span class="menu-arrow">▼</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <span class="page-title">业绩梳理</span>
+            </div>
+
+            <div class="content-wrapper">
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="search-input">
+                        <span>👤</span>
+                        <input type="text" placeholder="请输入客户姓名">
+                        <span class="search-icon">🔍</span>
+                    </div>
+
+                    <div class="select-wrapper">
+                        <span class="select-text">请选择参评专业</span>
+                        <span class="select-arrow">▼</span>
+                    </div>
+
+                    <div class="select-wrapper">
+                        <span class="select-text">全部状态</span>
+                        <span class="select-arrow">▼</span>
+                    </div>
+
+                    <div class="select-wrapper">
+                        <span class="select-text">全部图像处理状态</span>
+                        <span class="select-arrow">▼</span>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button class="btn">
+                            <span class="btn-icon">🔄</span>
+                            <span>重置</span>
+                        </button>
+                        <button class="btn">
+                            <span>展开高级筛选</span>
+                            <span class="btn-icon">▼</span>
+                        </button>
+                        <button class="btn">
+                            <span class="btn-icon">↻</span>
+                        </button>
+                        <button class="btn">
+                            <span class="btn-icon">⚙️</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 40px;">
+                                    <div class="checkbox"></div>
+                                </th>
+                                <th style="width: 60px;">序号</th>
+                                <th style="width: 120px;">客户姓名</th>
+                                <th style="width: 180px;">参评专业</th>
+                                <th style="width: 180px;">状态</th>
+                                <th style="width: 120px;">图像处理</th>
+                                <th style="width: 100px;">校区</th>
+                                <th style="width: 100px;">当前负责人</th>
+                                <th style="width: 120px;">分配时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"></div>
+                                </td>
+                                <td>1</td>
+                                <td>zzc009</td>
+                                <td>船舶工程与水运工程</td>
+                                <td>
+                                    <span class="status-tag">【二级组长】业绩梳理</span>
+                                </td>
+                                <td></td>
+                                <td>其他</td>
+                                <td>杨苗</td>
+                                <td>2025-01-15</td>
+                                <td>
+                                    <span class="action-btn" onclick="viewHistory('zzc009')">
+                                        <span style="margin-right: 4px;">🕒</span>
+                                        历史记录
+                                    </span>
+                                    <span class="action-btn" onclick="continueWork('zzc009')">
+                                        <span style="margin-right: 4px;">≡</span>
+                                        梳理
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"></div>
+                                </td>
+                                <td>2</td>
+                                <td>周莹</td>
+                                <td>建筑工程</td>
+                                <td>
+                                    <span class="status-tag">【资料制作员+二级组长】初审</span>
+                                </td>
+                                <td>
+                                    <span class="status-tag green">图像已完成</span>
+                                </td>
+                                <td>二分校</td>
+                                <td>向莹</td>
+                                <td>2025-01-14</td>
+                                <td>
+                                    <span class="action-btn" onclick="viewHistory('周莹')">
+                                        <span style="margin-right: 4px;">🕒</span>
+                                        历史记录
+                                    </span>
+                                    <span class="action-btn" onclick="continueWork('周莹')">
+                                        <span style="margin-right: 4px;">▶</span>
+                                        继续制作
+                                    </span>
+                                    <span class="action-btn green" onclick="initialReview('周莹')">
+                                        <span style="margin-right: 4px;">✓</span>
+                                        初审
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"></div>
+                                </td>
+                                <td>3</td>
+                                <td>ly023</td>
+                                <td>港口与航道工程</td>
+                                <td>
+                                    <span class="status-tag orange">【资料制作员】进度二进行中</span>
+                                </td>
+                                <td></td>
+                                <td>其他</td>
+                                <td>曹建红</td>
+                                <td>2025-01-13</td>
+                                <td>
+                                    <span class="action-btn" onclick="viewHistory('ly023')">
+                                        <span style="margin-right: 4px;">🕒</span>
+                                        历史记录
+                                    </span>
+                                    <span class="action-btn" onclick="continueWork('ly023')">
+                                        <span style="margin-right: 4px;">▶</span>
+                                        继续制作
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"></div>
+                                </td>
+                                <td>4</td>
+                                <td>张三</td>
+                                <td>高级工程师</td>
+                                <td>
+                                    <span class="status-tag purple">【资料制作员】资料待核稿</span>
+                                </td>
+                                <td>
+                                    <span class="status-tag green">图像已完成</span>
+                                </td>
+                                <td>总校</td>
+                                <td>李四</td>
+                                <td>2025-01-12</td>
+                                <td>
+                                    <span class="action-btn" onclick="viewHistory('张三')">
+                                        <span style="margin-right: 4px;">🕒</span>
+                                        历史记录
+                                    </span>
+                                    <span class="action-btn purple" onclick="goToProofreading('张三')">
+                                        <span style="margin-right: 4px;">📋</span>
+                                        进入核稿
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"></div>
+                                </td>
+                                <td>5</td>
+                                <td>陈七</td>
+                                <td>高级经济师</td>
+                                <td>
+                                    <span class="status-tag blue">【邮寄小组】资料待邮寄</span>
+                                </td>
+                                <td>
+                                    <span class="status-tag green">图像已完成</span>
+                                </td>
+                                <td>总校</td>
+                                <td>孙八</td>
+                                <td>2025-01-10</td>
+                                <td>
+                                    <span class="action-btn" onclick="viewHistory('陈七')">
+                                        <span style="margin-right: 4px;">🕒</span>
+                                        历史记录
+                                    </span>
+                                    <span class="action-btn blue" onclick="goToMailing('陈七')">
+                                        <span style="margin-right: 4px;">✉️</span>
+                                        更新邮寄状态
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"></div>
+                                </td>
+                                <td>6</td>
+                                <td>刘一</td>
+                                <td>高级工程师</td>
+                                <td>
+                                    <span class="status-tag teal">【扫描小组】资料待扫描</span>
+                                </td>
+                                <td>
+                                    <span class="status-tag green">图像已完成</span>
+                                </td>
+                                <td>总校</td>
+                                <td>郑二</td>
+                                <td>2025-01-08</td>
+                                <td>
+                                    <span class="action-btn" onclick="viewHistory('刘一')">
+                                        <span style="margin-right: 4px;">🕒</span>
+                                        历史记录
+                                    </span>
+                                    <span class="action-btn teal" onclick="goToScanning('刘一')">
+                                        <span style="margin-right: 4px;">📄</span>
+                                        上传扫描件
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="checkbox"></div>
+                                </td>
+                                <td>7</td>
+                                <td>钱三</td>
+                                <td>中级工程师</td>
+                                <td>
+                                    <span class="status-tag brown">【邮寄小组】资料待胶装</span>
+                                </td>
+                                <td></td>
+                                <td>五分校</td>
+                                <td>孙四</td>
+                                <td>2025-01-07</td>
+                                <td>
+                                    <span class="action-btn" onclick="viewHistory('钱三')">
+                                        <span style="margin-right: 4px;">🕒</span>
+                                        历史记录
+                                    </span>
+                                    <span class="action-btn brown" onclick="goToBinding('钱三')">
+                                        <span style="margin-right: 4px;">📚</span>
+                                        更新状态
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination">
+                    <div class="pagination-info">共 6 条</div>
+                    <div class="pagination-controls">
+                        <div class="page-btn active">1</div>
+                        <div class="page-btn disabled">></div>
+                        <div class="per-page">
+                            <span>15 条/页</span>
+                            <span style="margin-left: 4px;">▼</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Mailing Assignment Modal -->
+    <div class="modal" id="mailingAssignModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">分配邮寄人员</div>
+                <button class="modal-close" onclick="closeModal('mailingAssignModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="customer-info-text">客户：<span id="mailingCustomerName"></span></p>
+                <div class="form-group">
+                    <label class="form-label">选择邮寄人员</label>
+                    <select class="form-control" id="mailingPersonSelect">
+                        <option value="">请选择邮寄人员</option>
+                        <option value="zhangsan">张三 - 邮寄专员</option>
+                        <option value="lisi">李四 - 物流专员</option>
+                        <option value="wangwu">王五 - 资料专员</option>
+                        <option value="zhaoliu">赵六 - 邮寄专员</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">备注说明</label>
+                    <textarea class="form-control" id="mailingRemarkText" placeholder="请输入分配备注或特殊要求..." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-secondary" onclick="closeModal('mailingAssignModal')">取消</button>
+                <button class="btn-modal btn-primary" onclick="confirmMailingAssign()">确认分配</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scanner Assignment Modal -->
+    <div class="modal" id="scannerAssignModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">分配扫描人员</div>
+                <button class="modal-close" onclick="closeModal('scannerAssignModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p class="customer-info-text">客户：<span id="scannerCustomerName"></span></p>
+                <div class="form-group">
+                    <label class="form-label">选择扫描人员</label>
+                    <select class="form-control" id="scannerPersonSelect">
+                        <option value="">请选择扫描人员</option>
+                        <option value="chenqi">陈七 - 扫描专员</option>
+                        <option value="zhouba">周八 - 文档专员</option>
+                        <option value="wujiu">吴九 - 扫描主管</option>
+                        <option value="zhengshi">郑十 - 扫描专员</option>
+                        <option value="sunyi">孙一 - 文档处理员</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">扫描要求</label>
+                    <textarea class="form-control" id="scannerRemarkText" placeholder="请输入扫描要求或特殊说明..." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-modal btn-secondary" onclick="closeModal('scannerAssignModal')">取消</button>
+                <button class="btn-modal btn-primary" onclick="confirmScannerAssign()">确认分配</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 查看历史记录
+        function viewHistory(customerName) {
+            alert(`查看 ${customerName} 的历史记录`);
+            // 这里可以跳转到历史记录页面
+            // window.open('history.html?customer=' + customerName, '_blank');
+        }
+        
+        // 继续工作/梳理
+        function continueWork(customerName) {
+            alert(`继续处理 ${customerName} 的工作`);
+            // 这里可以跳转到具体的工作页面
+        }
+        
+        // 初审
+        function initialReview(customerName) {
+            if (confirm(`确认对 ${customerName} 进行初审？`)) {
+                alert(`开始对 ${customerName} 进行初审`);
+                // 这里可以跳转到初审页面
+            }
+        }
+        
+        // 核稿 - 跳转到核稿修改页面
+        function goToProofreading(customerName) {
+            if (confirm(`确认进入 ${customerName} 的核稿修改界面？`)) {
+                // 跳转到核稿修改页面
+                window.location.href = 'proofreading.html?customer=' + encodeURIComponent(customerName);
+            }
+        }
+        
+        // 分配邮寄 - 弹出分配模态框
+        function assignMailing(customerName) {
+            document.getElementById('mailingCustomerName').textContent = customerName;
+            document.getElementById('mailingPersonSelect').value = '';
+            document.getElementById('mailingRemarkText').value = '';
+            document.getElementById('mailingAssignModal').style.display = 'block';
+        }
+        
+        // 更新邮寄状态 - 跳转到邮寄盖章页面
+        function goToMailing(customerName) {
+            if (confirm(`确认进入 ${customerName} 的邮寄管理界面？`)) {
+                // 跳转到邮寄盖章页面
+                window.location.href = 'mailing.html?customer=' + encodeURIComponent(customerName);
+            }
+        }
+        
+        // 分配扫描 - 弹出分配模态框
+        function assignScanning(customerName) {
+            document.getElementById('scannerCustomerName').textContent = customerName;
+            document.getElementById('scannerPersonSelect').value = '';
+            document.getElementById('scannerRemarkText').value = '';
+            document.getElementById('scannerAssignModal').style.display = 'block';
+        }
+        
+        // 上传扫描件 - 跳转到扫描页面
+        function goToScanning(customerName) {
+            if (confirm(`确认进入 ${customerName} 的扫描管理界面？`)) {
+                // 跳转到扫描页面
+                window.location.href = 'scanning.html?customer=' + encodeURIComponent(customerName);
+            }
+        }
+        
+        // 更新胶装状态 - 跳转到胶装送审页面
+        function goToBinding(customerName) {
+            if (confirm(`确认进入 ${customerName} 的胶装送审界面？`)) {
+                // 跳转到胶装送审页面
+                window.location.href = 'binding.html?customer=' + encodeURIComponent(customerName);
+            }
+        }
+        
+        // 关闭模态框
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // 确认邮寄人员分配
+        function confirmMailingAssign() {
+            const customerName = document.getElementById('mailingCustomerName').textContent;
+            const selectedPerson = document.getElementById('mailingPersonSelect').value;
+            const remark = document.getElementById('mailingRemarkText').value;
+            
+            if (!selectedPerson) {
+                alert('请选择邮寄人员');
+                return;
+            }
+            
+            const personName = document.getElementById('mailingPersonSelect').selectedOptions[0].text;
+            let message = `已为客户 ${customerName} 分配邮寄人员：${personName}`;
+            if (remark) {
+                message += `\n备注：${remark}`;
+            }
+            
+            alert(message);
+            
+            // 更新列表中的状态和负责人
+            updateRowStatus(customerName, '【邮寄小组】资料待邮寄', personName.split(' - ')[0], 'blue');
+            
+            closeModal('mailingAssignModal');
+        }
+        
+        // 确认扫描人员分配
+        function confirmScannerAssign() {
+            const customerName = document.getElementById('scannerCustomerName').textContent;
+            const selectedPerson = document.getElementById('scannerPersonSelect').value;
+            const remark = document.getElementById('scannerRemarkText').value;
+            
+            if (!selectedPerson) {
+                alert('请选择扫描人员');
+                return;
+            }
+            
+            const personName = document.getElementById('scannerPersonSelect').selectedOptions[0].text;
+            let message = `已为客户 ${customerName} 分配扫描人员：${personName}`;
+            if (remark) {
+                message += `\n扫描要求：${remark}`;
+            }
+            
+            alert(message);
+            
+            // 更新列表中的状态和负责人
+            updateRowStatus(customerName, '【扫描小组】资料待扫描', personName.split(' - ')[0], 'teal');
+            
+            closeModal('scannerAssignModal');
+        }
+        
+        // 更新表格行的状态
+        function updateRowStatus(customerName, newStatus, newResponsible, statusClass) {
+            const rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                const nameCell = row.cells[2]; // 客户姓名列
+                if (nameCell && nameCell.textContent === customerName) {
+                    // 更新状态
+                    const statusCell = row.cells[4];
+                    const statusTag = statusCell.querySelector('.status-tag');
+                    if (statusTag) {
+                        statusTag.className = `status-tag ${statusClass}`;
+                        statusTag.textContent = newStatus;
+                    }
+                    
+                    // 更新负责人
+                    const responsibleCell = row.cells[7];
+                    if (responsibleCell) {
+                        responsibleCell.textContent = newResponsible;
+                    }
+                    
+                    // 更新操作按钮
+                    const actionCell = row.cells[9];
+                    if (actionCell) {
+                        const actionBtns = actionCell.querySelectorAll('.action-btn');
+                        if (actionBtns.length > 1) {
+                            // 移除分配按钮，添加对应的操作按钮
+                            const newActionBtn = actionBtns[1];
+                            if (statusClass === 'blue') {
+                                // 邮寄状态
+                                newActionBtn.className = 'action-btn blue';
+                                newActionBtn.onclick = () => goToMailing(customerName);
+                                newActionBtn.innerHTML = '<span style="margin-right: 4px;">✉️</span>更新邮寄状态';
+                            } else if (statusClass === 'teal') {
+                                // 扫描状态
+                                newActionBtn.className = 'action-btn teal';
+                                newActionBtn.onclick = () => goToScanning(customerName);
+                                newActionBtn.innerHTML = '<span style="margin-right: 4px;">📄</span>上传扫描件';
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(e) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
