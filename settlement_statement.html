@@ -75,9 +75,6 @@
                     <span class="refund-count">审核通过：<strong>6</strong> 条</span>
                     <span class="refund-count">审核拒绝：<strong>1</strong> 条</span>
                 </div>
-                <div class="action-right">
-                    <button class="btn btn-info" onclick="showExportRecordModal()">查看导出记录</button>
-                </div>
             </div>
 
             <!-- 表格区域 -->
@@ -92,8 +89,6 @@
                                 <th>序号</th>
                                 <th>结算单号</th>
                                 <th>结算周期</th>
-                                <th>支付结算总金额</th>
-                                <th>退款结算总金额</th>
                                 <th>创建时间</th>
                                 <th>审核时间</th>
                                 <th>结算状态</th>
@@ -105,8 +100,6 @@
                                 <td>1</td>
                                 <td>JS20241201001</td>
                                 <td>2024-12-01 至 2024-12-31</td>
-                                <td>¥125,680.00</td>
-                                <td>¥8,520.00</td>
                                 <td>2024-12-01 15:30:22</td>
                                 <td>-</td>
                                 <td><span class="status-badge status-pending">待审核</span></td>
@@ -121,8 +114,6 @@
                                 <td>2</td>
                                 <td>JS20241101001</td>
                                 <td>2024-11-01 至 2024-11-30</td>
-                                <td>¥98,450.00</td>
-                                <td>¥5,230.00</td>
                                 <td>2024-11-30 16:45:10</td>
                                 <td>2024-12-01 09:15:30</td>
                                 <td><span class="status-badge status-success">审核通过</span></td>
@@ -137,8 +128,6 @@
                                 <td>3</td>
                                 <td>JS20241001001</td>
                                 <td>2024-10-01 至 2024-10-31</td>
-                                <td>¥156,780.00</td>
-                                <td>¥12,450.00</td>
                                 <td>2024-10-31 14:20:15</td>
                                 <td>2024-11-01 10:30:45</td>
                                 <td><span class="status-badge status-success">审核通过</span></td>
@@ -153,8 +142,6 @@
                                 <td>4</td>
                                 <td>JS20240901001</td>
                                 <td>2024-09-01 至 2024-09-30</td>
-                                <td>¥89,230.00</td>
-                                <td>¥6,780.00</td>
                                 <td>2024-09-30 17:10:30</td>
                                 <td>2024-10-01 11:25:20</td>
                                 <td><span class="status-badge status-success">审核通过</span></td>
@@ -169,8 +156,6 @@
                                 <td>5</td>
                                 <td>JS20240801001</td>
                                 <td>2024-08-01 至 2024-08-31</td>
-                                <td>¥134,560.00</td>
-                                <td>¥9,120.00</td>
                                 <td>2024-08-31 15:45:00</td>
                                 <td>2024-09-01 14:30:15</td>
                                 <td><span class="status-badge status-failed">审核拒绝</span></td>
@@ -193,378 +178,384 @@
                 <button class="page-btn">3</button>
                 <button class="page-btn">下一页</button>
             </div>
-        </div>
-    </div>
 
-    <!-- 审核模态框 -->
-    <div class="modal" id="auditModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">结算单审核</h2>
-                <button class="close-btn" onclick="hideAuditModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="audit-info">
-                    <div class="audit-header">
-                        <h3>结算单号：<span id="auditSettlementNo">JS20241201001</span></h3>
-                        <p>结算周期：2024-12-01 00:00:00 至 2024-12-31 23:59:59</p>
+            <!-- 审核模态框 -->
+            <div class="modal" id="auditModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">结算单审核</h2>
+                        <button class="close-btn" onclick="hideAuditModal()">×</button>
                     </div>
-                </div>
-
-                <div class="confirm-summary-container">
-                    <!-- 收入汇总 -->
-                    <div class="confirm-summary-group income-group">
-                        <div class="confirm-summary-group-title">
-                            <span class="confirm-income-title">收入汇总</span>
-                        </div>
-                        <div class="confirm-summary-grid">
-                            <div class="confirm-summary-card">
-                                <h4>收入金额合计（元）<span class="info-icon" title="用户支付金额合计（不含退款金额）=微信支付+聚合支付+余额支付">!</span></h4>
-                                <div class="amount">¥125,680.00</div>
+                    <div class="modal-body">
+                        <!-- 结算单信息和订单条数一行展示（无结算时间段卡片） -->
+                        <div class="time-order-row" style="display: flex; align-items: flex-start; gap: 32px; margin-bottom: 16px;">
+                            <!-- 结算单信息卡片 -->
+                            <div class="info-card" style="flex: 1; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 16px 20px; min-width: 260px; box-sizing: border-box;">
+                                <div class="info-card-title" style="font-size: 16px; font-weight: bold; color: #1890ff; margin-bottom: 8px;">结算单信息</div>
+                                <div class="info-card-content" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div class="info-card-row" style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">结算单号：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;" id="auditSettlementNo">JS20241201001</span>
+                                    </div>
+                                    <div class="info-card-row" style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">结算周期：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;">2024-12-01 00:00:00 至 2024-12-31 23:59:59</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="confirm-summary-card">
-                                <h4>微信支付合计（元）<span class="info-icon" title="用户微信支付金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥68,420.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>聚合支付合计（元）<span class="info-icon" title="用户聚合支付金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥42,160.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>余额支付合计（元）<span class="info-icon" title="用户余额支付金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥15,100.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>后台开课合计（元）<span class="info-icon" title="管理员后台开课金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥0.00</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 退款汇总 -->
-                    <div class="confirm-summary-group refund-group">
-                        <div class="confirm-summary-group-title">
-                            <span class="confirm-refund-title">退款汇总</span>
-                        </div>
-                        <div class="confirm-summary-grid">
-                            <div class="confirm-summary-card">
-                                <h4>退款金额合计（元）<span class="info-icon" title="用户退款支付金额合计">!</span></h4>
-                                <div class="amount">¥8,520.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>微信退款合计（元）<span class="info-icon" title="用户微信支付退款金额">!</span></h4>
-                                <div class="amount">¥4,680.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>聚合退款合计（元）<span class="info-icon" title="用户聚合支付退款金额">!</span></h4>
-                                <div class="amount">¥2,840.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>余额退款合计（元）<span class="info-icon" title="用户余额支付退款金额">!</span></h4>
-                                <div class="amount">¥1,000.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>后台开课合计（元）<span class="info-icon" title="管理员后台开退款课金额">!</span></h4>
-                                <div class="amount">¥0.00</div>
+                            <!-- 订单条数信息卡片 -->
+                            <div class="info-card" style="flex: 1; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 16px 20px; min-width: 260px; box-sizing: border-box;">
+                                <div class="info-card-title" style="font-size: 16px; font-weight: bold; color: #1890ff; margin-bottom: 8px;">订单条数</div>
+                                <div class="info-card-content" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div class="info-card-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">支付订单条数：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;">1,180 笔</span>
+                                    </div>
+                                    <div class="info-card-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">退款订单条数：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;">76 笔</span>
+                                    </div>
+                                    <div class="info-card-row" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #dee2e6; padding-top: 8px;">
+                                        <span class="info-card-label" style="color: #495057; font-weight: bold;">总订单条数：</span>
+                                        <span class="info-card-value" style="color: #1890ff; font-weight: bold; font-size: 16px;">1,256 笔</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- 账户余额 -->
-                <div class="confirm-summary-group balance-group">
-                    <div class="confirm-summary-group-title">
-                        <span class="confirm-balance-title">账户余额</span>
-                    </div>
-                    <div class="confirm-summary-grid">
-                        <div class="confirm-summary-card">
-                            <h4>账户金额汇总（元）<span class="info-icon" title="充值金额合计（元）-充值额已开课金额（元）">!</span></h4>
-                            <div class="amount">¥45,230.00</div>
-                        </div>
-                        <div class="confirm-summary-card">
-                            <h4>充值金额合计（元）<span class="info-icon" title="所选时间段内的总充值额">!</span></h4>
-                            <div class="amount">¥52,800.00</div>
-                        </div>
-                        <div class="confirm-summary-card">
-                            <h4>充值额已开课金额（元）<span class="info-icon" title="所选时间段内，用余额开通课程的总金额">!</span></h4>
-                            <div class="amount">¥7,570.00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 对账时间信息 -->
-                <div class="time-info-section">
-                    <div class="time-info-title">
-                        <span>对账时间信息</span>
-                    </div>
-                    <div class="time-info-grid">
-                        <div class="time-info-item">
-                            <div class="time-info-label">开始时间</div>
-                            <div class="time-info-value">2024-12-01 00:00:00</div>
-                        </div>
-                        <div class="time-info-item">
-                            <div class="time-info-label">结束时间</div>
-                            <div class="time-info-value">2024-12-31 23:59:59</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 结算总金额和订单条数一行展示 -->
-                <div class="confirm-summary-row" style="display: flex; gap: 20px; margin-top: 20px; border-top: 2px solid #e8f4fd; padding-top: 20px;">
-                    <!-- 结算总金额区块 -->
-                    <div class="confirm-summary-group total-settlement-group" style="flex: 1;">
-                        <div class="confirm-summary-group-title" style="color: #1890ff; font-weight: bold; font-size: 16px;">
-                            <span>结算总金额</span>
-                        </div>
-                        <div class="confirm-summary-grid">
-                            <div class="confirm-summary-card" style="background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%); border: 2px solid #1890ff;">
-                                <h4 style="color: #1890ff; font-weight: bold;">
-                                    结算总金额（元）
-                                    <span class="info-icon" title="收入金额合计（元）-退款金额合计（元）+账户金额汇总（元）">!</span>
-                                </h4>
-                                <div class="amount" style="color: #1890ff; font-size: 24px; font-weight: bold;">¥162,390.00</div>
+                     
+                        <!-- 结算时间段未结算订单对账明细汇总 -->
+                        <div class="confirm-reconciliation-section" style="margin-top: 24px; border-top: 2px solid #f0f0f0; padding-top: 20px;">
+                            <div class="confirm-summary-group-title" style="color: #262626; font-weight: bold; font-size: 16px; margin-bottom: 16px;">结算时间段未结算订单对账明细汇总</div>
+                            <div class="confirm-reconciliation-container" style="display: flex; flex-direction: row; gap: 12px; flex-wrap: wrap;">
+                                <!-- 微信结算明细 -->
+                                <div class="confirm-reconciliation-group wechat-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title wechat-title" style="font-size: 14px; font-weight: 600; color: #07c160; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #e8f5e8;">微信结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div class="confirm-reconciliation-card wechat-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #07c160;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                微信支付合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过微信支付的开课订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过微信支付的开课订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥110.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card wechat-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #07c160;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                微信退款合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过微信支付的退款订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过微信支付的退款订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥110.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 聚合支付结算明细 -->
+                                <div class="confirm-reconciliation-group aggregate-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title aggregate-title" style="font-size: 14px; font-weight: 600; color: #1890ff; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #e8f4fd;">聚合支付结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div class="confirm-reconciliation-card aggregate-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #1890ff;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                聚合支付合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过聚合支付的开课订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过聚合支付的开课订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥200.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card aggregate-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #1890ff;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                聚合退款合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过聚合支付的退款订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过聚合支付的退款订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥110.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 后台开课结算明细 -->
+                                <div class="confirm-reconciliation-group backend-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title backend-title" style="font-size: 14px; font-weight: 600; color: #722ed1; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #f3e8ff;">后台开课结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div class="confirm-reconciliation-card backend-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #722ed1;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                后台开课合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过后台开课的开课订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过后台开课的开课订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥0.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card backend-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #722ed1;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                后台退款合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过后台开课的退款订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过后台开课的退款订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥0.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 余额结算明细 -->
+                                <div class="confirm-reconciliation-group balance-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title balance-title" style="font-size: 14px; font-weight: 600; color: #fa8c16; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #fff7e6;">余额结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期期初余额（元）
+                                                <span class="info-icon" title="所选时间段内，开始时间这个节点的账户剩余余额，如果开始时间为空，则为0"></span>
+                                                <div class="tooltip">所选时间段内，开始时间这个节点的账户剩余余额，如果开始时间为空，则为0</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥100.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期充值金额（元）
+                                                <span class="info-icon" title="所选时间段内的总充值额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【充值】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内的总充值额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【充值】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥50.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期充值开课金额（元）
+                                                <span class="info-icon" title="所选时间段内，用余额开通课程的总金额。统计所选时间段余额明细中流水类型为【支出】、交易类型为【消费】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内，用余额开通课程的总金额。统计所选时间段余额明细中流水类型为【支出】、交易类型为【消费】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥40.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期充值退款金额（元）
+                                                <span class="info-icon" title="所选时间段内的充值退款金额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【退款】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内的充值退款金额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【退款】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥10.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期账户余额退款（元）
+                                                <span class="info-icon" title="所选时间段内的总账户余额退款。统计所选时间段余额明细中流水类型为【支出】、交易类型为【作废】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内的总账户余额退款。统计所选时间段余额明细中流水类型为【支出】、交易类型为【作废】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥0.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期账户余额（元）
+                                                <span class="info-icon" title="如果筛选时间，开始时间和结束时间都为空，则本期账户余额=系统截止到当前时间的账户余额；否则，本期账户余额=本期期初余额+本期充值金额-本期充值开课金额+本期充值退款-本期账户余额退款"></span>
+                                                <div class="tooltip">如果筛选时间，开始时间和结束时间都为空，则本期账户余额=系统截止到当前时间的账户余额；否则，本期账户余额=本期期初余额+本期充值金额-本期充值开课金额+本期充值退款-本期账户余额退款</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥120.00</div>
+                                        </div>
+                                       
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- 订单条数区块 -->
-                    <div class="net-income-section" style="flex: 1;">
-                        <div class="net-income-title">
-                            <span>订单条数</span>
-                        </div>
-                        <div class="net-income-grid">
-                            <div class="net-income-item">
-                                <div class="net-income-label">支付订单条数</div>
-                                <div class="net-income-value">1,180 笔</div>
+                        <!-- 审核意见 -->
+                        <div class="audit-opinion-section">
+                            <div class="audit-opinion-title">
+                                <span>审核意见</span>
                             </div>
-                            <div class="net-income-item">
-                                <div class="net-income-label">退款订单条数</div>
-                                <div class="net-income-value">76 笔</div>
-                            </div>
-                            <div class="net-income-item">
-                                <div class="net-income-label">总订单条数</div>
-                                <div class="net-income-value">1,256 笔</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 审核意见 -->
-                <div class="audit-opinion-section">
-                    <div class="audit-opinion-title">
-                        <span>审核意见</span>
-                    </div>
-                    <div class="audit-opinion-content">
-                        <textarea id="auditOpinion" placeholder="请输入审核意见（可选）" rows="4"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="hideAuditModal()">关闭</button>
-                <button class="btn btn-danger" onclick="rejectAudit()">审核拒绝</button>
-                <button class="btn btn-success" onclick="approveAudit()">审核通过</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 详情模态框 -->
-    <div class="modal" id="detailModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 class="modal-title">结算单详情</h2>
-                <button class="close-btn" onclick="hideDetailModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="audit-info">
-                    <div class="audit-header">
-                        <h3>结算单号：<span id="detailSettlementNo">JS20241101001</span></h3>
-                        <p>结算周期：2024-11-01 00:00:00 至 2024-11-30 23:59:59</p>
-                    </div>
-                </div>
-
-                <div class="confirm-summary-container">
-                    <!-- 收入汇总 -->
-                    <div class="confirm-summary-group income-group">
-                        <div class="confirm-summary-group-title">
-                            <span class="confirm-income-title">收入汇总</span>
-                        </div>
-                        <div class="confirm-summary-grid">
-                            <div class="confirm-summary-card">
-                                <h4>收入金额合计（元）<span class="info-icon" title="用户支付金额合计（不含退款金额）=微信支付+聚合支付+余额支付">!</span></h4>
-                                <div class="amount">¥98,450.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>微信支付合计（元）<span class="info-icon" title="用户微信支付金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥65,230.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>聚合支付合计（元）<span class="info-icon" title="用户聚合支付金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥28,120.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>余额支付合计（元）<span class="info-icon" title="用户余额支付金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥5,100.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>后台开课合计（元）<span class="info-icon" title="管理员后台开课金额（不含退款金额）">!</span></h4>
-                                <div class="amount">¥0.00</div>
+                            <div class="audit-opinion-content">
+                                <textarea id="auditOpinion" placeholder="请输入审核意见（可选）" rows="4"></textarea>
                             </div>
                         </div>
                     </div>
-
-                    <!-- 退款汇总 -->
-                    <div class="confirm-summary-group refund-group">
-                        <div class="confirm-summary-group-title">
-                            <span class="confirm-refund-title">退款汇总</span>
-                        </div>
-                        <div class="confirm-summary-grid">
-                            <div class="confirm-summary-card">
-                                <h4>退款金额合计（元）<span class="info-icon" title="用户退款支付金额合计">!</span></h4>
-                                <div class="amount">¥5,230.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>微信退款合计（元）<span class="info-icon" title="用户微信支付退款金额">!</span></h4>
-                                <div class="amount">¥3,450.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>聚合退款合计（元）<span class="info-icon" title="用户聚合支付退款金额">!</span></h4>
-                                <div class="amount">¥1,580.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>余额退款合计（元）<span class="info-icon" title="用户余额支付退款金额">!</span></h4>
-                                <div class="amount">¥200.00</div>
-                            </div>
-                            <div class="confirm-summary-card">
-                                <h4>后台开课合计（元）<span class="info-icon" title="管理员后台开退款课金额">!</span></h4>
-                                <div class="amount">¥0.00</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 账户余额 -->
-                <div class="confirm-summary-group balance-group">
-                    <div class="confirm-summary-group-title">
-                        <span class="confirm-balance-title">账户余额</span>
-                    </div>
-                    <div class="confirm-summary-grid">
-                        <div class="confirm-summary-card">
-                            <h4>账户金额汇总（元）<span class="info-icon" title="充值金额合计（元）-充值额已开课金额（元）">!</span></h4>
-                            <div class="amount">¥38,450.00</div>
-                        </div>
-                        <div class="confirm-summary-card">
-                            <h4>充值金额合计（元）<span class="info-icon" title="所选时间段内的总充值额">!</span></h4>
-                            <div class="amount">¥45,200.00</div>
-                        </div>
-                        <div class="confirm-summary-card">
-                            <h4>充值额已开课金额（元）<span class="info-icon" title="所选时间段内，用余额开通课程的总金额">!</span></h4>
-                            <div class="amount">¥6,750.00</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 对账时间信息 -->
-                <div class="time-info-section">
-                    <div class="time-info-title">
-                        <span>对账时间信息</span>
-                    </div>
-                    <div class="time-info-grid">
-                        <div class="time-info-item">
-                            <div class="time-info-label">开始时间</div>
-                            <div class="time-info-value">2024-11-01 00:00:00</div>
-                        </div>
-                        <div class="time-info-item">
-                            <div class="time-info-label">结束时间</div>
-                            <div class="time-info-value">2024-11-30 23:59:59</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 结算总金额和订单条数一行展示 -->
-                <div class="confirm-summary-row" style="display: flex; gap: 20px; margin-top: 20px; border-top: 2px solid #e8f4fd; padding-top: 20px;">
-                    <!-- 结算总金额区块 -->
-                    <div class="confirm-summary-group total-settlement-group" style="flex: 1;">
-                        <div class="confirm-summary-group-title" style="color: #1890ff; font-weight: bold; font-size: 16px;">
-                            <span>结算总金额</span>
-                        </div>
-                        <div class="confirm-summary-grid">
-                            <div class="confirm-summary-card" style="background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%); border: 2px solid #1890ff;">
-                                <h4 style="color: #1890ff; font-weight: bold;">
-                                    结算总金额（元）
-                                    <span class="info-icon" title="收入金额合计（元）-退款金额合计（元）+账户金额汇总（元）">!</span>
-                                </h4>
-                                <div class="amount" style="color: #1890ff; font-size: 24px; font-weight: bold;">¥131,670.00</div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- 订单条数区块 -->
-                    <div class="net-income-section" style="flex: 1;">
-                        <div class="net-income-title">
-                            <span>订单条数</span>
-                        </div>
-                        <div class="net-income-grid">
-                            <div class="net-income-item">
-                                <div class="net-income-label">支付订单条数</div>
-                                <div class="net-income-value">1,089 笔</div>
-                            </div>
-                            <div class="net-income-item">
-                                <div class="net-income-label">退款订单条数</div>
-                                <div class="net-income-value">67 笔</div>
-                            </div>
-                            <div class="net-income-item">
-                                <div class="net-income-label">总订单条数</div>
-                                <div class="net-income-value">1,156 笔</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 审核信息 -->
-                <div class="audit-opinion-section">
-                    <div class="audit-opinion-title">
-                        <span>审核信息</span>
-                    </div>
-                    <div class="audit-opinion-content">
-                        <div class="audit-info-display">
-                            <p><strong>审核状态：</strong><span class="status-badge status-success">审核通过</span></p>
-                            <p><strong>审核时间：</strong>2024-12-01 09:15:30</p>
-                            <p><strong>审核意见：</strong>数据核对无误，审核通过</p>
-                        </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="hideAuditModal()">关闭</button>
+                        <button class="btn btn-danger" onclick="rejectAudit()">审核拒绝</button>
+                        <button class="btn btn-success" onclick="approveAudit()">审核通过</button>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="hideDetailModal()">关闭</button>
-            </div>
-        </div>
-    </div>
 
-    <!-- 导出记录模态框 -->
-    <div class="modal" id="exportRecordModal">
-        <div class="modal-content" style="width: 80%; max-width: 1000px;">
-            <div class="modal-header">
-                <h2 class="modal-title">导出记录</h2>
-                <button class="close-btn" onclick="hideExportRecordModal()">×</button>
-            </div>
-            <div class="modal-body">
-                <div class="export-record-table">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>文件名称</th>
-                                <th>导出状态</th>
-                                <th>操作时间</th>
-                                <th>操作人</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="exportRecordTableBody">
-                            <!-- 导出记录数据将在这里动态生成 -->
-                        </tbody>
-                    </table>
+            <!-- 详情模态框 -->
+            <div class="modal" id="detailModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">结算单详情</h2>
+                        <button class="close-btn" onclick="hideDetailModal()">×</button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- 结算单信息和订单条数一行展示（无结算时间段卡片） -->
+                        <div class="time-order-row" style="display: flex; align-items: flex-start; gap: 32px; margin-bottom: 16px;">
+                            <!-- 结算单信息卡片 -->
+                            <div class="info-card" style="flex: 1; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 16px 20px; min-width: 260px; box-sizing: border-box;">
+                                <div class="info-card-title" style="font-size: 16px; font-weight: bold; color: #1890ff; margin-bottom: 8px;">结算单信息</div>
+                                <div class="info-card-content" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div class="info-card-row" style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">结算单号：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;" id="detailSettlementNo">JS20241101001</span>
+                                    </div>
+                                    <div class="info-card-row" style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">结算周期：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;">2024-11-01 00:00:00 至 2024-11-30 23:59:59</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- 订单条数信息卡片 -->
+                            <div class="info-card" style="flex: 1; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 16px 20px; min-width: 260px; box-sizing: border-box;">
+                                <div class="info-card-title" style="font-size: 16px; font-weight: bold; color: #1890ff; margin-bottom: 8px;">订单条数</div>
+                                <div class="info-card-content" style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div class="info-card-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">支付订单条数：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;">1,089 笔</span>
+                                    </div>
+                                    <div class="info-card-row" style="display: flex; justify-content: space-between; align-items: center;">
+                                        <span class="info-card-label" style="color: #6c757d; font-size: 14px;">退款订单条数：</span>
+                                        <span class="info-card-value" style="color: #495057; font-weight: bold;">67 笔</span>
+                                    </div>
+                                    <div class="info-card-row" style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #dee2e6; padding-top: 8px;">
+                                        <span class="info-card-label" style="color: #495057; font-weight: bold;">总订单条数：</span>
+                                        <span class="info-card-value" style="color: #1890ff; font-weight: bold; font-size: 16px;">1,156 笔</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 结算时间段未结算订单对账明细汇总 -->
+                        <div class="confirm-reconciliation-section" style="margin-top: 24px; border-top: 2px solid #f0f0f0; padding-top: 20px;">
+                            <div class="confirm-summary-group-title" style="color: #262626; font-weight: bold; font-size: 16px; margin-bottom: 16px;">结算时间段未结算订单对账明细汇总</div>
+                            <div class="confirm-reconciliation-container" style="display: flex; flex-direction: row; gap: 12px; flex-wrap: wrap;">
+                                <!-- 微信结算明细 -->
+                                <div class="confirm-reconciliation-group wechat-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title wechat-title" style="font-size: 14px; font-weight: 600; color: #07c160; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #e8f5e8;">微信结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div class="confirm-reconciliation-card wechat-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #07c160;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                微信支付合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过微信支付的开课订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过微信支付的开课订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥110.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card wechat-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #07c160;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                微信退款合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过微信支付的退款订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过微信支付的退款订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥110.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 聚合支付结算明细 -->
+                                <div class="confirm-reconciliation-group aggregate-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title aggregate-title" style="font-size: 14px; font-weight: 600; color: #1890ff; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #e8f4fd;">聚合支付结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div class="confirm-reconciliation-card aggregate-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #1890ff;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                聚合支付合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过聚合支付的开课订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过聚合支付的开课订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥200.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card aggregate-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #1890ff;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                聚合退款合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过聚合支付的退款订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过聚合支付的退款订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥110.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 后台开课结算明细 -->
+                                <div class="confirm-reconciliation-group backend-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title backend-title" style="font-size: 14px; font-weight: 600; color: #722ed1; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #f3e8ff;">后台开课结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: flex; flex-direction: column; gap: 8px;">
+                                        <div class="confirm-reconciliation-card backend-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #722ed1;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                后台开课合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过后台开课的开课订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过后台开课的开课订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥0.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card backend-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #722ed1;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                后台退款合计（元）
+                                                <span class="info-icon" title="所选时间段内，通过后台开课的退款订单金额"></span>
+                                                <div class="tooltip">所选时间段内，通过后台开课的退款订单金额</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥0.00</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- 余额结算明细 -->
+                                <div class="confirm-reconciliation-group balance-group" style="flex: 1; min-width: 240px;">
+                                    <div class="confirm-reconciliation-group-title balance-title" style="font-size: 14px; font-weight: 600; color: #fa8c16; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 1px solid #fff7e6;">余额结算明细</div>
+                                    <div class="confirm-reconciliation-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期期初余额（元）
+                                                <span class="info-icon" title="所选时间段内，开始时间这个节点的账户剩余余额，如果开始时间为空，则为0"></span>
+                                                <div class="tooltip">所选时间段内，开始时间这个节点的账户剩余余额，如果开始时间为空，则为0</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥100.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期充值金额（元）
+                                                <span class="info-icon" title="所选时间段内的总充值额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【充值】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内的总充值额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【充值】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥50.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期充值开课金额（元）
+                                                <span class="info-icon" title="所选时间段内，用余额开通课程的总金额。统计所选时间段余额明细中流水类型为【支出】、交易类型为【消费】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内，用余额开通课程的总金额。统计所选时间段余额明细中流水类型为【支出】、交易类型为【消费】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥40.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期充值退款金额（元）
+                                                <span class="info-icon" title="所选时间段内的充值退款金额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【退款】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内的充值退款金额。统计所选时间段余额明细中流水类型为【收入】、交易类型为【退款】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥10.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期账户余额退款（元）
+                                                <span class="info-icon" title="所选时间段内的总账户余额退款。统计所选时间段余额明细中流水类型为【支出】、交易类型为【作废】、状态为【正常】的所有数据的金额之和"></span>
+                                                <div class="tooltip">所选时间段内的总账户余额退款。统计所选时间段余额明细中流水类型为【支出】、交易类型为【作废】、状态为【正常】的所有数据的金额之和</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥0.00</div>
+                                        </div>
+                                        <div class="confirm-reconciliation-card balance-section" style="background: #fafafa; border: 1px solid #e8e8e8; border-radius: 4px; padding: 8px; border-left: 4px solid #fa8c16;">
+                                            <h4 style="margin: 0 0 4px 0; font-size: 12px; color: #595959; font-weight: 500; display: flex; align-items: center; gap: 4px;">
+                                                本期账户余额（元）
+                                                <span class="info-icon" title="如果筛选时间，开始时间和结束时间都为空，则本期账户余额=系统截止到当前时间的账户余额；否则，本期账户余额=本期期初余额+本期充值金额-本期充值开课金额+本期充值退款-本期账户余额退款"></span>
+                                                <div class="tooltip">如果筛选时间，开始时间和结束时间都为空，则本期账户余额=系统截止到当前时间的账户余额；否则，本期账户余额=本期期初余额+本期充值金额-本期充值开课金额+本期充值退款-本期账户余额退款</div>
+                                            </h4>
+                                            <div class="amount" style="font-size: 14px; font-weight: 600; color: #262626;">¥120.00</div>
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 审核信息 -->
+                        <div class="audit-opinion-section">
+                            <div class="audit-opinion-title">
+                                <span>审核信息</span>
+                            </div>
+                            <div class="audit-opinion-content">
+                                <div class="audit-info-display">
+                                    <p><strong>审核状态：</strong><span class="status-badge status-success">审核通过</span></p>
+                                    <p><strong>审核时间：</strong>2024-12-01 09:15:30</p>
+                                    <p><strong>审核意见：</strong>数据核对无误，审核通过</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="hideDetailModal()">关闭</button>
+                    </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" onclick="hideExportRecordModal()">关闭</button>
             </div>
         </div>
     </div>
