@@ -1,0 +1,45 @@
+<!-- 生成证书弹窗组件 -->
+<div class="certificate-modal" id="certificateGenerateModal">
+    <div class="certificate-modal-content">
+        <div class="certificate-modal-header">
+            <h3><i class="fas fa-certificate"></i> 生成证书</h3>
+            <button class="certificate-close-btn" onclick="closeCertificateModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="certificate-modal-body">
+            <form id="generateCertificateForm">
+                <div class="form-group">
+                    <label>年份</label>
+                    <select id="modalYear" required></select>
+                </div>
+                <div class="form-group">
+                    <label>课程类型</label>
+                    <select id="modalType" required>
+                        <option value="">请选择</option>
+                        <option value="专业课">专业课</option>
+                        <option value="公需课">公需课</option>
+                        <option value="建工课">建工课</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>证书名称</label>
+                    <input type="text" id="modalName" placeholder="请输入证书名称" required>
+                </div>
+                <div class="form-group">
+                    <label>已选课程</label>
+                    <div class="selected-courses-list" id="selectedCoursesList">
+                        <!-- 课程列表由JS渲染 -->
+                    </div>
+                </div>
+                <div class="stat-info">
+                    已选课程 <span id="modalSelectedCount">0</span> 门，总学时 <span id="modalSelectedHours">0</span> 小时
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCertificateModal()">取消</button>
+                    <button type="submit" class="btn btn-primary" id="confirmGenerateBtn">确认生成</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div> 

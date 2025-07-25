@@ -1,0 +1,420 @@
+/* 联系弹窗样式 */
+
+/* 弹窗遮罩层 */
+.contact-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.contact-modal.show {
+    display: flex;
+}
+
+/* 弹窗内容 */
+.contact-modal-content {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+    position: relative;
+}
+
+/* 弹窗头部 */
+.contact-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    color: white;
+    position: relative;
+}
+
+.contact-modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    animation: modalShine 2s ease-in-out infinite;
+}
+
+.contact-modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.contact-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+/* 弹窗主体 */
+.contact-modal-body {
+    padding: 24px;
+    max-height: calc(90vh - 80px);
+    overflow-y: auto;
+}
+
+.contact-modal-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.contact-modal-body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.contact-modal-body::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.contact-modal-body::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 微信二维码区域 */
+.qr-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.qr-code-container {
+    text-align: center;
+}
+
+.qr-code {
+    width: 160px;
+    height: 160px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed #dee2e6;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin: 0 auto 12px;
+    transition: all 0.3s ease;
+}
+
+.qr-code:hover {
+    border-color: #1890ff;
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+}
+
+.qr-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: #666;
+}
+
+.qr-placeholder i {
+    font-size: 36px;
+    color: #1890ff;
+}
+
+.qr-placeholder span {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.profile-pic {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 24px;
+    height: 24px;
+    background: #1890ff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    border: 2px solid white;
+}
+
+.qr-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+}
+
+/* 分割线 */
+.divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #e8eaed 50%, transparent 100%);
+    margin: 24px 0;
+    position: relative;
+}
+
+.divider::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 3px;
+    background: #1890ff;
+    border-radius: 2px;
+}
+
+/* 联系方式列表 */
+.contact-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #fafbfc;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+    transition: all 0.3s ease;
+}
+
+.contact-item:hover {
+    background: #f0f8ff;
+    border-color: #1890ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(24, 144, 255, 0.1);
+}
+
+.contact-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #1890ff 0%, #40a9ff 100%);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.contact-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.contact-text {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.contact-text:first-child {
+    font-weight: 600;
+    color: #1890ff;
+}
+
+/* 按钮样式 */
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 4px;
+    min-width: 60px;
+}
+
+.btn-large {
+    padding: 14px 24px;
+    font-size: 14px;
+    border-radius: 8px;
+    font-weight: 600;
+    width: 100%;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-large:hover {
+    background: linear-gradient(135deg, #096dd9 0%, #0050b3 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+/* 联系操作区域 */
+.contact-action {
+    margin-top: 20px;
+}
+
+/* 复制成功提示 */
+.copy-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #52c41a;
+    color: white;
+    padding: 10px 16px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+    transform: translateX(100%);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10000;
+}
+
+.copy-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.copy-toast i {
+    font-size: 14px;
+}
+
+/* 动画效果 */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from { 
+        transform: translateY(-50px) scale(0.9); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+}
+
+@keyframes modalShine {
+    0% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .contact-modal-content {
+        width: 95%;
+        max-width: none;
+        margin: 20px;
+    }
+    
+    .contact-modal-body {
+        padding: 20px;
+    }
+    
+    .qr-code {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .qr-placeholder i {
+        font-size: 32px;
+    }
+    
+    .contact-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .contact-icon {
+        align-self: flex-start;
+    }
+    
+    .contact-info {
+        width: 100%;
+    }
+    
+    .btn-sm {
+        align-self: flex-end;
+    }
+    
+    .copy-toast {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+        transform: translateY(-100%);
+    }
+    
+    .copy-toast.show {
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 480px) {
+    .contact-modal-header {
+        padding: 16px 20px;
+    }
+    
+    .contact-modal-header h3 {
+        font-size: 16px;
+    }
+    
+    .qr-code {
+        width: 120px;
+        height: 120px;
+    }
+    
+    .qr-placeholder i {
+        font-size: 28px;
+    }
+    
+    .btn-large {
+        padding: 12px 20px;
+        font-size: 13px;
+    }
+} 

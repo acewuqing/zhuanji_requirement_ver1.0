@@ -192,6 +192,20 @@ function getStatusClass(status) {
     }
 }
 
+// 获取导出记录状态对应的CSS类
+function getExportStatusClass(status) {
+    switch (status) {
+        case '已完成':
+            return 'status-success';
+        case '执行中':
+            return 'status-info';
+        case '执行失败':
+            return 'status-danger';
+        default:
+            return 'status-info';
+    }
+}
+
 // 显示加载消息
 function showLoadingMessage(message) {
     // 创建加载提示
@@ -294,33 +308,34 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'Escape') {
             hideAuditModal();
             hideDetailModal();
-            hideExportRecordsModal();
+            hideExportRecordModal();
         }
     });
     
     // 绑定导出记录模态框事件
-    const exportRecordsModal = document.getElementById('exportRecordsModal');
-    if (exportRecordsModal) {
-        exportRecordsModal.addEventListener('click', function(e) {
+    const exportRecordModal = document.getElementById('exportRecordModal');
+    if (exportRecordModal) {
+        exportRecordModal.addEventListener('click', function(e) {
             if (e.target === this) {
-                hideExportRecordsModal();
+                hideExportRecordModal();
             }
         });
     }
 }); 
 
 // 显示导出记录模态框
-function showExportRecordsModal() {
-    const modal = document.getElementById('exportRecordsModal');
+function showExportRecordModal() {
+    const modal = document.getElementById('exportRecordModal');
     if (modal) {
         modal.classList.add('show');
         document.body.style.overflow = 'hidden';
+        loadExportRecords(); // 每次弹窗时加载数据
     }
 }
 
 // 隐藏导出记录模态框
-function hideExportRecordsModal() {
-    const modal = document.getElementById('exportRecordsModal');
+function hideExportRecordModal() {
+    const modal = document.getElementById('exportRecordModal');
     if (modal) {
         modal.classList.remove('show');
         document.body.style.overflow = '';
@@ -338,12 +353,98 @@ function downloadFile(fileName) {
     showSuccessMessage('文件下载开始...');
 }
 
+// 重试导出
+function retryExport(fileName) {
+    console.log('重试导出:', fileName);
+    showLoadingMessage('正在重试导出...');
+    // 模拟重试过程
+    setTimeout(() => {
+        hideLoadingMessage();
+        alert(`重试导出成功！\n文件名：${fileName}`);
+        loadExportRecords(); // 刷新列表
+    }, 1500);
+}
 
+function loadExportRecords() {
+    // 模拟从服务器获取导出记录数据
+    const exportRecords = [
+        {
+            fileName: 'JS20241201001_结算订单明细_20241201153022.xlsx',
+            status: '已完成',
+            operationTime: '2024-12-01 15:30:22',
+            operator: 'admin'
+        },
+        {
+            fileName: 'JS20241101001_结算订单明细_20241201091530.xlsx',
+            status: '已完成',
+            operationTime: '2024-12-01 09:15:30',
+            operator: 'admin'
+        },
+        {
+            fileName: 'JS20241201001_结算订单明细_20241201154500.xlsx',
+            status: '执行中',
+            operationTime: '2024-12-01 15:45:00',
+            operator: 'admin'
+        },
+        {
+            fileName: 'JS20241001001_结算订单明细_20241101103045.xlsx',
+            status: '执行失败',
+            operationTime: '2024-11-01 10:30:45',
+            operator: 'admin'
+        },
+        // 新增几条演示数据
+        {
+            fileName: 'JS20240901001_结算订单明细_20241001120000.xlsx',
+            status: '已完成',
+            operationTime: '2024-10-01 12:00:00',
+            operator: 'user1'
+        },
+        {
+            fileName: 'JS20240801001_结算订单明细_20240901100000.xlsx',
+            status: '执行中',
+            operationTime: '2024-09-01 10:00:00',
+            operator: 'user2'
+        },
+        {
+            fileName: 'JS20240701001_结算订单明细_20240801150000.xlsx',
+            status: '执行失败',
+            operationTime: '2024-08-01 15:00:00',
+            operator: 'user3'
+        }
+    ];
+    
+    renderExportRecords(exportRecords);
+}
+
+// 渲染导出记录列表
+function renderExportRecords(records) {
+    const tbody = document.getElementById('exportRecordTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    records.forEach(record => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${record.fileName}</td>
+            <td><span class="status-badge ${getExportStatusClass(record.status)}">${record.status}</span></td>
+            <td>${record.operationTime}</td>
+            <td>${record.operator}</td>
+            <td>
+                ${record.status === '已完成' ? 
+                    `<button class="btn btn-primary btn-sm" onclick="downloadFile('${record.fileName}')">下载</button>` : 
+                    record.status === '执行失败' ? 
+                        `<span class="text-muted">导出失败</span>` : 
+                        `<span class="text-muted">处理中...</span>`
+                }
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
 
 // 显示成功提示消息
 function showSuccessMessage(message) {
     const successDiv = document.createElement('div');
-    successDiv.className = 'success-message';
+    successDiv.className = 'success-message top-right';
     successDiv.textContent = message;
     document.body.appendChild(successDiv);
     

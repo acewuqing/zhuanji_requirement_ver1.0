@@ -1,0 +1,510 @@
+/* 证书管理系统样式 */
+
+/* 页面头部 */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    color: #1890ff;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 筛选栏 */
+.filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-bar select,
+.filter-bar input {
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.filter-bar select {
+    min-width: 120px;
+}
+
+.filter-bar input {
+    min-width: 200px;
+}
+
+/* 课程表格 */
+.course-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.course-table th,
+.course-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.course-table th {
+    background: #fafafa;
+    font-weight: 600;
+    color: #333;
+}
+
+.course-table tbody tr:hover {
+    background: #f5f5f5;
+}
+
+.course-table input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+}
+
+/* 课程页脚 */
+.course-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.selected-info {
+    font-size: 14px;
+    color: #666;
+}
+
+.selected-info span {
+    color: #1890ff;
+    font-weight: 600;
+}
+
+/* 证书表格 */
+.certificate-table-section {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.certificate-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.certificate-table th,
+.certificate-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.certificate-table th {
+    background: #fafafa;
+    font-weight: 600;
+    color: #333;
+}
+
+.certificate-table tbody tr:hover {
+    background: #f5f5f5;
+}
+
+/* 操作按钮 */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+    border-radius: 4px;
+}
+
+/* 证书状态 */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.status-active {
+    background: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+}
+
+.status-inactive {
+    background: #fff2e8;
+    color: #fa8c16;
+    border: 1px solid #ffd591;
+}
+
+/* 生成证书弹窗 */
+.certificate-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(4px);
+}
+
+.certificate-modal.show {
+    display: flex;
+}
+
+.certificate-modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+.certificate-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+    color: white;
+}
+
+.certificate-modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.certificate-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.certificate-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.certificate-modal-body {
+    padding: 24px;
+    max-height: calc(90vh - 80px);
+    overflow-y: auto;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 已选课程列表 */
+.selected-courses-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e8eaed;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.course-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.course-item:last-child {
+    border-bottom: none;
+}
+
+.course-info {
+    flex: 1;
+}
+
+.course-name {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.course-details {
+    font-size: 12px;
+    color: #666;
+}
+
+.remove-course {
+    background: #ff4d4f;
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.remove-course:hover {
+    background: #cf1322;
+    transform: scale(1.1);
+}
+
+/* 统计信息 */
+.stat-info {
+    background: #f0f8ff;
+    padding: 12px;
+    border-radius: 6px;
+    margin: 16px 0;
+    text-align: center;
+    font-size: 14px;
+    color: #1890ff;
+    font-weight: 500;
+}
+
+.stat-info span {
+    font-weight: 600;
+    color: #096dd9;
+}
+
+/* 弹窗操作按钮 */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* 二次确认弹窗 */
+.confirm-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    backdrop-filter: blur(4px);
+}
+
+.confirm-modal.show {
+    display: flex;
+}
+
+.confirm-modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease;
+}
+
+.confirm-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #fa8c16 0%, #d46b08 100%);
+    color: white;
+}
+
+.confirm-modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.confirm-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.confirm-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.confirm-modal-body {
+    padding: 24px;
+}
+
+.confirm-info {
+    margin-bottom: 24px;
+}
+
+.confirm-info p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 16px;
+    font-weight: 500;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.info-value {
+    font-size: 14px;
+    color: #1890ff;
+    font-weight: 600;
+}
+
+.confirm-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+}
+
+/* 动画效果 */
+@keyframes modalSlideIn {
+    from { 
+        transform: translateY(-50px) scale(0.9); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateY(0) scale(1); 
+        opacity: 1; 
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-bar select,
+    .filter-bar input {
+        width: 100%;
+    }
+    
+    .course-footer {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .certificate-modal-content,
+    .confirm-modal-content {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .certificate-modal-body,
+    .confirm-modal-body {
+        padding: 20px;
+    }
+    
+    .modal-actions,
+    .confirm-actions {
+        flex-direction: column;
+    }
+    
+    .modal-actions .btn,
+    .confirm-actions .btn {
+        width: 100%;
+    }
+} 

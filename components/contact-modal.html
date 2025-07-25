@@ -1,0 +1,118 @@
+<!-- 联系弹窗组件 -->
+<div class="contact-modal" id="contactModal">
+    <div class="contact-modal-content">
+        <!-- 弹窗头部 -->
+        <div class="contact-modal-header">
+            <h3><i class="fas fa-headset"></i> 客服中心</h3>
+            <button class="contact-close-btn" onclick="closeContactModal()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- 弹窗主体 -->
+        <div class="contact-modal-body">
+            <!-- 微信二维码区域 -->
+            <div class="qr-section">
+                <div class="qr-code-container">
+                    <div class="qr-code">
+                        <div class="qr-placeholder">
+                            <i class="fab fa-weixin"></i>
+                            <span>微信二维码</span>
+                        </div>
+                        <div class="profile-pic">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <p class="qr-label">客服微信</p>
+                </div>
+            </div>
+
+            <!-- 分割线 -->
+            <div class="divider"></div>
+
+            <!-- 联系方式列表 -->
+            <div class="contact-methods">
+                <!-- 微信扫码 -->
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-qrcode"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-text">打开微信扫描上面的二维码</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="showScanTip()">
+                        <i class="fas fa-camera"></i> 扫码
+                    </button>
+                </div>
+
+                <!-- 微信咨询 -->
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fab fa-weixin"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-text">微信咨询: 18685139192</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm copy-btn" data-text="18685139192">
+                        <i class="fas fa-copy"></i> 复制
+                    </button>
+                </div>
+
+                <!-- 电话客服 -->
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-text">电话客服电话: 18685139192</span>
+                        <span class="contact-text">学校电话: 085188506066</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm copy-btn" data-text="18685139192">
+                        <i class="fas fa-copy"></i> 复制
+                    </button>
+                </div>
+
+                <!-- 客服在线时间 -->
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-text">客服在线时间:</span>
+                        <span class="contact-text">上午8:30-12:00</span>
+                        <span class="contact-text">下午14:00-17:30</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm copy-btn" data-text="上午8:30-12:00，下午14:00-17:30">
+                        <i class="fas fa-copy"></i> 复制
+                    </button>
+                </div>
+
+                <!-- QQ咨询 -->
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <i class="fab fa-qq"></i>
+                    </div>
+                    <div class="contact-info">
+                        <span class="contact-text">QQ咨询: 379867411</span>
+                    </div>
+                    <button class="btn btn-primary btn-sm copy-btn" data-text="379867411">
+                        <i class="fas fa-copy"></i> 复制
+                    </button>
+                </div>
+            </div>
+
+            <!-- 在线沟通按钮 -->
+            <div class="contact-action">
+                <button class="btn btn-primary btn-large" onclick="showOnlineChat()">
+                    <i class="fas fa-comments"></i> 在线沟通
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 复制成功提示 -->
+<div class="copy-toast" id="copyToast">
+    <i class="fas fa-check"></i>
+    <span>复制成功</span>
+</div> 
